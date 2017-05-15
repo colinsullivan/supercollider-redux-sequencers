@@ -1,0 +1,25 @@
+{
+  "name": "awakening-sequencers",
+  "version": "0.0.1",
+  "description": "Components for building generative music systems involving sequenced events.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/colinsullivan/awakening-sequencers.git"
+  },
+  "keywords": [
+    "node.js",
+    "supercollider",
+    "supercollider-redux",
+    "abletonlink-redux"
+  ],
+  "author": "Colin Sullivan <colin [at] colin-sullivan.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/colinsullivan/awakening-sequencers/issues"
+  },
+  "homepage": "https://github.com/colinsullivan/awakening-sequencers#readme"
+}
