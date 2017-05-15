@@ -2,9 +2,10 @@
   "name": "awakening-sequencers",
   "version": "0.0.1",
   "description": "Components for building generative music systems involving sequenced events.",
-  "main": "main.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start_example": "babel-node src/example.js",
+    "build": "rm -Rf lib/* && babel src --out-dir lib"
   },
   "repository": {
     "type": "git",
@@ -21,5 +22,36 @@
   "bugs": {
     "url": "https://github.com/colinsullivan/awakening-sequencers/issues"
   },
-  "homepage": "https://github.com/colinsullivan/awakening-sequencers#readme"
+  "homepage": "https://github.com/colinsullivan/awakening-sequencers#readme",
+  "dependencies": {
+    "abletonlink-redux": "0.0.2",
+    "redux": "^3.6.0",
+    "supercollider-redux": "0.0.2"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "impliedStrict": true
+      }
+    },
+    "env": {
+      "browser": false,
+      "node": true,
+      "es6": true,
+      "mocha": true
+    },
+    "rules": {
+      "no-console": 0,
+      "no-use-before-define": "error",
+      "block-scoped-var": "error"
+    }
+  }
 }
