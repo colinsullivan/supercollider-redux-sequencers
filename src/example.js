@@ -62,9 +62,9 @@ var store = createStore(rootReducer);
 var scStoreController = new SCStoreController(store);
 var abletonLinkController = new AbletonLinkController(store, 'abletonlink');
 
-//setInterval(() => {
-  //console.log("store.getState()");
-  //console.log(store.getState());
+setInterval(() => {
+  console.log("store.getState()");
+  console.log(store.getState());
   //console.log("Queueing simple sound...");
   //store.dispatch(actions.simpleSoundQueued());
-//}, 1000);
+}, 1000);

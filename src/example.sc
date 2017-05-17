@@ -10,24 +10,21 @@
  **/
 
 (
-  var store, lastBeatFloor, clock, pat, clockOffsetSeconds;
+  var store, lastBeatFloor, clockController, pat, clockOffsetSeconds, patPlayed = false;
 
   API.mountDuplexOSC();
+
+  s.boot();
 
   // I needed this to acutally sync with ableton
   clockOffsetSeconds = 0;
 
-  s.options.outDevice = "JackRouter";
-  s.options.inDevice = "JackRouter";
-  s.options.blockSize = 8;
-  s.boot();
-
   store = StateStore.getInstance();
-  clock = false;
+  clockController = AbletonTempoClockController.new((store: store, clockOffsetSeconds: clockOffsetSeconds));
 
   // define a simple synth
   SynthDef(\simple, {
-    arg freq, amp = 0.2;
+    arg freq, amp = 0.7;
     var out;
     out = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.001, 0.05, 0.3), doneAction: 2);
     Out.ar(0, [out, out]);
@@ -54,32 +51,28 @@
     var tempo;
     //var secondsPerBeat;
     var beatFloor = beat.floor();
-    //var noteFreq;
-    
-    if (bpm == false, {
-      ^this;    
-    }, {
-      tempo = bpm / 60.0;
-    });
 
-    if (clock == false, {
-      "initializing TempoClock...".postln();
-      "beat:".postln;
-      beat.postln;
-      clock = TempoClock.new(tempo: tempo, beats: beat + (tempo * clockOffsetSeconds));
-      "TempoClock initialized.".postln();
-      "playing pattern...".postln();
-      pat.play(clock: clock, quant: [4]);
-    }, {
-      clock.beats = beat + (tempo * clockOffsetSeconds);
-    });
+    //if (clockController == false, {
+      //"initializing TempoClock...".postln();
+      //"beat:".postln;
+      //beat.postln;
+      //clockController = TempoClock.new(tempo: tempo, beats: beat + (tempo * clockOffsetSeconds));
+      //"TempoClock initialized.".postln();
+      //"playing pattern...".postln();
+      //pat.play(clockController: clockController, quant: [4]);
+    //}, {
+      //clockController.beats = beat + (tempo * clockOffsetSeconds);
+    //});
     //secondsPerBeat = 60.0 / bpm;
 
     if (lastBeatFloor != beatFloor, {
       "beatFloor:".postln;
       beatFloor.postln;
-      "clock.beats:".postln;
-      clock.beats.postln;
+      if (clockController.isReady() && patPlayed == false, {
+        "playing...".postln();
+        patPlayed = true;
+        pat.play(clock: clockController.clock, quant: [0]);
+      });
 
       //if (beatFloor % 3 == 0, {
         //noteFreq = 880;
