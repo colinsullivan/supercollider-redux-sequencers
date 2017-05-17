@@ -19,6 +19,7 @@ import supercolliderRedux from "supercollider-redux"
 import abletonLinkRedux from "abletonlink-redux"
 import SCStoreController from "./SCStoreController"
 import AbletonLinkController from "./AbletonLinkController"
+import awakeningSequencers from "."
 
 //// When we want the sound to play
 //const SIMPLE_SOUND_QUEUED = "SIMPLE_SOUND_QUEUED";
@@ -48,11 +49,21 @@ import AbletonLinkController from "./AbletonLinkController"
 //};
 //var simpleSequence
 
-var rootReducer = function (state = {}, action) {
+function create_default_state () {
+  return {
+    sequencers: {
+      'metro': awakeningSequencers.create_default_sequencer('metro')
+    }
+  };
+}
+
+var rootReducer = function (state = create_default_state(), action) {
 
   //state.simpleSound = simpleSound(state.simpleSound, action);
   state.abletonlink = abletonLinkRedux.reducer(state.abletonlink, action);
   state.supercolliderRedux = supercolliderRedux.reducer(state.supercolliderRedux, action);
+
+  state.sequencers = awakeningSequencers.reducer(state.sequencers, action);
 
   return state;
   
@@ -65,6 +76,9 @@ var abletonLinkController = new AbletonLinkController(store, 'abletonlink');
 setInterval(() => {
   console.log("store.getState()");
   console.log(store.getState());
-  //console.log("Queueing simple sound...");
-  //store.dispatch(actions.simpleSoundQueued());
 }, 1000);
+
+setTimeout(() => {
+  console.log("Queueing metronome...");
+  store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+}, 4000);

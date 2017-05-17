@@ -38,7 +38,7 @@ AbletonTempoClockController : Object {
     //var secondsPerBeat;
     var beatFloor = beat.floor();
     //var noteFreq;
-    
+   
     if (bpm == false, {
       ^this;    
     }, {

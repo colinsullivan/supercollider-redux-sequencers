@@ -11,18 +11,59 @@
 
 import * as actionTypes from "./actionTypes";
 
+export var PLAYING_STATES = {
+  STOPPED: "STOPPED",
+  QUEUED: "QUEUED",
+  PLAYING: "PLAYING",
+  STOP_QUEUED: "STOP_QUEUED"
+};
+
 export function create_default_state () {
   return {
-    sequencers: []
   };
 }
-export default function (state = create_default_state(), action) {
-  switch (action.type) {
+export function create_default_sequencer (name) {
+  return {
+    name: name,
+    clockOffsetSeconds: 0.0,
+    transport: {
+      beat: 0
+    },
+    meter: {
+      numBeats: 8,
+      beatDur: 1
+    },
+    playingState: PLAYING_STATES.STOPPED
+  }
+}
+export function sequencer (state, action) {
+  if (action.payload && action.payload.name == state.name) {
+    switch (action.type) {
+      case actionTypes.SEQUENCER_QUEUED:
+        state.playingState = PLAYING_STATES.QUEUED;
+        break;
 
-      // TODO
-    
-    default:
-      break;
+      case actionTypes.SEQUENCER_PLAYING:
+        state.playingState = PLAYING_STATES.PLAYING;
+        break;
+
+      case actionTypes.SEQUENCER_STOPPED:
+        state.playingState = PLAYING_STATES.STOPPED;
+        break;
+
+      case actionTypes.SEQUENCER_STOP_QUEUED:
+        state.playingState = PLAYING_STATES.STOP_QUEUED;
+        break;
+      
+      default:
+        break;
+    }
   }
   return state;
+}
+export default function (sequencers = create_default_state(), action) {
+  for (var name in sequencers) {
+    sequencers[name] = sequencer(sequencers[name], action);
+  }
+  return sequencers;
 }

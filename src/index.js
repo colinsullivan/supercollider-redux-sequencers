@@ -1,9 +1,10 @@
-import * as actions from "./lib/actions"
-import * as actionTypes from "./lib/actionTypes"
-import reducer from "./lib/reducers"
+import * as actions from "./actions"
+import * as actionTypes from "./actionTypes"
+import reducer, { create_default_sequencer } from "./reducers"
 
 export default {
   actions,
   actionTypes,
-  reducer
+  reducer,
+  create_default_sequencer
 }

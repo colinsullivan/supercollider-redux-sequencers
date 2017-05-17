@@ -10,7 +10,7 @@
  **/
 
 (
-  var store, lastBeatFloor, clockController, pat, clockOffsetSeconds, patPlayed = false;
+  var store, lastBeatFloor, pat, clockOffsetSeconds, patPlayed = false, sequencers;
 
   API.mountDuplexOSC();
 
@@ -20,7 +20,7 @@
   clockOffsetSeconds = 0;
 
   store = StateStore.getInstance();
-  clockController = AbletonTempoClockController.new((store: store, clockOffsetSeconds: clockOffsetSeconds));
+  sequencers = IdentityDictionary.new();
 
   // define a simple synth
   SynthDef(\simple, {
@@ -42,47 +42,55 @@
   );
 
 
+
   // when state changes, this method will be called
-  lastBeatFloor = 0;
+  //lastBeatFloor = 0;
   store.subscribe({
     var state = store.getState();
-    var beat = state.abletonlink.beat;
-    var bpm = state.abletonlink.bpm;
-    var tempo;
-    //var secondsPerBeat;
-    var beatFloor = beat.floor();
 
-    //if (clockController == false, {
-      //"initializing TempoClock...".postln();
-      //"beat:".postln;
-      //beat.postln;
-      //clockController = TempoClock.new(tempo: tempo, beats: beat + (tempo * clockOffsetSeconds));
-      //"TempoClock initialized.".postln();
-      //"playing pattern...".postln();
-      //pat.play(clockController: clockController, quant: [4]);
-    //}, {
-      //clockController.beats = beat + (tempo * clockOffsetSeconds);
-    //});
-    //secondsPerBeat = 60.0 / bpm;
 
-    if (lastBeatFloor != beatFloor, {
-      "beatFloor:".postln;
-      beatFloor.postln;
-      if (clockController.isReady() && patPlayed == false, {
-        "playing...".postln();
-        patPlayed = true;
-        pat.play(clock: clockController.clock, quant: [0]);
-      });
-
-      //if (beatFloor % 3 == 0, {
-        //noteFreq = 880;
-      //}, {
-        //noteFreq = 440;
-      //});
-      //s.makeBundle(secondsPerBeat, {Synth(\simple, [freq: noteFreq, amp: 0.4]); });
-
-      lastBeatFloor = beatFloor;    
+    if ((state.sequencers != nil) && (state.sequencers.metro != nil) && (sequencers['metro'] == nil), {
+      sequencers['metro'] = MetronomeSequencer.new((store: store, sequencerId: 'metro'));
     });
+
+
+    //var beat = state.abletonlink.beat;
+    //var bpm = state.abletonlink.bpm;
+    //var tempo;
+    ////var secondsPerBeat;
+    //var beatFloor = beat.floor();
+
+    ////if (clockController == false, {
+      ////"initializing TempoClock...".postln();
+      ////"beat:".postln;
+      ////beat.postln;
+      ////clockController = TempoClock.new(tempo: tempo, beats: beat + (tempo * clockOffsetSeconds));
+      ////"TempoClock initialized.".postln();
+      ////"playing pattern...".postln();
+      ////pat.play(clockController: clockController, quant: [4]);
+    ////}, {
+      ////clockController.beats = beat + (tempo * clockOffsetSeconds);
+    ////});
+    ////secondsPerBeat = 60.0 / bpm;
+
+    //if (lastBeatFloor != beatFloor, {
+      //"beatFloor:".postln;
+      //beatFloor.postln;
+      //if (clockController.isReady() && patPlayed == false, {
+        //"playing...".postln();
+        //patPlayed = true;
+        //pat.play(clock: clockController.clock, quant: [0]);
+      //});
+
+      ////if (beatFloor % 3 == 0, {
+        ////noteFreq = 880;
+      ////}, {
+        ////noteFreq = 440;
+      ////});
+      ////s.makeBundle(secondsPerBeat, {Synth(\simple, [freq: noteFreq, amp: 0.4]); });
+
+      //lastBeatFloor = beatFloor;    
+    //});
 
 
 

@@ -11,20 +11,38 @@
 
 import * as actionTypes from "./actionTypes"
 
-export function sequencerQueued () {
+export function sequencerQueued (name) {
   return {
-    type: actionTypes.SEQUENCER_QUEUED
+    type: actionTypes.SEQUENCER_QUEUED,
+    payload: {
+      name
+    }
   };
 }
 
-export function sequencerPlaying () {
+export function sequencerPlaying (name) {
   return {
-    type: actionTypes.SEQUENCER_PLAYING
+    type: actionTypes.SEQUENCER_PLAYING,
+    payload: {
+      name
+    }
   };
 }
 
-export function sequencerStopped () {
+export function sequencerStopped (name) {
   return {
-    type: actionTypes.SEQUENCER_STOPPED
+    type: actionTypes.SEQUENCER_STOPPED,
+    payload: {
+      name
+    }
   };
+}
+
+export function sequencerStopQueued (name) {
+  return {
+    type: actionTypes.SEQUENCER_STOP_QUEUED,
+    payload: {
+      name
+    }
+  }
 }
