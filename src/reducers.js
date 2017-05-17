@@ -33,7 +33,8 @@ export function create_default_sequencer (name) {
       numBeats: 8,
       beatDur: 1
     },
-    playingState: PLAYING_STATES.STOPPED
+    playingState: PLAYING_STATES.STOPPED,
+    isReady: false
   }
 }
 export function sequencer (state, action) {
@@ -53,6 +54,10 @@ export function sequencer (state, action) {
 
       case actionTypes.SEQUENCER_STOP_QUEUED:
         state.playingState = PLAYING_STATES.STOP_QUEUED;
+        break;
+
+      case actionTypes.SEQUENCER_READY:
+        state.isReady = true;
         break;
       
       default:

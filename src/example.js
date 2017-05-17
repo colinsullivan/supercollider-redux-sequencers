@@ -73,12 +73,24 @@ var store = createStore(rootReducer);
 var scStoreController = new SCStoreController(store);
 var abletonLinkController = new AbletonLinkController(store, 'abletonlink');
 
+let metroReady = false;
+store.subscribe(() => {
+  let state = store.getState();
+  let newMetroReady = state.sequencers.metro.isReady;
+
+  if (newMetroReady != metroReady) {
+    console.log("Queueing metronome...");
+    metroReady = newMetroReady;
+    store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+  }
+});
+
 setInterval(() => {
   console.log("store.getState()");
   console.log(store.getState());
 }, 1000);
 
 setTimeout(() => {
-  console.log("Queueing metronome...");
-  store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
-}, 4000);
+  store.dispatch(awakeningSequencers.actions.sequencerStopQueued('metro'));
+}, 10000);
+

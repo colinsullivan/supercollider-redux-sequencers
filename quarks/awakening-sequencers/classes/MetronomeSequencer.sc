@@ -1,5 +1,5 @@
 MetronomeSequencer : GenerativeSequencer {
-  var pat;
+  var pat, patPlayer;
   initOutputs {
     // define a simple synth
     SynthDef(\simple, {
@@ -23,12 +23,15 @@ MetronomeSequencer : GenerativeSequencer {
 
   queue {
     super.queue();
-    pat.play(clock: this.clock, quant: [0]);
+    "MetronomeSequencer.queue".postln();
+    patPlayer = pat.play(clock: this.clock, quant: [4, 0]);
   }
 
   queueStop {
+    super.queueStop();
+    "MetronomeSequencer.queueStop".postln();
     this.clock.play({
-      pat.stop;
-    }, [0]);
+      patPlayer.stop();
+    }, [8, 0]);
   }
 }

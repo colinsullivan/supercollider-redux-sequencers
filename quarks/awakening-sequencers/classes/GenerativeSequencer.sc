@@ -17,7 +17,7 @@ GenerativeSequencer : Object {
     seqOutputMIDI,
     // Currently, built to be an AbletonTempoClockController
     clockController,
-    <>clock;
+    <>clock = false;
 
   *new {
     arg params;
@@ -38,6 +38,10 @@ GenerativeSequencer : Object {
     //^stateSlice;
     var state = store.getState();
     ^state.sequencers[sequencerId];
+  }
+
+  isReady {
+    ^currentState.isReady;
   }
 
   init {
@@ -77,10 +81,18 @@ GenerativeSequencer : Object {
     var state = store.getState(),
       newState = this.getStateSlice();
 
+    //"GenerativeSequencer.handleStateChange".postln();
+
     if (this.clock == false, {
 
       if (clockController.isReady(), {
         this.clock = clockController.clock;
+        store.dispatch((
+          type: "AWAKENING-SEQUENCERS-SEQ_READY",
+          payload: (
+            name: sequencerId
+          )
+        ));
       }, {
         ^this;
       });
@@ -130,14 +142,16 @@ GenerativeSequencer : Object {
   }
 
   queue {
+    //"GenerativeSequencer.queue".postln();
     this.clock.play({
+      //"Dispatching...".postln();
       store.dispatch((
         type: "AWAKENING-SEQUENCERS-SEQ_PLAYING",
         payload: (
           name: sequencerId
         )
       ));
-    });
+    }, [4, 0]);
   }
 
   play {
@@ -145,7 +159,15 @@ GenerativeSequencer : Object {
   }
 
   queueStop {
-
+    this.clock.play({
+      //"Dispatching...".postln();
+      store.dispatch((
+        type: "AWAKENING-SEQUENCERS-SEQ_STOPPED",
+        payload: (
+          name: sequencerId
+        )
+      ));
+    }, [8, 0]);
   }
 
 }
