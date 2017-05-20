@@ -52,10 +52,7 @@ GenerativeSequencer : Object {
     sequencerId = params['sequencerId'];
 
     currentState = this.getStateSlice();
-    "currentState:".postln;
-    currentState.postln;
-
-    clockController = AbletonTempoClockController.new((store: store, clockOffsetSeconds: currentState.clockOffsetSeconds));
+    clockController = ReduxAbletonTempoClockController.new((store: store, clockOffsetSeconds: currentState.clockOffsetSeconds));
 
     this.initOutputs();
     this.patchOutputChannel = this.create_output_channel();
@@ -117,12 +114,12 @@ GenerativeSequencer : Object {
     });
     
     // if we are playing and the transport changes
-    if (
-      newState.beat != currentState.beat && newState.playingState == "PLAYING", {
-      //("[TAWSequencer (" + name + ")]: Transport has changed.").postln();
-      // schedule next beat
-      this.scheduleNextBeat();
-    });
+    //if (
+      //newState.beat != currentState.beat && newState.playingState == "PLAYING", {
+      ////("[TAWSequencer (" + name + ")]: Transport has changed.").postln();
+      //// schedule next beat
+      //this.scheduleNextBeat();
+    //});
 
     // if a parameter update needs to be queued ?
     //if (newState.queuedDispatch.size() > 0, {
@@ -169,21 +166,4 @@ GenerativeSequencer : Object {
       ));
     }, [8, 0]);
   }
-
-  getNextNoteBeat {
-    ^clock.nextTimeOnGrid(1, 0);
-  }
-
-  scheduleNextBeat {
-    this.clock.schedAbs(this.getNextNoteBeat(), {
-      store.dispatch((
-        type: "AWAKENING-SEQUENCERS-SEQ_ADVANCED",
-        payload: (
-          name: sequencerId,
-          beat: currentState.beat + 1
-        )
-      ));
-    });
-  }
-
 }

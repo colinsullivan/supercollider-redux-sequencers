@@ -26,7 +26,6 @@ export function create_default_state () {
 export function create_default_sequencer (name) {
   return {
     name: name,
-    eventStreamPlayerId: 'metro',
     clockOffsetSeconds: 0.0,
     beat: 0,
     nextBeat: false,
@@ -65,7 +64,7 @@ export function sequencer (state, action) {
 
   switch (action.type) {
     case supercolliderRedux.actionTypes.SUPERCOLLIDER_EVENTSTREAMPLAYER_NEXTBEAT:
-      if (action.payload.id == state.eventStreamPlayerId) {
+      if (action.payload.id == state.name) {
         state.nextBeat = action.payload.nextBeat;
         state.beat = (state.beat + 1) % state.numBeats;
       }
