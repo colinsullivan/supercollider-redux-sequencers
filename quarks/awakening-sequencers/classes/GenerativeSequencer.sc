@@ -10,9 +10,9 @@ GenerativeSequencer : Object {
     // if we are sending our sequence output to a SuperCollider synth, do so
     // through an instance of the cruciallib's [Patch](https://github.com/crucialfelix/crucial-library)
     // abstraction
-    seqOutputPatch,
+    <>seqOutputPatch,
     // a patch needs an audio output channel
-    patchOutputChannel,
+    <>patchOutputChannel,
     //TODO: MIDI out
     seqOutputMIDI,
     // Currently, built to be an AbletonTempoClockController
@@ -58,6 +58,7 @@ GenerativeSequencer : Object {
     clockController = AbletonTempoClockController.new((store: store, clockOffsetSeconds: currentState.clockOffsetSeconds));
 
     this.initOutputs();
+    this.patchOutputChannel = this.create_output_channel();
     this.initSeqGenerator();
 
     // watch state store for updates
@@ -72,8 +73,8 @@ GenerativeSequencer : Object {
     ^MixerChannel.new(
       "GenerativeSequencer[" ++ currentState.name ++ "]" ,
       Server.default,
-      2, 2,
-      outbus: parentOutputChannel
+      2, 2
+      //outbus: parentOutputChannel
     );
   }
 
@@ -117,8 +118,7 @@ GenerativeSequencer : Object {
     
     // if we are playing and the transport changes
     if (
-      newState.transport.beat != currentState.transport.beat
-      && newState.playingState == "PLAYING", {
+      newState.beat != currentState.beat && newState.playingState == "PLAYING", {
       //("[TAWSequencer (" + name + ")]: Transport has changed.").postln();
       // schedule next beat
       this.scheduleNextBeat();
@@ -168,6 +168,22 @@ GenerativeSequencer : Object {
         )
       ));
     }, [8, 0]);
+  }
+
+  getNextNoteBeat {
+    ^clock.nextTimeOnGrid(1, 0);
+  }
+
+  scheduleNextBeat {
+    this.clock.schedAbs(this.getNextNoteBeat(), {
+      store.dispatch((
+        type: "AWAKENING-SEQUENCERS-SEQ_ADVANCED",
+        payload: (
+          name: sequencerId,
+          beat: currentState.beat + 1
+        )
+      ));
+    });
   }
 
 }

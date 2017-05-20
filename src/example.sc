@@ -10,7 +10,7 @@
  **/
 
 (
-  var store, lastBeatFloor, pat, clockOffsetSeconds, patPlayed = false, sequencers;
+  var store, lastBeatFloor, pat, patPlayer, clockOffsetSeconds, patPlayed = false, sequencers, clockController;
 
   API.mountDuplexOSC();
 
@@ -21,6 +21,7 @@
 
   store = StateStore.getInstance();
   sequencers = IdentityDictionary.new();
+  clockController = ReduxAbletonTempoClockController.new((store: store, clockOffsetSeconds: clockOffsetSeconds));
 
   // define a simple synth
   SynthDef(\simple, {
@@ -49,48 +50,58 @@
     var state = store.getState();
 
 
-    if ((state.sequencers != nil) && (state.sequencers.metro != nil) && (sequencers['metro'] == nil), {
-      sequencers['metro'] = MetronomeSequencer.new((store: store, sequencerId: 'metro'));
-    });
+    //if ((state.sequencers != nil) && (state.sequencers.metro != nil) && (sequencers['metro'] == nil), {
+      //sequencers['metro'] = MetronomeSequencer.new((store: store, sequencerId: 'metro'));
+    //});
 
 
-    //var beat = state.abletonlink.beat;
+    var beat = state.abletonlink.beat;
     //var bpm = state.abletonlink.bpm;
     //var tempo;
-    ////var secondsPerBeat;
-    //var beatFloor = beat.floor();
+    //var secondsPerBeat;
+    var beatFloor = beat.floor();
 
-    ////if (clockController == false, {
-      ////"initializing TempoClock...".postln();
-      ////"beat:".postln;
-      ////beat.postln;
-      ////clockController = TempoClock.new(tempo: tempo, beats: beat + (tempo * clockOffsetSeconds));
-      ////"TempoClock initialized.".postln();
-      ////"playing pattern...".postln();
-      ////pat.play(clockController: clockController, quant: [4]);
-    ////}, {
-      ////clockController.beats = beat + (tempo * clockOffsetSeconds);
-    ////});
+    //if (clockController == false, {
+      //"initializing TempoClock...".postln();
+      //"beat:".postln;
+      //beat.postln;
+      //clockController = TempoClock.new(tempo: tempo, beats: beat + (tempo * clockOffsetSeconds));
+      //"TempoClock initialized.".postln();
+      //"playing pattern...".postln();
+      //pat.play(clockController: clockController, quant: [4]);
+    //}, {
+      //clockController.beats = beat + (tempo * clockOffsetSeconds);
+    //});
     ////secondsPerBeat = 60.0 / bpm;
 
-    //if (lastBeatFloor != beatFloor, {
-      //"beatFloor:".postln;
-      //beatFloor.postln;
-      //if (clockController.isReady() && patPlayed == false, {
-        //"playing...".postln();
-        //patPlayed = true;
-        //pat.play(clock: clockController.clock, quant: [0]);
+    if (lastBeatFloor != beatFloor, {
+      "beatFloor:".postln;
+      beatFloor.postln;
+      //"clockController.isReady():".postln;
+      //clockController.isReady().postln;
+      //"clockController.clock:".postln;
+      //clockController.clock.postln;
+      if (clockController.isReady().and(patPlayed == false), {
+        "playing...".postln();
+        patPlayed = true;
+        patPlayer = ReduxEventStreamPlayer.new(
+          store,
+          "metro",
+          stream: pat.asStream()
+        );
+        patPlayer.play(clockController.clock, quant: [0]);
+
+      });
+
+      //if (beatFloor % 3 == 0, {
+        //noteFreq = 880;
+      //}, {
+        //noteFreq = 440;
       //});
+      //s.makeBundle(secondsPerBeat, {Synth(\simple, [freq: noteFreq, amp: 0.4]); });
 
-      ////if (beatFloor % 3 == 0, {
-        ////noteFreq = 880;
-      ////}, {
-        ////noteFreq = 440;
-      ////});
-      ////s.makeBundle(secondsPerBeat, {Synth(\simple, [freq: noteFreq, amp: 0.4]); });
-
-      //lastBeatFloor = beatFloor;    
-    //});
+      lastBeatFloor = beatFloor;    
+    });
 
 
 

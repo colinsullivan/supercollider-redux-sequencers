@@ -10,6 +10,7 @@
  **/
 
 import * as actionTypes from "./actionTypes";
+import supercolliderRedux from "supercollider-redux";
 
 export var PLAYING_STATES = {
   STOPPED: "STOPPED",
@@ -25,14 +26,11 @@ export function create_default_state () {
 export function create_default_sequencer (name) {
   return {
     name: name,
+    eventStreamPlayerId: 'metro',
     clockOffsetSeconds: 0.0,
-    transport: {
-      beat: 0
-    },
-    meter: {
-      numBeats: 8,
-      beatDur: 1
-    },
+    beat: 0,
+    nextBeat: false,
+    numBeats: 8,
     playingState: PLAYING_STATES.STOPPED,
     isReady: false
   }
@@ -64,6 +62,21 @@ export function sequencer (state, action) {
         break;
     }
   }
+
+  switch (action.type) {
+    case supercolliderRedux.actionTypes.SUPERCOLLIDER_EVENTSTREAMPLAYER_NEXTBEAT:
+      if (action.payload.id == state.eventStreamPlayerId) {
+        state.nextBeat = action.payload.nextBeat;
+        state.beat = (state.beat + 1) % state.numBeats;
+      }
+      
+      break;
+    
+    default:
+      break;
+  }
+
+
   return state;
 }
 export default function (sequencers = create_default_state(), action) {
