@@ -71,8 +71,8 @@ GenerativeSequencer : Object {
     currentState = this.getStateSlice();
     clockController = ReduxAbletonTempoClockController.new((store: store, clockOffsetSeconds: currentState.clockOffsetSeconds));
     
-    this.initPatch();
     patchOutputChannel = this.create_output_channel();
+    this.initPatch();
     this.initStream();
 
     // watch state store for updates
@@ -96,7 +96,7 @@ GenerativeSequencer : Object {
     var state = store.getState(),
       newState = this.getStateSlice();
 
-    //"GenerativeSequencer.handleStateChange".postln();
+    "GenerativeSequencer.handleStateChange".postln();
 
     if (clock == false, {
 
@@ -160,18 +160,30 @@ GenerativeSequencer : Object {
   }
 
   queue {
-    //"GenerativeSequencer.queue".postln();
+		var protoEvent = Event.default.copy;
+		//var protoEvent = args[\protoEvent] ?? { Event.default.copy };
+    "GenerativeSequencer.queue".postln();
+		protoEvent.proto ?? { protoEvent.proto = () };
+		protoEvent.proto.putAll((
+			chan: patchOutputChannel,
+			server: patchOutputChannel.server,
+			bus: patchOutputChannel.inbus,
+			outbus: patchOutputChannel.inbus.index,
+			out: patchOutputChannel.inbus.index,
+			i_out: patchOutputChannel.inbus.index
+		));
     streamPlayer = ReduxEventStreamPlayer.new(
       store,
       sequencerId,
-      stream: this.getStream()
+      stream: this.getStream(),
+      event: protoEvent
     );
     streamPlayer.play(
       clock,
       quant: currentState.playQuant
     );
     clock.play({
-      //"Dispatching...".postln();
+      "Dispatching...".postln();
       store.dispatch((
         type: "AWAKENING-SEQUENCERS-SEQ_PLAYING",
         payload: (
@@ -187,7 +199,7 @@ GenerativeSequencer : Object {
 
   queueStop {
     clock.play({
-      //"Dispatching...".postln();
+      "Dispatching...".postln();
       streamPlayer.stop();
       store.dispatch((
         type: "AWAKENING-SEQUENCERS-SEQ_STOPPED",

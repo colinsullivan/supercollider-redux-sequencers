@@ -13,6 +13,8 @@ MetronomeSequencer : GenerativeSequencer {
     });
     patch.prepareForPlay();
     patchSynth = patch.asSynthDef().add();
+
+    patchOutputChannel.level = 0.9;
   }
 
   initStream {
