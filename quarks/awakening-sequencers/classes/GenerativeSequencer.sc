@@ -64,7 +64,7 @@ GenerativeSequencer : Object {
     
     this.initOutputs();
     this.patchOutputChannel = this.create_output_channel();
-    this.initSeqGenerator();
+    this.initStream();
 
     // watch state store for updates
     me = this;
@@ -138,7 +138,7 @@ GenerativeSequencer : Object {
 
   }
 
-  initSeqGenerator {
+  initStream {
 
   }
 

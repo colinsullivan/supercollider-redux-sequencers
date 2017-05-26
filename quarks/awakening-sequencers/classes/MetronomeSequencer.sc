@@ -17,7 +17,7 @@ MetronomeSequencer : GenerativeSequencer {
     patchSynth = this.seqOutputPatch.asSynthDef().add();
   }
 
-  initSeqGenerator {
+  initStream {
 
     pat = Pbind(
       // the name of the SynthDef to use for each note
