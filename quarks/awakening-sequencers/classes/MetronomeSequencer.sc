@@ -1,20 +1,18 @@
 MetronomeSequencer : GenerativeSequencer {
   var pat,
     patStream,
-    currentNote,
-    patPlayer,
     patchSynth;
 
-  initOutputs {
+  initPatch {
     // define a simple synth
-    this.seqOutputPatch = Patch({
+    patch = Patch({
       arg freq, amp = 0.0;
       var out;
       out = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.001, 0.05, 0.3), doneAction: 2);
       [out, out];
     });
-    this.seqOutputPatch.prepareForPlay();
-    patchSynth = this.seqOutputPatch.asSynthDef().add();
+    patch.prepareForPlay();
+    patchSynth = patch.asSynthDef().add();
   }
 
   initStream {
@@ -29,22 +27,8 @@ MetronomeSequencer : GenerativeSequencer {
 
   }
 
-  queue {
-    super.queue();
-    "MetronomeSequencer.queue".postln();
-    patPlayer = ReduxEventStreamPlayer.new(
-      store,
-      sequencerId,
-      stream: pat.asStream()
-    );
-    patPlayer.play(clockController.clock, quant: this.currentState.playQuant);
+  getStream {
+    ^pat.asStream();
   }
 
-  queueStop {
-    super.queueStop();
-    "MetronomeSequencer.queueStop".postln();
-    this.clock.play({
-      patPlayer.stop();
-    }, this.currentState.stopQuant);
-  }
 }

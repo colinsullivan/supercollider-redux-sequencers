@@ -1,3 +1,11 @@
+
+/**
+ *  @class        GenerativeSequencer
+ *
+ *  @classdesc    A framework for playing a stream in sync with a clock.
+ *  Subclasses handle setting up the stream and patch that the stream is
+ *  playing.
+ **/
 GenerativeSequencer : Object {
 
   // reference to our state store
@@ -6,20 +14,21 @@ GenerativeSequencer : Object {
     // state tree
     sequencerId,
     // last known state
-    <currentState,
+    currentState,
     // if we are sending our sequence output to a SuperCollider synth, do so
     // through an instance of the cruciallib's [Patch](https://github.com/crucialfelix/crucial-library)
     // abstraction
-    <>seqOutputPatch,
+    patch,
     // a patch needs an audio output channel
-    <>patchOutputChannel,
+    patchOutputChannel,
     //TODO: MIDI out
     seqOutputMIDI,
     // Currently, built to be an AbletonTempoClockController
     clockController,
     // number representing SC audio output channel
-    <>outputBus,
-    <>clock = false;
+    outputBus,
+    streamPlayer,
+    clock = false;
 
   *new {
     arg params;
@@ -54,16 +63,16 @@ GenerativeSequencer : Object {
     sequencerId = params['sequencerId'];
     
     if (params['outputBus'] == nil, {
-      this.outputBus = 0;
+      outputBus = 0;
     }, {
-      this.outputBus = params['outputBus'];
+      outputBus = params['outputBus'];
     });
 
     currentState = this.getStateSlice();
     clockController = ReduxAbletonTempoClockController.new((store: store, clockOffsetSeconds: currentState.clockOffsetSeconds));
     
-    this.initOutputs();
-    this.patchOutputChannel = this.create_output_channel();
+    this.initPatch();
+    patchOutputChannel = this.create_output_channel();
     this.initStream();
 
     // watch state store for updates
@@ -79,7 +88,7 @@ GenerativeSequencer : Object {
       "GenerativeSequencer[" ++ currentState.name ++ "]" ,
       Server.default,
       2, 2,
-      outbus: this.outputBus
+      outbus: outputBus
     );
   }
 
@@ -89,10 +98,10 @@ GenerativeSequencer : Object {
 
     //"GenerativeSequencer.handleStateChange".postln();
 
-    if (this.clock == false, {
+    if (clock == false, {
 
       if (clockController.isReady(), {
-        this.clock = clockController.clock;
+        clock = clockController.clock;
         store.dispatch((
           type: "AWAKENING-SEQUENCERS-SEQ_READY",
           payload: (
@@ -142,13 +151,26 @@ GenerativeSequencer : Object {
 
   }
 
-  initOutputs {
+  getStream {
+    
+  }
+
+  initPatch {
 
   }
 
   queue {
     //"GenerativeSequencer.queue".postln();
-    this.clock.play({
+    streamPlayer = ReduxEventStreamPlayer.new(
+      store,
+      sequencerId,
+      stream: this.getStream()
+    );
+    streamPlayer.play(
+      clock,
+      quant: currentState.playQuant
+    );
+    clock.play({
       //"Dispatching...".postln();
       store.dispatch((
         type: "AWAKENING-SEQUENCERS-SEQ_PLAYING",
@@ -156,7 +178,7 @@ GenerativeSequencer : Object {
           name: sequencerId
         )
       ));
-    }, [4, 0]);
+    }, currentState.playQuant);
   }
 
   play {
@@ -164,14 +186,15 @@ GenerativeSequencer : Object {
   }
 
   queueStop {
-    this.clock.play({
+    clock.play({
       //"Dispatching...".postln();
+      streamPlayer.stop();
       store.dispatch((
         type: "AWAKENING-SEQUENCERS-SEQ_STOPPED",
         payload: (
           name: sequencerId
         )
       ));
-    }, [8, 0]);
+    }, currentState.stopQuant);
   }
 }
