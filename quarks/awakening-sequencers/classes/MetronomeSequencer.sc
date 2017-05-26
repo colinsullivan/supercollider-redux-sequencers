@@ -1,6 +1,10 @@
 MetronomeSequencer : GenerativeSequencer {
-  var pat, patStream, currentNote, patPlayer,
-  patchSynth;
+  var pat,
+    patStream,
+    currentNote,
+    patPlayer,
+    patchSynth;
+
   initOutputs {
     // define a simple synth
     this.seqOutputPatch = Patch({
@@ -12,6 +16,7 @@ MetronomeSequencer : GenerativeSequencer {
     this.seqOutputPatch.prepareForPlay();
     patchSynth = this.seqOutputPatch.asSynthDef().add();
   }
+
   initSeqGenerator {
 
     pat = Pbind(
@@ -32,7 +37,7 @@ MetronomeSequencer : GenerativeSequencer {
       sequencerId,
       stream: pat.asStream()
     );
-    patPlayer.play(clockController.clock, quant: [4, 0]);
+    patPlayer.play(clockController.clock, quant: this.currentState.playQuant);
   }
 
   queueStop {
@@ -40,6 +45,6 @@ MetronomeSequencer : GenerativeSequencer {
     "MetronomeSequencer.queueStop".postln();
     this.clock.play({
       patPlayer.stop();
-    }, [8, 0]);
+    }, this.currentState.stopQuant);
   }
 }

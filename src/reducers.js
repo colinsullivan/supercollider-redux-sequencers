@@ -31,7 +31,9 @@ export function create_default_sequencer (name) {
     nextBeat: false,
     numBeats: 8,
     playingState: PLAYING_STATES.STOPPED,
-    isReady: false
+    isReady: false,
+    playQuant: [4, 0],
+    stopQuant: [8, 0]
   }
 }
 export function sequencer (state, action) {

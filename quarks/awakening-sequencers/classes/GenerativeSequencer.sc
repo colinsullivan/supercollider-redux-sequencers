@@ -6,7 +6,7 @@ GenerativeSequencer : Object {
     // state tree
     sequencerId,
     // last known state
-    currentState,
+    <currentState,
     // if we are sending our sequence output to a SuperCollider synth, do so
     // through an instance of the cruciallib's [Patch](https://github.com/crucialfelix/crucial-library)
     // abstraction
@@ -17,6 +17,8 @@ GenerativeSequencer : Object {
     seqOutputMIDI,
     // Currently, built to be an AbletonTempoClockController
     clockController,
+    // number representing SC audio output channel
+    <>outputBus,
     <>clock = false;
 
   *new {
@@ -50,10 +52,16 @@ GenerativeSequencer : Object {
 
     store = params['store'];
     sequencerId = params['sequencerId'];
+    
+    if (params['outputBus'] == nil, {
+      this.outputBus = 0;
+    }, {
+      this.outputBus = params['outputBus'];
+    });
 
     currentState = this.getStateSlice();
     clockController = ReduxAbletonTempoClockController.new((store: store, clockOffsetSeconds: currentState.clockOffsetSeconds));
-
+    
     this.initOutputs();
     this.patchOutputChannel = this.create_output_channel();
     this.initSeqGenerator();
@@ -70,8 +78,8 @@ GenerativeSequencer : Object {
     ^MixerChannel.new(
       "GenerativeSequencer[" ++ currentState.name ++ "]" ,
       Server.default,
-      2, 2
-      //outbus: parentOutputChannel
+      2, 2,
+      outbus: this.outputBus
     );
   }
 
