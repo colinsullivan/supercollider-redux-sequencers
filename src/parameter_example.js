@@ -22,9 +22,11 @@ import AbletonLinkController from "./AbletonLinkController"
 import awakeningSequencers from "."
 
 function create_default_state () {
+  var paramExampleSeq = awakeningSequencers.create_default_sequencer('paramexample');
+  paramExampleSeq.releaseTime = 0.3;
   return {
     sequencers: {
-      'paramexample': awakeningSequencers.create_default_sequencer('paramexample')
+      'paramexample': paramExampleSeq
     }
   };
 }
@@ -36,6 +38,20 @@ var rootReducer = function (state = create_default_state(), action) {
   state.supercolliderRedux = supercolliderRedux.reducer(state.supercolliderRedux, action);
 
   state.sequencers = awakeningSequencers.reducer(state.sequencers, action);
+
+  switch (action.type) {
+    case "PARAM_EXAMPLE_LEGATO":
+      state.sequencers.paramexample.releaseTime = 1.2;
+      
+      break;
+
+    case "PARAM_EXAMPLE_STOCCATO":
+      state.sequencers.paramexample.releaseTime = 0.2;
+      break;
+    
+    default:
+      break;
+  }
 
   return state;
   
@@ -63,6 +79,21 @@ setInterval(() => {
 }, 1000);
 
 setTimeout(() => {
-  store.dispatch(awakeningSequencers.actions.sequencerStopQueued('paramexample'));
-}, 10000);
+  store.dispatch({
+    type: "PARAM_EXAMPLE_LEGATO"
+  });
+
+  setTimeout(() => {
+    store.dispatch({
+      type: "PARAM_EXAMPLE_STOCCATO"
+    });
+
+    setTimeout(() => {
+      store.dispatch(awakeningSequencers.actions.sequencerStopQueued('paramexample'));
+    }, 6000);
+
+  }, 6000);
+
+}, 6000);
+
 
