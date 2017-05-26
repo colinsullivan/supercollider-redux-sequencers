@@ -185,10 +185,6 @@ GenerativeSequencer : Object {
         quant: currentState.playQuant
       )
     );
-    //streamPlayer.play(
-      //clock,
-      //quant: currentState.playQuant
-    //);
     clock.play({
       "Dispatching...".postln();
       store.dispatch((

@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "start_example": "babel-node src/example.js",
+    "start_parameter_example": "babel-node src/parameter_example.js",
     "build": "rm -Rf lib/* && babel src --out-dir lib"
   },
   "repository": {

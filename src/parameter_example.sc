@@ -1,7 +1,8 @@
 /**
- *  @file       example.sc
+ *  @file       parameter_example.sc
  *
- *	@desc       This is an example of creating a sequencer that is started and stopped from the accompanying JS code.
+ *	@desc       This is an example of creating a sequencer that is started
+ *  and parameters are played with while it is going.
  *
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
  *
@@ -28,8 +29,8 @@
     var state = store.getState();
 
 
-    if ((state.sequencers != nil) && (state.sequencers.metro != nil) && (sequencers['metro'] == nil), {
-      sequencers['metro'] = MetronomeSequencer.new((store: store, sequencerId: 'metro'));
+    if ((state.sequencers != nil) && (state.sequencers.paramexample != nil) && (sequencers['paramexample'] == nil), {
+      sequencers['paramexample'] = ParamExampleSequencer.new((store: store, sequencerId: 'paramexample'));
     });
 
 
