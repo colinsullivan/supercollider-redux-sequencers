@@ -6,6 +6,7 @@
   "scripts": {
     "start_example": "babel-node src/example.js",
     "start_parameter_example": "babel-node src/parameter_example.js",
+    "start_sampler_example": "babel-node src/example_sampler.js",
     "build": "rm -Rf lib/* && babel src --out-dir lib"
   },
   "repository": {

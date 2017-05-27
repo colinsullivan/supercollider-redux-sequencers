@@ -28,6 +28,9 @@ GenerativeSequencer : Object {
     // number representing SC audio output channel
     outputBus,
     streamPlayer,
+    // if this sequencer uses buffers this is a reference to the
+    // `BufferManager` instance
+    bufManager,
     clock = false;
 
   *new {
@@ -61,6 +64,8 @@ GenerativeSequencer : Object {
 
     store = params['store'];
     sequencerId = params['sequencerId'];
+
+    bufManager = params['bufManager'];
     
     if (params['outputBus'] == nil, {
       outputBus = 0;
