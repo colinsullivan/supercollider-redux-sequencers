@@ -37,7 +37,7 @@ SamplerExampleSequencer : GenerativeSequencer{
       \instrument, patchSynth.name,
       //\midinote, Pseq([96, 84, 84, 84], inf),
       // rhythmic values
-      \dur, Pseq([1, Rest(1), Rest(1), Rest(1)], inf)
+      \dur, Pseq([4, Rest(4)], inf)
     );
     
   }
