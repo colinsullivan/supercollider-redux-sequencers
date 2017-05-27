@@ -27,7 +27,7 @@
   "dependencies": {
     "abletonlink-redux": "0.0.2",
     "redux": "^3.6.0",
-    "supercollider-redux": "0.0.41"
+    "supercollider-redux": "0.0.42"
   },
   "babel": {
     "presets": [

@@ -160,24 +160,14 @@ GenerativeSequencer : Object {
   }
 
   queue {
-		var protoEvent = Event.default.copy;
-		//var protoEvent = args[\protoEvent] ?? { Event.default.copy };
     "GenerativeSequencer.queue".postln();
-		//protoEvent.proto ?? { protoEvent.proto = () };
-		//protoEvent.proto.putAll((
-			//chan: patchOutputChannel,
-			//server: patchOutputChannel.server,
-			//bus: patchOutputChannel.inbus,
-			//outbus: patchOutputChannel.inbus.index,
-			//out: patchOutputChannel.inbus.index,
-			//i_out: patchOutputChannel.inbus.index
-		//));
     streamPlayer = ReduxEventStreamPlayer.new(
       store,
       sequencerId,
-      stream: this.getStream(),
-      //event: protoEvent
+      stream: this.getStream()
     );
+    // ddwMixerChannel hack required, this will only work
+    // on a `ReduxEventStreamPlayer`
     patchOutputChannel.play(
       streamPlayer,
       (

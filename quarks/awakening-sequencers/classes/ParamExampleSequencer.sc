@@ -49,6 +49,5 @@ ParamExampleSequencer : GenerativeSequencer {
     super.handleStateChange();
 
     releaseTime.value = currentState.releaseTime;
-
   }
 }
