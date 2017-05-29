@@ -119,6 +119,21 @@ GenerativeSequencer : Object {
 
     });
 
+    // if readyness changes
+    if (currentState.isReady != newState.isReady, {
+      // go into playingState    
+      switch(currentState.playingState)
+        {"QUEUED"} {
+          this.queue();
+        }
+        {"PLAYING"} {
+          this.play();
+        }
+        {"STOP_QUEUED"} {
+          this.queueStop();
+        }
+    });
+
 
     // if playing state has changed
     if (currentState.playingState != newState.playingState, {
