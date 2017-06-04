@@ -121,6 +121,7 @@ GenerativeSequencer : Object {
 
     // if readyness changes
     if (currentState.isReady != newState.isReady, {
+      currentState.isReady = newState.isReady;
       // go into playingState    
       switch(currentState.playingState)
         {"QUEUED"} {
@@ -137,6 +138,7 @@ GenerativeSequencer : Object {
 
     // if playing state has changed
     if (currentState.playingState != newState.playingState, {
+      currentState.playingState = newState.playingState;
 
       switch(newState.playingState)
         {"QUEUED"} {
@@ -163,7 +165,7 @@ GenerativeSequencer : Object {
       //// queue all parameters    
     //});
 
-    currentState = newState;
+    //currentState = newState;
 
   }
 
