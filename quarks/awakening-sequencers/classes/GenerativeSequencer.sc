@@ -151,21 +151,6 @@ GenerativeSequencer : Object {
           this.queueStop();
         }
     });
-    
-    // if we are playing and the transport changes
-    //if (
-      //newState.beat != currentState.beat && newState.playingState == "PLAYING", {
-      ////("[TAWSequencer (" + name + ")]: Transport has changed.").postln();
-      //// schedule next beat
-      //this.scheduleNextBeat();
-    //});
-
-    // if a parameter update needs to be queued ?
-    //if (newState.queuedDispatch.size() > 0, {
-      //// queue all parameters    
-    //});
-
-    //currentState = newState;
 
   }
 
@@ -182,7 +167,10 @@ GenerativeSequencer : Object {
   }
 
   queue {
-    "GenerativeSequencer.queue".postln();
+    //"GenerativeSequencer.queue".postln();
+    if (streamPlayer != nil, {
+      streamPlayer.stop();    
+    });
     streamPlayer = ReduxEventStreamPlayer.new(
       store,
       sequencerId,
@@ -198,7 +186,7 @@ GenerativeSequencer : Object {
       )
     );
     clock.play({
-      "Dispatching...".postln();
+      //"Dispatching...".postln();
       store.dispatch((
         type: "AWAKENING-SEQUENCERS-SEQ_PLAYING",
         payload: (
@@ -214,8 +202,9 @@ GenerativeSequencer : Object {
 
   queueStop {
     clock.play({
-      "Dispatching...".postln();
-      streamPlayer.stop();
+      var theStreamPlayer = streamPlayer;
+      //"Dispatching...".postln();
+      theStreamPlayer.stop();
       store.dispatch((
         type: "AWAKENING-SEQUENCERS-SEQ_STOPPED",
         payload: (
