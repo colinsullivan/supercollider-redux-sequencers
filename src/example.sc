@@ -23,7 +23,6 @@
   sequencers = IdentityDictionary.new();
 
   // when state changes, this method will be called
-  //lastBeatFloor = 0;
   store.subscribe({
     var state = store.getState();
 

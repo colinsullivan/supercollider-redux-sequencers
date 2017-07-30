@@ -21,34 +21,6 @@ import SCStoreController from "./SCStoreController"
 import AbletonLinkController from "./AbletonLinkController"
 import awakeningSequencers from "."
 
-//// When we want the sound to play
-//const SIMPLE_SOUND_QUEUED = "SIMPLE_SOUND_QUEUED";
-//// when the sound is actually scheduled to play in the sound engine
-//const SIMPLE_SOUND_SCHEDULED = "SIMPLE_SOUND_SCHEDULED"
-
-//var actions = {
-  //simpleSoundQueued: () => {
-    //return {
-      //type: SIMPLE_SOUND_QUEUED
-    //}
-  //}
-//};
-
-//var simpleSound = function (state = {queued: false}, action) {
-  //switch (action.type) {
-    //case abletonLinkRedux.actionTypes.LINK_TRANSPORT_CHANGED:
-      //state.queued = true;
-      //break;
-    //case SIMPLE_SOUND_SCHEDULED:
-      //state.queued = false;
-      //break;
-    //default:
-      //break;
-  //}
-  //return state;
-//};
-//var simpleSequence
-
 function create_default_state () {
   return {
     sequencers: {
@@ -59,7 +31,6 @@ function create_default_state () {
 
 var rootReducer = function (state = create_default_state(), action) {
 
-  //state.simpleSound = simpleSound(state.simpleSound, action);
   state.abletonlink = abletonLinkRedux.reducer(state.abletonlink, action);
   state.supercolliderRedux = supercolliderRedux.reducer(state.supercolliderRedux, action);
 

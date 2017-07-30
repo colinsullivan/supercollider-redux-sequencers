@@ -1,4 +1,4 @@
-ParamExampleSequencer : GenerativeSequencer {
+ParamExampleSequencer : AwakenedSequencer {
   var pat,
     instr,
     patStream,
@@ -24,6 +24,7 @@ ParamExampleSequencer : GenerativeSequencer {
     releaseTime = patch.releaseTime;
     patch.prepareForPlay();
     patchSynth = patch.asSynthDef().add();
+    ^patch
   }
 
   initStream {
@@ -38,11 +39,9 @@ ParamExampleSequencer : GenerativeSequencer {
       \dur, 1,
       \releaseTime, releaseTime
     );
-
-  }
-
-  getStream {
+    
     ^pat.asStream();
+
   }
 
   handleStateChange {

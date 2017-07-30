@@ -1,4 +1,4 @@
-SamplerExampleSequencer : GenerativeSequencer{
+SamplerExampleSequencer : AwakenedSequencer{
   var pat, patchSynth;
 
   initPatch {
@@ -28,6 +28,8 @@ SamplerExampleSequencer : GenerativeSequencer{
     ));
     patch.prepareForPlay();
     patchSynth = patch.asSynthDef().add();
+
+    ^patch
     
   }
 
@@ -39,10 +41,6 @@ SamplerExampleSequencer : GenerativeSequencer{
       // rhythmic values
       \dur, Pseq([4, Rest(4)], inf)
     );
-    
-  }
-
-  getStream {
     ^pat.asStream();
   }
 }

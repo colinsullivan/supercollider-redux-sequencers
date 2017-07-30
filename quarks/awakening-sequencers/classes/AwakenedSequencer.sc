@@ -1,12 +1,12 @@
 
 /**
- *  @class        GenerativeSequencer
+ *  @class        AwakenedSequencer
  *
  *  @classdesc    A framework for playing a stream in sync with a clock.
  *  Subclasses handle setting up the stream and patch that the stream is
  *  playing.
  **/
-GenerativeSequencer : Object {
+AwakenedSequencer : Object {
 
   // reference to our state store
   var store,
@@ -19,6 +19,7 @@ GenerativeSequencer : Object {
     // through an instance of the cruciallib's [Patch](https://github.com/crucialfelix/crucial-library)
     // abstraction
     patch,
+    stream,
     // a patch needs an audio output channel
     patchOutputChannel,
     //TODO: MIDI out
@@ -77,8 +78,8 @@ GenerativeSequencer : Object {
     clockController = ReduxAbletonTempoClockController.new((store: store, clockOffsetSeconds: currentState.clockOffsetSeconds));
     
     patchOutputChannel = this.create_output_channel();
-    this.initPatch();
-    this.initStream();
+    patch = this.initPatch();
+    stream = this.initStream();
 
     // watch state store for updates
     me = this;
@@ -90,7 +91,7 @@ GenerativeSequencer : Object {
   create_output_channel {
     arg parentOutputChannel;
     ^MixerChannel.new(
-      "GenerativeSequencer[" ++ currentState.name ++ "]" ,
+      "AwakenedSequencer[" ++ currentState.name ++ "]" ,
       Server.default,
       2, 2,
       outbus: outputBus
@@ -101,7 +102,7 @@ GenerativeSequencer : Object {
     var state = store.getState(),
       newState = this.getStateSlice();
 
-    //"GenerativeSequencer.handleStateChange".postln();
+    //"AwakenedSequencer.handleStateChange".postln();
 
     if (clock == false, {
 
@@ -155,29 +156,35 @@ GenerativeSequencer : Object {
   }
 
   initStream {
-
-  }
-
-  getStream {
-    
+    // subclasses implement this method to create a pattern generator
+    // and return its stream
   }
 
   initPatch {
-
+    // subclasses implement this method to create a sound generator driven
+    // by the stream
   }
 
   queue {
-    //"GenerativeSequencer.queue".postln();
+    //"AwakenedSequencer.queue".postln();
     if (streamPlayer != nil, {
       streamPlayer.stop();    
     });
+
+    /**
+     *  The ReduxEventStreamPlayer instance will dispatch next beat
+     *  events to the Redux state store as they happen.
+     *
+     *  https://github.com/colinsullivan/supercollider-redux
+     */
     streamPlayer = ReduxEventStreamPlayer.new(
       store,
       sequencerId,
-      stream: this.getStream()
+
+      // this AwakenedSequencer's stream
+      stream: stream
     );
-    // ddwMixerChannel hack required, this will only work
-    // on a `ReduxEventStreamPlayer`
+
     patchOutputChannel.play(
       streamPlayer,
       (
@@ -185,6 +192,7 @@ GenerativeSequencer : Object {
         quant: currentState.playQuant
       )
     );
+
     clock.play({
       //"Dispatching...".postln();
       store.dispatch((

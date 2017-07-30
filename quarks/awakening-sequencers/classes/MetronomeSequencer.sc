@@ -1,4 +1,4 @@
-MetronomeSequencer : GenerativeSequencer {
+MetronomeSequencer : AwakenedSequencer {
   var pat,
     patStream,
     patchSynth;
@@ -13,6 +13,7 @@ MetronomeSequencer : GenerativeSequencer {
     });
     patch.prepareForPlay();
     patchSynth = patch.asSynthDef().add();
+    ^patch
   }
 
   initStream {
@@ -25,10 +26,6 @@ MetronomeSequencer : GenerativeSequencer {
       \dur, 1
     );
 
-  }
-
-  getStream {
     ^pat.asStream();
   }
-
 }
