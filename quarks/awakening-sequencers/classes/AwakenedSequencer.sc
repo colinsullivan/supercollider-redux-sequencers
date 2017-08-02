@@ -52,7 +52,7 @@ AwakenedSequencer : Object {
     //});
     //^stateSlice;
     var state = store.getState();
-    ^state.sequencers[sequencerId];
+    ^state.sequencers[sequencerId.asSymbol()];
   }
 
   isReady {
@@ -83,9 +83,7 @@ AwakenedSequencer : Object {
         clockOffsetSeconds: currentState.clockOffsetSeconds
       ));
     });
-    "clockController:".postln;
-    clockController.postln;
-    
+
     patchOutputChannel = this.create_output_channel();
     patch = this.initPatch();
     stream = this.initStream();
