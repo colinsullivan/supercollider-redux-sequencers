@@ -75,7 +75,14 @@ AwakenedSequencer : Object {
     });
 
     currentState = this.getStateSlice();
-    clockController = ReduxAbletonTempoClockController.new((store: store, clockOffsetSeconds: currentState.clockOffsetSeconds));
+    if (params['clockController'] != nil, {
+      clockController = params['clockController']    
+    }, {
+      clockController = ReduxAbletonTempoClockController.new((
+        store: store,
+        clockOffsetSeconds: currentState.clockOffsetSeconds
+      ));
+    });
     
     patchOutputChannel = this.create_output_channel();
     patch = this.initPatch();
@@ -111,7 +118,7 @@ AwakenedSequencer : Object {
         store.dispatch((
           type: "AWAKENING-SEQUENCERS-SEQ_READY",
           payload: (
-            name: sequencerId
+            sequencerId: sequencerId
           )
         ));
       }, {
@@ -180,7 +187,6 @@ AwakenedSequencer : Object {
     streamPlayer = ReduxEventStreamPlayer.new(
       store,
       sequencerId,
-
       // this AwakenedSequencer's stream
       stream: stream
     );
@@ -198,7 +204,7 @@ AwakenedSequencer : Object {
       store.dispatch((
         type: "AWAKENING-SEQUENCERS-SEQ_PLAYING",
         payload: (
-          name: sequencerId
+          sequencerId: sequencerId
         )
       ));
     }, currentState.playQuant);
@@ -216,7 +222,7 @@ AwakenedSequencer : Object {
       store.dispatch((
         type: "AWAKENING-SEQUENCERS-SEQ_STOPPED",
         payload: (
-          name: sequencerId
+          sequencerId: sequencerId
         )
       ));
     }, currentState.stopQuant);

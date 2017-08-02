@@ -23,9 +23,10 @@ export function create_default_state () {
   return {
   };
 }
-export function create_default_sequencer (name) {
+export function create_default_sequencer (sequencerId, name) {
   return {
     name: name,
+    sequencerId: sequencerId,
     clockOffsetSeconds: 0.0,
     beat: 0,
     nextBeat: false,
@@ -37,7 +38,7 @@ export function create_default_sequencer (name) {
   }
 }
 export function sequencer (state, action) {
-  if (action.payload && action.payload.name == state.name) {
+  if (action.payload && action.payload.sequencerId == state.sequencerId) {
     switch (action.type) {
       case actionTypes.SEQUENCER_QUEUED:
         state.playingState = PLAYING_STATES.QUEUED;
@@ -66,7 +67,7 @@ export function sequencer (state, action) {
 
   switch (action.type) {
     case supercolliderRedux.actionTypes.SUPERCOLLIDER_EVENTSTREAMPLAYER_NEXTBEAT:
-      if (action.payload.id == state.name) {
+      if (action.payload.id == state.sequencerId) {
         state.nextBeat = action.payload.nextBeat;
         state.beat = (state.beat + 1) % state.numBeats;
       }
@@ -81,8 +82,8 @@ export function sequencer (state, action) {
   return state;
 }
 export default function (sequencers = create_default_state(), action) {
-  for (var name in sequencers) {
-    sequencers[name] = sequencer(sequencers[name], action);
+  for (var sequencerId in sequencers) {
+    sequencers[sequencerId] = sequencer(sequencers[sequencerId], action);
   }
   return sequencers;
 }
