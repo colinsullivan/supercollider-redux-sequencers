@@ -83,6 +83,8 @@ AwakenedSequencer : Object {
         clockOffsetSeconds: currentState.clockOffsetSeconds
       ));
     });
+    "clockController:".postln;
+    clockController.postln;
     
     patchOutputChannel = this.create_output_channel();
     patch = this.initPatch();
