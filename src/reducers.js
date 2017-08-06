@@ -1,4 +1,5 @@
 /**
+ *
  *  @file       reducers.js
  *
  *	@desc       Translate actions into changes in the Redux state store.
@@ -34,7 +35,8 @@ export function create_default_sequencer (sequencerId, name) {
     playingState: PLAYING_STATES.STOPPED,
     isReady: false,
     playQuant: [4, 0],
-    stopQuant: [8, 0]
+    stopQuant: [8, 0],
+    event: false
   }
 }
 export function sequencer (state, action) {
@@ -70,6 +72,7 @@ export function sequencer (state, action) {
       if (action.payload.id == state.sequencerId) {
         state.nextBeat = action.payload.nextBeat;
         state.beat = (state.beat + 1) % state.numBeats;
+        state.event = Object.assign({}, action.payload);
       }
       
       break;
