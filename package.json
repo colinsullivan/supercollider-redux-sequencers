@@ -7,7 +7,8 @@
     "start_example": "babel-node src/example.js",
     "start_parameter_example": "babel-node src/parameter_example.js",
     "start_sampler_example": "babel-node src/example_sampler.js",
-    "build": "rm -Rf lib/* && babel src --out-dir lib"
+    "build": "rm -Rf lib/* && babel src --out-dir lib",
+    "test": "mocha --compilers js:babel-register"
   },
   "repository": {
     "type": "git",
@@ -55,5 +56,10 @@
       "no-use-before-define": "error",
       "block-scoped-var": "error"
     }
+  },
+  "devDependencies": {
+    "babel-register": "^6.24.1",
+    "chai": "^4.1.1",
+    "mocha": "^3.5.0"
   }
 }

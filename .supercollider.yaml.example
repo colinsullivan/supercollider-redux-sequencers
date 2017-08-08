@@ -1,0 +1,6 @@
+sclang: /Applications/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+scsynth: /Applications/SuperCollider/SuperCollider.app/Contents/Resources/scsynth
+sclang_conf: /Users/colin/Library/Application Support/SuperCollider/sclang_conf.yaml
+debug: true
+echo: true
+stdin: false
