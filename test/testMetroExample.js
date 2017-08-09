@@ -1,18 +1,15 @@
-#!/usr/bin/env node
-
 /**
- *  @file       example.js
+ *  @file       testMetroExample.js
  *
- *	@desc       Ableton Link state changes into state store, forwarded to
- *	            SuperCollider replica state store.
+ *	@desc       Testing the AwakeningSequencer through the MetronomeSequencer
+ *	example.  Also see `testMetroSequencer.sc` which is the corresponding
+ *	SC code.
  *
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
  *
  *  @copyright  2017 Colin Sullivan
  *  @license    Licensed under the MIT license.
  **/
-
-
 
 import { createStore } from "redux"
 import sc from 'supercolliderjs';
@@ -46,17 +43,6 @@ function rootReducer (state = create_default_state(), action) {
   return state;
   
 }
-
-
-
-//setInterval(() => {
-  //console.log("store.getState()");
-  //console.log(store.getState());
-//}, 1000);
-
-//setTimeout(() => {
-  //store.dispatch(awakeningSequencers.actions.sequencerStopQueued('metro'));
-//}, 10000);
 
 describe("Metronome Example", function () {
   this.timeout(10000);
@@ -154,6 +140,5 @@ describe("Metronome Example", function () {
         done();
       }
     });
-
   });
 });

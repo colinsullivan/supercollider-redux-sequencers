@@ -1,7 +1,8 @@
 /**
- *  @file       example.sc
+ *  @file       testMetroExample.sc
  *
  *	@desc       This is an example of creating a sequencer that is started and stopped from the accompanying JS code.
+ *
  *
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
  *
