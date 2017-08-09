@@ -10,7 +10,7 @@ To run the examples:
 For each example, there is a Node.js script and a SuperCollider script that must be run simultaneously.
 
 ### Basic Example
-This example plays a metronome implemented in `MetronomeSequencer.sc`.
+This example plays a metronome implemented in `MetronomeSequencer.sc`.  It is now in `testMetroExample.[js|sc]` as well.
 
     $ sclang src/example.sc
     # Warning, sound will play!!
@@ -32,4 +32,4 @@ This example demonstrates how a SuperCollider pattern can be parameterized throu
 
 ## Sidenotes
 
-It is possible to run Node.js and a child SuperCollider process using [supercolliderjs](https://github.com/crucialfelix/supercolliderjs)
+It is possible to run Node.js and a child SuperCollider process using [supercolliderjs](https://github.com/crucialfelix/supercolliderjs).  The unit tests do this.
