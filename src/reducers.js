@@ -76,6 +76,16 @@ export function sequencer (state, action) {
       }
       
       break;
+
+    case supercolliderRedux.actionTypes.SUPERCOLLIDER_EVENTSTREAMPLAYER_ENDED:
+      if (action.payload.id == state.sequencerId) {
+        state.beat = 0;
+        state.event = false;
+        state.nextBeat = false;
+        state.playingState = PLAYING_STATES.STOPPED;
+      }
+      
+      break;
     
     default:
       break;

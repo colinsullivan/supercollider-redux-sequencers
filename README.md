@@ -33,3 +33,10 @@ This example demonstrates how a SuperCollider pattern can be parameterized throu
 ## Sidenotes
 
 It is possible to run Node.js and a child SuperCollider process using [supercolliderjs](https://github.com/crucialfelix/supercolliderjs).  The unit tests do this.
+
+## Unit Tests
+
+There are two unit tests: `testMetroExample.[js|sc]` and `testOneShotMetroExample.[js|sc]`.  Both of these have repeated code and can only be run one at a time.  To run:
+
+    $ npm run test testMetroExample.js
+    $ npm run test testOneShotMetroExample.js

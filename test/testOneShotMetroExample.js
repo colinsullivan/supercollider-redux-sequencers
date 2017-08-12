@@ -1,8 +1,8 @@
 /**
- *  @file       testMetroExample.js
+ *  @file       testOneShotMetroExample.js
  *
  *	@desc       Testing the AwakeningSequencer through the MetronomeSequencer
- *	example.  Also see `testMetroSequencer.sc` which is the corresponding
+ *	example.  Also see `testOneShotMetroSequencer.sc` which is the corresponding
  *	SC code.
  *
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
@@ -25,7 +25,7 @@ function create_default_state () {
   var metroInitialState = awakeningSequencers.create_default_sequencer(
     'metro'
   );
-  metroInitialState.numBeats = 4;
+  metroInitialState.numBeats = 8;
   metroInitialState.stopQuant = [4, 4];
   return {
     sequencers: {
@@ -74,7 +74,7 @@ describe("Metronome Example", function () {
         }
       }
     });
-    this.sclang.executeFile(__dirname + '/testMetroExample.sc').catch(done);
+    this.sclang.executeFile(__dirname + '/testOneShotMetroExample.sc').catch(done);
   });
 
   it("should start playing when queued", function (done) {
@@ -94,34 +94,7 @@ describe("Metronome Example", function () {
     });
   });
 
-  it("should play for 4 beats then queue stop", function (done) {
-    var beat = this.store.getState().sequencers.metro.beat;
-    var unsub = this.store.subscribe(() => {
-      let state = this.store.getState();
-      let newBeat = state.sequencers.metro.beat;
-
-      if (newBeat != beat) {
-        beat = newBeat;
-        if (beat == 0) {
-          this.store.dispatch(
-            awakeningSequencers.actions.sequencerStopQueued('metro')
-          );
-          unsub();
-          done();
-        }
-      }
-    });
-  });
-
-  it("should have queued stop", function (done) {
-    var state = this.store.getState();
-    expect(
-      state.sequencers.metro.playingState
-    ).to.equal(awakeningSequencers.PLAYING_STATES.STOP_QUEUED);
-    done();
-  });
-
-  it("should actually stop playing on beat 0", function (done) {
+  it("should actually stop playing on beat 0 (after 8 beats)", function (done) {
     
     var playingState = this.store.getState().sequencers.metro.playingState;
     var unsub = this.store.subscribe(() => {
@@ -140,12 +113,5 @@ describe("Metronome Example", function () {
         done();
       }
     });
-  });
-
-  // TODO
-  it("should quit sclang", function (done) {
-    this.sclang.quit().then(() => {
-      console.log("quit?");
-    }).catch(done);
   });
 });
