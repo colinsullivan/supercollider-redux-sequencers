@@ -200,8 +200,6 @@ AwakenedSequencer : Object {
       )
     );
 
-    "currentState.playQuant:".postln;
-    currentState.playQuant.postln;
     clock.play({
       "Dispatching...".postln();
       store.dispatch((
