@@ -107,7 +107,8 @@ AwakenedSequencer : Object {
 
   handleStateChange {
     var state = store.getState(),
-      newState = this.getStateSlice();
+      lastState = currentState;
+    currentState = this.getStateSlice();
 
     //"AwakenedSequencer.handleStateChange".postln();
 
@@ -128,8 +129,7 @@ AwakenedSequencer : Object {
     });
 
     // if readyness changes
-    if (currentState.isReady != newState.isReady, {
-      currentState.isReady = newState.isReady;
+    if (currentState.isReady != lastState.isReady, {
       // go into playingState    
       switch(currentState.playingState)
         {"QUEUED"} {
@@ -145,10 +145,8 @@ AwakenedSequencer : Object {
 
 
     // if playing state has changed
-    if (currentState.playingState != newState.playingState, {
-      currentState.playingState = newState.playingState;
-
-      switch(newState.playingState)
+    if (currentState.playingState != lastState.playingState, {
+      switch(currentState.playingState)
         {"QUEUED"} {
           this.queue();
         }
@@ -157,6 +155,9 @@ AwakenedSequencer : Object {
         }
         {"STOP_QUEUED"} {
           this.queueStop();
+        }
+        {"STOPPED"} {
+          this.stop();
         }
     });
 
@@ -199,8 +200,10 @@ AwakenedSequencer : Object {
       )
     );
 
+    "currentState.playQuant:".postln;
+    currentState.playQuant.postln;
     clock.play({
-      //"Dispatching...".postln();
+      "Dispatching...".postln();
       store.dispatch((
         type: "AWAKENING-SEQUENCERS-SEQ_PLAYING",
         payload: (
@@ -226,5 +229,9 @@ AwakenedSequencer : Object {
         )
       ));
     }, currentState.stopQuant);
+  }
+
+  stop {
+    stream = this.initStream();
   }
 }

@@ -114,4 +114,41 @@ describe("Metronome Example", function () {
       }
     });
   });
+
+  it("should start playing again when queued", function (done) {
+    this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+    var playingState = this.store.getState().sequencers.metro.playingState;
+    var unsub = this.store.subscribe(() => {
+      let state = this.store.getState();
+      let newPlayingState = state.sequencers.metro.playingState;
+
+      if (newPlayingState != playingState) {
+        playingState = newPlayingState;
+        if (playingState == awakeningSequencers.PLAYING_STATES.PLAYING) {
+          unsub();
+          done();
+        }
+      }
+    });
+  });
+  it("should actually stop playing again on beat 0 (after 8 beats)", function (done) {
+    
+    var playingState = this.store.getState().sequencers.metro.playingState;
+    var unsub = this.store.subscribe(() => {
+      let state = this.store.getState();
+      let newPlayingState = state.sequencers.metro.playingState;
+
+      if (newPlayingState != playingState) {
+        playingState = newPlayingState;
+        expect(
+          state.sequencers.metro.beat
+        ).to.equal(0)
+        expect(
+          state.sequencers.metro.playingState
+        ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
+        unsub();
+        done();
+      }
+    });
+  });
 });
