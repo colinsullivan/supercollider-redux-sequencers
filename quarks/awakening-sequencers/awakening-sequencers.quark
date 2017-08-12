@@ -3,7 +3,7 @@
   path:    "awakening-sequencers",
   summary:    "Components for building generative music systems involving sequenced events.",
   author:    "Colin Sullivan",
-  version:    0.73,
+  version:    0.74,
 //  helpdoc:    "",
   url:      "https://github.com/colinsullivan/awakening-sequencers",
   dependencies:  #["supercollider-redux@tags/0.0.3"]
