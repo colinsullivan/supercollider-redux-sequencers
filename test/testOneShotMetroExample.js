@@ -151,4 +151,54 @@ describe("Metronome Example", function () {
       }
     });
   });
+  it("should not play when queued then stopped", function (done) {
+    var beat = null;
+    var playingState = this.store.getState().sequencers.metro.playingState;
+
+    var unsub = this.store.subscribe(() => {
+      let state = this.store.getState();
+      let newPlayingState = state.sequencers.metro.playingState;
+      let newBeat = state.sequencers.metro.beat;
+
+      if (beat != null && newBeat != beat) {
+        unsub();
+        done("Beat should not have changed");
+      }
+
+      if (newPlayingState != playingState) {
+        playingState = newPlayingState;
+        // if it is queued
+        if (playingState == awakeningSequencers.PLAYING_STATES.QUEUED) {
+          beat = this.store.getState().sequencers.metro.beat;
+
+        } else {
+
+          // otherwise, it should just stop
+          expect(
+            playingState
+          ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
+         
+          // and stay stopped
+          setTimeout(() => {
+            expect(
+              playingState
+            ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
+            unsub();
+            done();
+          }, 2000);
+        }
+
+      }
+    });
+    // first queue
+    console.log("queueing...");
+    this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+    // shortly after stop
+    setTimeout(() => {
+      console.log("immediately stopping...");
+      this.store.dispatch(
+        awakeningSequencers.actions.sequencerStopped('metro')
+      );
+    }, 30);
+  });
 });

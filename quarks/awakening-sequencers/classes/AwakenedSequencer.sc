@@ -14,7 +14,7 @@ AwakenedSequencer : Object {
     // state tree
     sequencerId,
     // last known state
-    currentState,
+    <>currentState,
     // if we are sending our sequence output to a SuperCollider synth, do so
     // through an instance of the cruciallib's [Patch](https://github.com/crucialfelix/crucial-library)
     // abstraction
@@ -146,6 +146,9 @@ AwakenedSequencer : Object {
 
     // if playing state has changed
     if (currentState.playingState != lastState.playingState, {
+      "AwakenedSequencer::playingState changed".postln();
+      "currentState.playingState:".postln;
+      currentState.playingState.postln;
       switch(currentState.playingState)
         {"QUEUED"} {
           this.queue();
@@ -201,13 +204,20 @@ AwakenedSequencer : Object {
     );
 
     clock.play({
-      "Dispatching...".postln();
-      store.dispatch((
-        type: "AWAKENING-SEQUENCERS-SEQ_PLAYING",
-        payload: (
-          sequencerId: sequencerId
-        )
-      ));
+      "AwakenedSequencer: queued clock playing...".postln();
+      // if we're still queued
+      if (currentState.playingState == "QUEUED", {
+        // inform state store we've started playing
+        "this.currentState:".postln;
+        this.currentState.postln;
+        "Dispatching...".postln();
+        store.dispatch((
+          type: "AWAKENING-SEQUENCERS-SEQ_PLAYING",
+          payload: (
+            sequencerId: sequencerId
+          )
+        ));
+      });
     }, currentState.playQuant);
   }
 
@@ -230,6 +240,11 @@ AwakenedSequencer : Object {
   }
 
   stop {
+    "AwakenedSequencer.stop".postln();
+    // stop immediately
+    if (streamPlayer != nil, {
+      streamPlayer.stop();    
+    });
     stream = this.initStream();
   }
 }
