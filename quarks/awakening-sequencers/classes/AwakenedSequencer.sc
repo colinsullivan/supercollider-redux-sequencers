@@ -61,7 +61,6 @@ AwakenedSequencer : Object {
 
   init {
     arg params;
-    var me;
 
     store = params['store'];
     sequencerId = params['sequencerId'];
@@ -89,16 +88,16 @@ AwakenedSequencer : Object {
     stream = this.initStream();
 
     // watch state store for updates
-    me = this;
+    this.handleStateChange();
     store.subscribe({
-      me.handleStateChange();
+      this.handleStateChange();
     });
   }
   
   create_output_channel {
     arg parentOutputChannel;
     ^MixerChannel.new(
-      "AwakenedSequencer[" ++ currentState.name ++ "]" ,
+      "AwakenedSequencer[" ++ currentState.sequencerId ++ "]" ,
       Server.default,
       2, 2,
       outbus: outputBus
@@ -130,7 +129,8 @@ AwakenedSequencer : Object {
 
     // if readyness changes
     if (currentState.isReady != lastState.isReady, {
-      // go into playingState    
+      lastState.isReady = currentState.isReady;
+      // go into playingState
       switch(currentState.playingState)
         {"QUEUED"} {
           this.queue();
@@ -147,6 +147,9 @@ AwakenedSequencer : Object {
     // if playing state has changed
     if (currentState.playingState != lastState.playingState, {
       "AwakenedSequencer::playingState changed".postln();
+      "lastState.playingState:".postln;
+      lastState.playingState.postln;
+      lastState.playingState = currentState.playingState;
       "currentState.playingState:".postln;
       currentState.playingState.postln;
       switch(currentState.playingState)

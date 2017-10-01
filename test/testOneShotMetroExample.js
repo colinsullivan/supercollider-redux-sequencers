@@ -141,10 +141,10 @@ describe("Metronome Example", function () {
       if (newPlayingState != playingState) {
         playingState = newPlayingState;
         expect(
-          state.sequencers.metro.beat
+          state.sequencers.metro.beat, 'sequencer should have stopped at beat 0'
         ).to.equal(0)
         expect(
-          state.sequencers.metro.playingState
+          state.sequencers.metro.playingState, 'sequencer should have stopped'
         ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
         unsub();
         done();
@@ -175,13 +175,13 @@ describe("Metronome Example", function () {
 
           // otherwise, it should just stop
           expect(
-            playingState
+            playingState, 'sequencer should have changed to stopped'
           ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
          
           // and stay stopped
           setTimeout(() => {
             expect(
-              playingState
+              playingState, 'sequencer should have remain stopped'
             ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
             unsub();
             done();
@@ -191,14 +191,16 @@ describe("Metronome Example", function () {
       }
     });
     // first queue
-    console.log("queueing...");
-    this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
-    // shortly after stop
     setTimeout(() => {
-      console.log("immediately stopping...");
-      this.store.dispatch(
-        awakeningSequencers.actions.sequencerStopped('metro')
-      );
-    }, 30);
+      console.log("queueing...");
+      this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+      // shortly after stop
+      setTimeout(() => {
+        console.log("immediately stopping...");
+        this.store.dispatch(
+          awakeningSequencers.actions.sequencerStopped('metro')
+        );
+      }, 50);
+    }, 50);
   });
 });

@@ -143,9 +143,9 @@ describe("Metronome Example", function () {
   });
 
   // TODO
-  it("should quit sclang", function (done) {
-    this.sclang.quit().then(() => {
-      console.log("quit?");
-    }).catch(done);
-  });
+  //it("should quit sclang", function (done) {
+    //this.sclang.quit().then(() => {
+      //console.log("quit?");
+    //}).catch(done);
+  //});
 });
