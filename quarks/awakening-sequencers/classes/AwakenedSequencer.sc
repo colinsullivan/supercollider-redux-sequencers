@@ -18,12 +18,13 @@ AwakenedSequencer : Object {
     // if we are sending our sequence output to a SuperCollider synth, do so
     // through an instance of the cruciallib's [Patch](https://github.com/crucialfelix/crucial-library)
     // abstraction
+    // patch could be false if just MIDI out
     patch,
     stream,
     // a patch needs an audio output channel
     patchOutputChannel,
-    //TODO: MIDI out
-    seqOutputMIDI,
+    // the MIDI output for this sequencer
+    midiOut,
     // Currently, built to be an AbletonTempoClockController
     clockController,
     // number representing SC audio output channel
@@ -84,6 +85,7 @@ AwakenedSequencer : Object {
     });
 
     patchOutputChannel = this.create_output_channel();
+    midiOut = this.initMidiOut();
     patch = this.initPatch();
     stream = this.initStream();
 
@@ -102,6 +104,15 @@ AwakenedSequencer : Object {
       2, 2,
       outbus: outputBus
     );
+  }
+
+  initMidiOut {
+    if (currentState.midiOutDeviceName != false, {
+      ^MIDIOut.newByName(
+        currentState.midiOutDeviceName,
+        currentState.midiOutPortName
+      ).latency_(Server.default.latency);
+    });
   }
 
   handleStateChange {

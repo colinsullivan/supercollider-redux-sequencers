@@ -36,7 +36,9 @@ export function create_default_sequencer (sequencerId, name) {
     isReady: false,
     playQuant: [4, 0],
     stopQuant: [8, 0],
-    event: false
+    event: false,
+    midiOutDeviceName: false,
+    midiOutPortName: false
   }
 }
 export function sequencer (state, action) {
