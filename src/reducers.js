@@ -45,22 +45,27 @@ export function sequencer (state, action) {
   if (action.payload && action.payload.sequencerId == state.sequencerId) {
     switch (action.type) {
       case actionTypes.SEQUENCER_QUEUED:
+        state = Object.assign({}, state);
         state.playingState = PLAYING_STATES.QUEUED;
         break;
 
       case actionTypes.SEQUENCER_PLAYING:
+        state = Object.assign({}, state);
         state.playingState = PLAYING_STATES.PLAYING;
         break;
 
       case actionTypes.SEQUENCER_STOPPED:
+        state = Object.assign({}, state);
         state.playingState = PLAYING_STATES.STOPPED;
         break;
 
       case actionTypes.SEQUENCER_STOP_QUEUED:
+        state = Object.assign({}, state);
         state.playingState = PLAYING_STATES.STOP_QUEUED;
         break;
 
       case actionTypes.SEQUENCER_READY:
+        state = Object.assign({}, state);
         state.isReady = true;
         break;
       
@@ -72,6 +77,7 @@ export function sequencer (state, action) {
   switch (action.type) {
     case supercolliderRedux.actionTypes.SUPERCOLLIDER_EVENTSTREAMPLAYER_NEXTBEAT:
       if (action.payload.id == state.sequencerId) {
+        state = Object.assign({}, state);
         state.nextBeat = action.payload.nextBeat;
         state.beat = (state.beat + 1) % state.numBeats;
         state.event = Object.assign({}, action.payload);
@@ -81,6 +87,7 @@ export function sequencer (state, action) {
 
     case supercolliderRedux.actionTypes.SUPERCOLLIDER_EVENTSTREAMPLAYER_ENDED:
       if (action.payload.id == state.sequencerId) {
+        state = Object.assign({}, state);
         state.beat = 0;
         state.event = false;
         state.nextBeat = false;

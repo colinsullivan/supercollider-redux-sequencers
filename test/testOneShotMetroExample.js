@@ -16,7 +16,7 @@ import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
 import abletonLinkRedux from "abletonlink-redux"
 import SCStoreController from "../src/SCStoreController"
-import AbletonLinkController from "../src/AbletonLinkController"
+const AbletonLinkController = abletonLinkRedux.AbletonLinkController;
 import awakeningSequencers from "../src/"
 import chai from "chai"
 const expect = chai.expect;
@@ -74,7 +74,25 @@ describe("Metronome Example", function () {
         }
       }
     });
-    this.sclang.executeFile(__dirname + '/testOneShotMetroExample.sc').catch(done);
+    this.sclang.interpret(`
+  var store, sequencers;
+
+  API.mountDuplexOSC();
+
+  s.waitForBoot({
+    store = StateStore.getInstance();
+    sequencers = IdentityDictionary.new();
+
+    // when state changes, this method will be called
+    store.subscribe({
+      var state = store.getState();
+
+      if ((state.sequencers != nil) && (state.sequencers.metro != nil) && (sequencers['metro'] == nil), {
+        sequencers['metro'] = OneShotMetronomeSequencer.new((store: store, sequencerId: 'metro'));
+      });
+    });
+  });
+    `).catch(done);
   });
 
   it("should start playing when queued", function (done) {
@@ -192,15 +210,21 @@ describe("Metronome Example", function () {
     });
     // first queue
     setTimeout(() => {
-      console.log("queueing...");
       this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
       // shortly after stop
       setTimeout(() => {
-        console.log("immediately stopping...");
         this.store.dispatch(
           awakeningSequencers.actions.sequencerStopped('metro')
         );
       }, 50);
     }, 50);
+  });
+
+  it("should quit sclang", function (done) {
+    this.sclang.interpret('s.quit();').then(() => {
+      this.sclang.quit().then(() => {
+        setTimeout(done, 1000);
+      }).catch(done);
+    }).catch(done);
   });
 });

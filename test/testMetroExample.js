@@ -37,7 +37,6 @@ function rootReducer (state = create_default_state(), action) {
 
   state.abletonlink = abletonLinkRedux.reducer(state.abletonlink, action);
   state.supercolliderRedux = supercolliderRedux.reducer(state.supercolliderRedux, action);
-
   state.sequencers = awakeningSequencers.reducer(state.sequencers, action);
 
   return state;
@@ -99,12 +98,17 @@ describe("Metronome Example", function () {
 
   it("should start playing when queued", function (done) {
     this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
-    var playingState = this.store.getState().sequencers.metro.playingState;
+    var currentState = this.store.getState().sequencers.metro;
+    var playingState = currentState.playingState;
     var unsub = this.store.subscribe(() => {
-      let state = this.store.getState();
-      let newPlayingState = state.sequencers.metro.playingState;
+      var newState = this.store.getState().sequencers.metro;
+      let newPlayingState = newState.playingState;
 
       if (newPlayingState != playingState) {
+        expect(
+          newState,
+          'object reference did not change, it is mutable'
+        ).to.not.equal(currentState);
         playingState = newPlayingState;
         if (playingState == awakeningSequencers.PLAYING_STATES.PLAYING) {
           unsub();

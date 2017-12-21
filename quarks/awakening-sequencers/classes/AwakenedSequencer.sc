@@ -78,6 +78,7 @@ AwakenedSequencer : Object {
     if (params['clockController'] != nil, {
       clockController = params['clockController']    
     }, {
+      //"Creating new ReduxAbletonTempoClockController".postln();
       clockController = ReduxAbletonTempoClockController.new((
         store: store,
         clockOffsetSeconds: currentState.clockOffsetSeconds
@@ -123,9 +124,11 @@ AwakenedSequencer : Object {
     //"AwakenedSequencer.handleStateChange".postln();
 
     if (clock == false, {
+      //"initializing clock...".postln();
 
       if (clockController.isReady(), {
         clock = clockController.clock;
+        //"dispatching ready..".postln();
         store.dispatch((
           type: "AWAKENING-SEQUENCERS-SEQ_READY",
           payload: (
@@ -157,12 +160,12 @@ AwakenedSequencer : Object {
 
     // if playing state has changed
     if (currentState.playingState != lastState.playingState, {
-      "AwakenedSequencer::playingState changed".postln();
-      "lastState.playingState:".postln;
-      lastState.playingState.postln;
+      //"AwakenedSequencer::playingState changed".postln();
+      //"lastState.playingState:".postln;
+      //lastState.playingState.postln;
       lastState.playingState = currentState.playingState;
-      "currentState.playingState:".postln;
-      currentState.playingState.postln;
+      //"currentState.playingState:".postln;
+      //currentState.playingState.postln;
       switch(currentState.playingState)
         {"QUEUED"} {
           this.queue();
@@ -218,13 +221,11 @@ AwakenedSequencer : Object {
     );
 
     clock.play({
-      "AwakenedSequencer: queued clock playing...".postln();
+      //"AwakenedSequencer: queued clock playing...".postln();
       // if we're still queued
       if (currentState.playingState == "QUEUED", {
         // inform state store we've started playing
-        "this.currentState:".postln;
-        this.currentState.postln;
-        "Dispatching...".postln();
+        //"Dispatching...".postln();
         store.dispatch((
           type: "AWAKENING-SEQUENCERS-SEQ_PLAYING",
           payload: (
@@ -254,7 +255,7 @@ AwakenedSequencer : Object {
   }
 
   stop {
-    "AwakenedSequencer.stop".postln();
+    //"AwakenedSequencer.stop".postln();
     // stop immediately
     if (streamPlayer != nil, {
       streamPlayer.stop();    
