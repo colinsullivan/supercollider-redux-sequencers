@@ -18,7 +18,7 @@ import { createStore } from "redux"
 import supercolliderRedux from "supercollider-redux"
 import abletonLinkRedux from "abletonlink-redux"
 import SCStoreController from "./SCStoreController"
-import AbletonLinkController from "./AbletonLinkController"
+const AbletonLinkController = abletonLinkRedux.AbletonLinkController;
 import awakeningSequencers from "."
 
 function create_default_state () {
