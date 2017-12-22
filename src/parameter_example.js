@@ -23,7 +23,10 @@ const AbletonLinkController = abletonLinkRedux.AbletonLinkController;
 import awakeningSequencers from "."
 
 function create_default_state () {
-  var paramExampleSeq = awakeningSequencers.create_default_sequencer('paramexample');
+  var paramExampleSeq = awakeningSequencers.create_default_sequencer(
+    'paramexample',
+    'ParamExampleSequencer'
+  );
   paramExampleSeq.releaseTime = 0.3;
   return {
     sequencers: {
@@ -77,27 +80,15 @@ sc.lang.boot().then((sclang) => {
     });
 
     sclang.interpret(`
-  var store, sequencers;
+    var store, sequencerFactory;
 
-  s.waitForBoot({
-    store = StateStore.getInstance();
-    sequencers = IdentityDictionary.new();
+    s.boot();
 
-    // when state changes, this method will be called
-    store.subscribe({
-      var state = store.getState();
-
-
-      if ((state.sequencers != nil) && (state.sequencers.paramexample != nil) && (sequencers['paramexample'] == nil), {
-        sequencers['paramexample'] = ParamExampleSequencer.new((store: store, sequencerId: 'paramexample'));
-      });
-
-
-    });
-  });
-
-  s.boot();
-
+    s.waitForBoot({
+      store = StateStore.getInstance();
+      sequencerFactory = AwakenedSequencerFactory.getInstance();
+      sequencerFactory.setStore(store);
+    })
     `);
 
     setInterval(() => {

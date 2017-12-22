@@ -25,7 +25,10 @@ import awakeningSequencers from "."
 function create_default_state () {
   return {
     sequencers: {
-      'metro': awakeningSequencers.create_default_sequencer('metro')
+      'metro': awakeningSequencers.create_default_sequencer(
+        'metro',
+        'MetronomeSequencer'
+      )
     }
   };
 }
@@ -56,24 +59,14 @@ sc.lang.boot().then((lang) => {
     });
 
     sclang.interpret(`
-    var store, clockOffsetSeconds, sequencers;
+    var store, sequencerFactory;
 
     s.boot();
 
     s.waitForBoot({
       store = StateStore.getInstance();
-      sequencers = IdentityDictionary.new();
-
-      store.subscribe({
-        var state = store.getState();
-
-        if ((state.sequencers != nil) && (state.sequencers.metro != nil) && (sequencers['metro'] == nil), {
-          "creating MetronomeSequencer".postln();
-          sequencers['metro'] = MetronomeSequencer.new((store: store, sequencerId: 'metro'));
-        });
-
-
-      });
+      sequencerFactory = AwakenedSequencerFactory.getInstance();
+      sequencerFactory.setStore(store);
     })
 
     `);

@@ -26,7 +26,10 @@ import awakeningSequencers from "."
 function create_default_state () {
   return {
     sequencers: {
-      'sampler': awakeningSequencers.create_default_sequencer('sampler')
+      'sampler': awakeningSequencers.create_default_sequencer(
+        'sampler',
+        'SamplerExampleSequencer'
+      )
     }
   };
 }
@@ -57,32 +60,16 @@ sc.lang.boot().then((sclang) => {
 
     sclang.interpret(`
 
-  var store, sequencers, bufManager, samples_done_loading;
+  var store, sequencerFactory, bufManager, samples_done_loading;
 
   samples_done_loading = {
 
     "Samples done loading!".postln();
 
-    "Creating state store...".postln();
     store = StateStore.getInstance();
-    sequencers = IdentityDictionary.new();
-
-    // when state changes, this method will be called
-    store.subscribe({
-      var state = store.getState();
-
-
-      if ((state.sequencers != nil) && (state.sequencers.sampler != nil) && (sequencers['sampler'] == nil), {
-        sequencers['sampler'] = SamplerExampleSequencer.new((
-          store: store,
-          sequencerId: 'sampler',
-          bufManager: bufManager
-        ));
-      });
-
-
-    });
-    
+    sequencerFactory = AwakenedSequencerFactory.getInstance();
+    sequencerFactory.setBufManager(bufManager);
+    sequencerFactory.setStore(store);
   };
 
   bufManager = BufferManager.new((

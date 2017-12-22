@@ -24,10 +24,10 @@ export function create_default_state () {
   return {
   };
 }
-export function create_default_sequencer (sequencerId, name) {
+export function create_default_sequencer (sequencerId, type) {
   return {
-    name: name,
-    sequencerId: sequencerId,
+    sequencerId,
+    type,
     clockOffsetSeconds: 0.0,
     beat: 0,
     nextBeat: false,

@@ -23,7 +23,8 @@ const expect = chai.expect;
 
 function create_default_state () {
   var metroInitialState = awakeningSequencers.create_default_sequencer(
-    'metro'
+    'metro',
+    'MetronomeSequencer'
   );
   metroInitialState.numBeats = 4;
   metroInitialState.stopQuant = [4, 4];
@@ -71,22 +72,14 @@ describe("Metronome Example", function () {
     });
     this.sclang.interpret(`
 
-  var store, sequencers;
+  var store, sequencerFactory;
 
   API.mountDuplexOSC();
 
   s.waitForBoot({
     store = StateStore.getInstance();
-    sequencers = IdentityDictionary.new();
-
-    // when state changes, this method will be called
-    store.subscribe({
-      var state = store.getState();
-
-      if ((state.sequencers != nil) && (state.sequencers.metro != nil) && (sequencers['metro'] == nil), {
-        sequencers['metro'] = MetronomeSequencer.new((store: store, sequencerId: 'metro'));
-      });
-    });
+    sequencerFactory = AwakenedSequencerFactory.getInstance();
+    sequencerFactory.setStore(store);
   });
 
     `).catch(done);
