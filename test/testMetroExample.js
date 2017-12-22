@@ -11,7 +11,7 @@
  *  @license    Licensed under the MIT license.
  **/
 
-import { createStore } from "redux"
+import { createStore, combineReducers } from "redux"
 import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
 import abletonLinkRedux from "abletonlink-redux"
@@ -33,22 +33,18 @@ function create_default_state () {
     }
   };
 }
-function rootReducer (state = create_default_state(), action) {
-
-  state.abletonlink = abletonLinkRedux.reducer(state.abletonlink, action);
-  state.supercolliderRedux = supercolliderRedux.reducer(state.supercolliderRedux, action);
-  state.sequencers = awakeningSequencers.reducer(state.sequencers, action);
-
-  return state;
-  
-}
+var rootReducer = combineReducers({
+  abletonlink: abletonLinkRedux.reducer,
+  supercolliderRedux: supercolliderRedux.reducer,
+  sequencers: awakeningSequencers.reducer
+});
 
 describe("Metronome Example", function () {
   this.timeout(10000);
 
   it("should initialize properly", function (done) {
 
-    var store = createStore(rootReducer);
+    var store = createStore(rootReducer, create_default_state());
     this.store = store;
     this.scStoreController = new SCStoreController(store);
     this.abletonLinkController = new AbletonLinkController(store, 'abletonlink');
