@@ -14,10 +14,11 @@
 
 
 
-import { createStore } from "redux"
+import { createStore, combineReducers } from "redux"
+import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
 import abletonLinkRedux from "abletonlink-redux"
-import SCStoreController from "./SCStoreController"
+const SCStoreController = supercolliderRedux.SCStoreController;
 const AbletonLinkController = abletonLinkRedux.AbletonLinkController;
 import awakeningSequencers from "."
 
@@ -29,39 +30,61 @@ function create_default_state () {
   };
 }
 
-var rootReducer = function (state = create_default_state(), action) {
-
-  state.abletonlink = abletonLinkRedux.reducer(state.abletonlink, action);
-  state.supercolliderRedux = supercolliderRedux.reducer(state.supercolliderRedux, action);
-
-  state.sequencers = awakeningSequencers.reducer(state.sequencers, action);
-
-  return state;
-  
-};
-
-var store = createStore(rootReducer);
-var scStoreController = new SCStoreController(store);
-var abletonLinkController = new AbletonLinkController(store, 'abletonlink');
-
-let metroReady = false;
-store.subscribe(() => {
-  let state = store.getState();
-  let newMetroReady = state.sequencers.metro.isReady;
-
-  if (newMetroReady != metroReady) {
-    console.log("Queueing metronome...");
-    metroReady = newMetroReady;
-    store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
-  }
+var rootReducer = combineReducers({
+  [abletonLinkRedux.DEFAULT_MOUNT_POINT]: abletonLinkRedux.reducer,
+  [supercolliderRedux.DEFAULT_MOUNT_POINT]: supercolliderRedux.reducer,
+  sequencers: awakeningSequencers.reducer
 });
 
-setInterval(() => {
-  console.log("store.getState()");
-  console.log(store.getState());
-}, 1000);
+var store = createStore(rootReducer, create_default_state());
+sc.lang.boot().then((lang) => {
+  var sclang = lang;
+  sclang.interpret('API.mountDuplexOSC();').then(() => {
+    var scStoreController = new SCStoreController(store);
+    var abletonLinkController = new AbletonLinkController(store, 'abletonlink');
+    
+    let metroReady = false;
+    store.subscribe(() => {
+      let state = store.getState();
+      let newMetroReady = state.sequencers.metro.isReady;
 
-setTimeout(() => {
-  store.dispatch(awakeningSequencers.actions.sequencerStopQueued('metro'));
-}, 10000);
+      if (newMetroReady != metroReady) {
+        console.log("Queueing metronome...");
+        metroReady = newMetroReady;
+        store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+      }
+    });
 
+    sclang.interpret(`
+    var store, clockOffsetSeconds, sequencers;
+
+    s.boot();
+
+    s.waitForBoot({
+      store = StateStore.getInstance();
+      sequencers = IdentityDictionary.new();
+
+      store.subscribe({
+        var state = store.getState();
+
+        if ((state.sequencers != nil) && (state.sequencers.metro != nil) && (sequencers['metro'] == nil), {
+          "creating MetronomeSequencer".postln();
+          sequencers['metro'] = MetronomeSequencer.new((store: store, sequencerId: 'metro'));
+        });
+
+
+      });
+    })
+
+    `);
+
+    setInterval(() => {
+      console.log("store.getState()");
+      console.log(store.getState());
+    }, 1000);
+
+    setTimeout(() => {
+      store.dispatch(awakeningSequencers.actions.sequencerStopQueued('metro'));
+    }, 10000);
+  });
+});

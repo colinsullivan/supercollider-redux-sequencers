@@ -12,10 +12,7 @@ For each example, there is a Node.js script and a SuperCollider script that must
 ### Basic Example
 This example plays a metronome implemented in `MetronomeSequencer.sc`.  It is now in `testMetroExample.[js|sc]` as well.
 
-    $ sclang src/example.sc
-    # Warning, sound will play!!
     $ npm run start_example
-
 
 ### Sampler
 This example demonstrates a sampler that requires samples are loaded.
