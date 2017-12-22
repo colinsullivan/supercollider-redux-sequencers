@@ -17,7 +17,6 @@ This example plays a metronome implemented in `MetronomeSequencer.sc`.  It is no
 ### Sampler
 This example demonstrates a sampler that requires samples are loaded.
 
-    $ sclang src/example_sampler.js
     $ npm run start_sampler_example
 
 ### Parameterized
