@@ -10,7 +10,7 @@ To run the examples:
 For each example, there is a Node.js script and a SuperCollider script that must be run simultaneously.
 
 ### Basic Example
-This example plays a metronome implemented in `MetronomeSequencer.sc`.  It is now in `testMetroExample.[js|sc]` as well.
+This example plays a metronome implemented in `MetronomeSequencer.sc`.  It is now in `testMetroExample.js` as well.
 
     $ npm run start_example
 
@@ -22,9 +22,7 @@ This example demonstrates a sampler that requires samples are loaded.
 ### Parameterized
 This example demonstrates how a SuperCollider pattern can be parameterized through the state store.  See `ParamExampleSequencer` in the quark.
 
-    $ sclang src/parameter_example.sc
     $ npm run start_parameter_example
-
 
 ## Sidenotes
 
@@ -32,7 +30,7 @@ It is possible to run Node.js and a child SuperCollider process using [supercoll
 
 ## Unit Tests
 
-There are two unit tests: `testMetroExample.[js|sc]` and `testOneShotMetroExample.[js|sc]`.  Both of these have repeated code and can only be run one at a time.  To run:
+There are two unit tests: `testMetroExample.js` and `testOneShotMetroExample.js`.  Both of these have repeated code and can only be run one at a time.  To run:
 
     $ npm run build && npm run test test/testMetroExample.js
     $ npm run build && npm run test test/testOneShotMetroExample.js
