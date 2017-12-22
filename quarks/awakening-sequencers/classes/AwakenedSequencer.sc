@@ -1,4 +1,3 @@
-
 /**
  *  @class        AwakenedSequencer
  *
@@ -24,7 +23,7 @@ AwakenedSequencer : Object {
     // a patch needs an audio output channel
     patchOutputChannel,
     // the MIDI output for this sequencer
-    midiOut,
+    <midiOut,
     // Currently, built to be an AbletonTempoClockController
     clockController,
     // number representing SC audio output channel
@@ -113,6 +112,8 @@ AwakenedSequencer : Object {
         currentState.midiOutDeviceName,
         currentState.midiOutPortName
       ).latency_(Server.default.latency);
+    }, {
+      ^false;
     });
   }
 
@@ -186,11 +187,13 @@ AwakenedSequencer : Object {
   initStream {
     // subclasses implement this method to create a pattern generator
     // and return its stream
+    ^false;
   }
 
   initPatch {
     // subclasses implement this method to create a sound generator driven
     // by the stream
+    ^false;
   }
 
   queue {
@@ -212,13 +215,28 @@ AwakenedSequencer : Object {
       stream: stream
     );
 
-    patchOutputChannel.play(
-      streamPlayer,
-      (
-        clock: clock,
-        quant: currentState.playQuant
-      )
-    );
+    // if we are playing through a patch, play the patch on the audio output
+    if (patch != false, {
+      patchOutputChannel.play(
+        streamPlayer,
+        (
+          clock: clock,
+          quant: currentState.playQuant
+        )
+      );
+    }, {
+      // if we are playing through a midi out, just call play on the stream
+      if (midiOut != false, {
+        streamPlayer.play(
+          clock,
+          // doReset: false (continue from where paused)
+          false,
+          currentState.playQuant
+        );
+      }, {
+        "ERROR: Both midiOut and patch are false...".postln();
+      });
+    });
 
     clock.play({
       //"AwakenedSequencer: queued clock playing...".postln();
