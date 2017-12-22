@@ -27,9 +27,9 @@
   },
   "homepage": "https://github.com/colinsullivan/awakening-sequencers#readme",
   "dependencies": {
-    "abletonlink-redux": "0.0.4",
+    "abletonlink-redux": "0.0.7",
     "redux": "^3.6.0",
-    "supercollider-redux": "0.0.54"
+    "supercollider-redux": "0.0.6"
   },
   "babel": {
     "presets": [

@@ -15,7 +15,7 @@ import { createStore } from "redux"
 import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
 import abletonLinkRedux from "abletonlink-redux"
-import SCStoreController from "../src/SCStoreController"
+const SCStoreController = supercolliderRedux.SCStoreController
 const AbletonLinkController = abletonLinkRedux.AbletonLinkController;
 import awakeningSequencers from "../src/"
 import chai from "chai"
