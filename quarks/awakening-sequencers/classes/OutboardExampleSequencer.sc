@@ -8,7 +8,9 @@ OutboardExampleSequencer : AwakenedSequencer {
     pat = Pbind(
       \type, \midi,
       \midiout, this.midiOut,
-      \midinote, Pseq([96, 84, 84, 84], inf),
+      \midicmd, \noteOn,
+      \chan, 0,
+      \midinote, Pseq([96, 84, 84, 84], 1),
       // rhythmic values
       \dur, 1
     );

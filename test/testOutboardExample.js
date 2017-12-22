@@ -20,8 +20,6 @@ import chai from "chai"
 const expect = chai.expect;
 import midi from 'midi';
 
-const virtualMidiInputName = 'awakeningInputTest';
-
 function create_default_state () {
   var metroInitialState = awakeningSequencers.create_default_sequencer(
     'metro',
@@ -29,8 +27,8 @@ function create_default_state () {
   );
   metroInitialState.numBeats = 4;
   metroInitialState.stopQuant = [4, 4];
-  metroInitialState.midiOutDeviceName = virtualMidiInputName;
-  metroInitialState.midiOutPortName = virtualMidiInputName;
+  metroInitialState.midiOutDeviceName = "(in) SuperCollider";
+  metroInitialState.midiOutPortName = "(in) SuperCollider";
   return {
     sequencers: {
       'metro': metroInitialState
@@ -50,8 +48,16 @@ describe("Outboard Example", function () {
   it("should initialize properly", function (done) {
 
     var store = createStore(rootReducer, create_default_state());
-    this.virtualMidiInput = new midi.input();
-    this.virtualMidiInput.openVirtualPort(virtualMidiInputName);
+    this.midiInput = new midi.input();
+    console.log(this.midiInput.getPortName(3));
+
+    this.midiNotesReceived = []
+    this.midiInput.on('message', (deltaTime, message) => {
+      console.log('m:' + message + ' d:' + deltaTime);
+      this.midiNotesReceived.push(message);
+    });
+    this.midiInput.openPort(3);
+
     this.store = store;
     this.scStoreController = new SCStoreController(store);
     this.abletonLinkController = new AbletonLinkController(store, 'abletonlink');
@@ -113,34 +119,7 @@ describe("Outboard Example", function () {
     });
   });
 
-  it("should play for 4 beats then queue stop", function (done) {
-    var beat = this.store.getState().sequencers.metro.beat;
-    var unsub = this.store.subscribe(() => {
-      let state = this.store.getState();
-      let newBeat = state.sequencers.metro.beat;
-
-      if (newBeat != beat) {
-        beat = newBeat;
-        if (beat == 0) {
-          this.store.dispatch(
-            awakeningSequencers.actions.sequencerStopQueued('metro')
-          );
-          unsub();
-          done();
-        }
-      }
-    });
-  });
-
-  it("should have queued stop", function (done) {
-    var state = this.store.getState();
-    expect(
-      state.sequencers.metro.playingState
-    ).to.equal(awakeningSequencers.PLAYING_STATES.STOP_QUEUED);
-    done();
-  });
-
-  it("should actually stop playing on beat 0", function (done) {
+  it("should actually stop playing on beat 0 (after 4 beats)", function (done) {
     
     var playingState = this.store.getState().sequencers.metro.playingState;
     var unsub = this.store.subscribe(() => {
@@ -159,6 +138,17 @@ describe("Outboard Example", function () {
         done();
       }
     });
+  });
+
+  it("should have received midi notes through virtual port", function (done) {
+    // four notes, note on and off
+    expect(this.midiNotesReceived.length).to.equal(4 * 2);
+    done();
+  });
+
+  it("Should close midi port", function (done) {
+    this.midiInput.closePort();
+    done();
   });
 
   it("should quit sclang", function (done) {
