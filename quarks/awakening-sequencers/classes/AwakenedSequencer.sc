@@ -129,7 +129,7 @@ AwakenedSequencer : Object {
 
       if (clockController.isReady(), {
         clock = clockController.clock;
-        //"dispatching ready..".postln();
+        "dispatching ready..".postln();
         store.dispatch((
           type: "AWAKENING-SEQUENCERS-SEQ_READY",
           payload: (
@@ -150,9 +150,9 @@ AwakenedSequencer : Object {
         {"QUEUED"} {
           this.queue();
         }
-        {"PLAYING"} {
-          this.play();
-        }
+        //{"PLAYING"} {
+          //this.play();
+        //}
         {"STOP_QUEUED"} {
           this.queueStop();
         }
@@ -171,9 +171,9 @@ AwakenedSequencer : Object {
         {"QUEUED"} {
           this.queue();
         }
-        {"PLAYING"} {
-          this.play();
-        }
+        //{"PLAYING"} {
+          //this.play();
+        //}
         {"STOP_QUEUED"} {
           this.queueStop();
         }
@@ -208,6 +208,7 @@ AwakenedSequencer : Object {
      *
      *  https://github.com/colinsullivan/supercollider-redux
      */
+    //streamPlayer = EventStreamPlayer.new(stream);
     streamPlayer = ReduxEventStreamPlayer.new(
       store,
       sequencerId,
@@ -254,11 +255,13 @@ AwakenedSequencer : Object {
     }, currentState.playQuant);
   }
 
-  play {
+  //play {
+    //"AwakenedSequencer.play".postln();
 
-  }
+  //}
 
   queueStop {
+    //"AwakenedSequencer.queueStop".postln();
     clock.play({
       var theStreamPlayer = streamPlayer;
       //"Dispatching...".postln();
