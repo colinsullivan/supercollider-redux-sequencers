@@ -1,4 +1,14 @@
 /**
+ *  @file       AwakenedSequencerFactory.sc
+ *
+ *
+ *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
+ *
+ *  @copyright  2018 Colin Sullivan
+ *  @license    Licensed under the GPLv3 license.
+ **/
+
+/**
  *  @class        AwakenedSequencerFactory
  *
  *  @classdesc    Watches state store for new sequencers and creates them.
@@ -8,6 +18,7 @@ AwakenedSequencerFactory : Object {
   // reference to our state store
   var store,
     bufManager,
+    clockController,
     // our list of sequencers (AwakenedSequencer instances / subclasses)
     sequencers;
 
@@ -36,8 +47,14 @@ AwakenedSequencerFactory : Object {
     bufManager = theBufManager;
   }
 
+  setClockController {
+    arg theClockController;
+    clockController = theClockController;
+  }
+
   init {
     sequencers = IdentityDictionary.new();
+    clockController = nil;
   }
 
   handleStateChange {
@@ -55,7 +72,8 @@ AwakenedSequencerFactory : Object {
           sequencers[sequencerId] = sequencerClass.new((
             store: store,
             sequencerId: sequencerId,
-            bufManager: bufManager
+            bufManager: bufManager,
+            clockController: clockController
           ));
         });
 
