@@ -11,7 +11,8 @@
  *  @license    Licensed under the MIT license.
  **/
 
-import { createStore, combineReducers } from "redux"
+import { createStore, combineReducers, applyMiddleware } from "redux"
+import logger from 'redux-logger';
 import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
 import abletonLinkRedux from "abletonlink-redux"
@@ -44,8 +45,14 @@ describe("Metronome Example", function () {
   this.timeout(10000);
 
   it("should initialize properly", function (done) {
-
-    var store = createStore(rootReducer, create_default_state());
+    var middleware = [
+      //logger
+    ];
+    var store = createStore(
+      rootReducer,
+      create_default_state(),
+      applyMiddleware(...middleware)
+    );
     this.store = store;
     this.scStoreController = new SCStoreController(store);
     this.abletonLinkController = new AbletonLinkController(store, 'abletonlink');
@@ -137,6 +144,7 @@ describe("Metronome Example", function () {
       }
     });
   });
+
   it("should actually stop playing again on beat 0 (after 8 beats)", function (done) {
     
     var playingState = this.store.getState().sequencers.metro.playingState;
@@ -157,6 +165,7 @@ describe("Metronome Example", function () {
       }
     });
   });
+
   it("should not play when queued then stopped", function (done) {
     var beat = null;
     var playingState = this.store.getState().sequencers.metro.playingState;
@@ -206,6 +215,79 @@ describe("Metronome Example", function () {
         );
       }, 50);
     }, 50);
+  });
+
+  it("should loop when queued while playing", function (done) {
+    var playingState = this.store.getState().sequencers.metro.playingState;
+
+    expect(playingState).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
+    
+    var unsub = this.store.subscribe(() => {
+      let state = this.store.getState();
+      let newPlayingState = state.sequencers.metro.playingState;
+
+      if (newPlayingState !== playingState) {
+
+        if (playingState === awakeningSequencers.PLAYING_STATES.STOPPED) {
+          // should go from stopped to queued
+          expect(newPlayingState).to.equal(
+            awakeningSequencers.PLAYING_STATES.QUEUED
+          );
+        }
+        // should go from queued to playing
+        if (playingState === awakeningSequencers.PLAYING_STATES.QUEUED) {
+          expect(newPlayingState).to.equal(
+            awakeningSequencers.PLAYING_STATES.PLAYING
+          );
+          // queue again after a delay
+          setTimeout(() => {
+            this.store.dispatch(
+              awakeningSequencers.actions.sequencerQueued('metro')
+            );
+          }, 2000);
+        } else if (playingState === awakeningSequencers.PLAYING_STATES.PLAYING) {
+          // should go from PLAYING -> REQUEUED
+          expect(newPlayingState).to.equal(
+            awakeningSequencers.PLAYING_STATES.REQUEUED
+          );
+        } else if (playingState === awakeningSequencers.PLAYING_STATES.REQUEUED) {
+          // should go from REQUEUED -> PLAYING
+          expect(newPlayingState).to.equal(
+            awakeningSequencers.PLAYING_STATES.PLAYING
+          );
+          unsub();
+          done();
+        }
+
+        playingState = newPlayingState;
+      }
+    });
+
+    // first queue
+    setTimeout(() => {
+      this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+    }, 50);
+  });
+  
+  it("should actually stop playing again on beat 0 (after 8 beats)", function (done) {
+    
+    var playingState = this.store.getState().sequencers.metro.playingState;
+    var unsub = this.store.subscribe(() => {
+      let state = this.store.getState();
+      let newPlayingState = state.sequencers.metro.playingState;
+
+      if (newPlayingState !== playingState) {
+        playingState = newPlayingState;
+        expect(
+          state.sequencers.metro.beat, 'sequencer should have stopped at beat 0'
+        ).to.equal(0)
+        expect(
+          state.sequencers.metro.playingState, 'sequencer should have stopped'
+        ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
+        unsub();
+        done();
+      }
+    });
   });
 
   it("should quit sclang", function (done) {

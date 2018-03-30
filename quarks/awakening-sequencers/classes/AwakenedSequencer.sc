@@ -178,6 +178,9 @@ AwakenedSequencer : Object {
       //"currentState.playingState:".postln;
       //currentState.playingState.postln;
       switch(currentState.playingState)
+        {"REQUEUED"} {
+          this.queue(true);
+        }
         {"QUEUED"} {
           this.queue();
         }
@@ -207,10 +210,14 @@ AwakenedSequencer : Object {
   }
 
   queue {
+    arg requeue = false;
+    var prevStreamPlayer = streamPlayer;
     //"AwakenedSequencer.queue".postln();
-    if (streamPlayer != nil, {
-      streamPlayer.stop();    
-    });
+    //if ((streamPlayer != nil) && (requeue == false), {
+      //streamPlayer.stop();    
+    //});
+    
+    stream = this.initStream();
 
     /**
      *  The ReduxEventStreamPlayer instance will dispatch next beat
@@ -251,8 +258,14 @@ AwakenedSequencer : Object {
 
     clock.play({
       //"AwakenedSequencer: queued clock playing...".postln();
-      // if we're still queued
-      if (currentState.playingState == "QUEUED", {
+      // if we're still queued or requeued
+      if (
+        (currentState.playingState == "QUEUED")
+        || (currentState.playingState == "REQUEUED")
+      , {
+        if (prevStreamPlayer != nil, {
+          prevStreamPlayer.stop();    
+        });
         // inform state store we've started playing
         //"Dispatching...".postln();
         store.dispatch((

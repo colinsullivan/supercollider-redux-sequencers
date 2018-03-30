@@ -17,6 +17,7 @@ export var PLAYING_STATES = {
   STOPPED: "STOPPED",
   QUEUED: "QUEUED",
   PLAYING: "PLAYING",
+  REQUEUED: "REQUEUED",
   STOP_QUEUED: "STOP_QUEUED"
 };
 
@@ -46,7 +47,11 @@ export function sequencer (state, action) {
     switch (action.type) {
       case actionTypes.SEQUENCER_QUEUED:
         state = Object.assign({}, state);
-        state.playingState = PLAYING_STATES.QUEUED;
+        if (state.playingState === PLAYING_STATES.PLAYING) {
+          state.playingState = PLAYING_STATES.REQUEUED;
+        } else {
+          state.playingState = PLAYING_STATES.QUEUED;
+        }
         break;
 
       case actionTypes.SEQUENCER_PLAYING:
@@ -104,6 +109,7 @@ export function sequencer (state, action) {
   return state;
 }
 export default function (sequencers = create_default_state(), action) {
+  sequencers = Object.assign({}, sequencers);
   for (var sequencerId in sequencers) {
     sequencers[sequencerId] = sequencer(sequencers[sequencerId], action);
   }
