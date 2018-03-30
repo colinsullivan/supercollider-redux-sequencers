@@ -66,6 +66,15 @@ AwakenedSequencerFactory : Object {
         arg sequencerId, sequencerState;
         var sequencerClass = sequencerState['type'].asSymbol().asClass();
 
+        // if class was not found, error
+        if (sequencerClass == nil, {
+          Error(
+            "Class % not found, cannot instantiate sequencer".format(
+              sequencerState['type']
+            )
+          ).throw();
+        });
+
         // if it doesn't exist in our list
         if (sequencers[sequencerId] == nil, {
           // instantiate it
