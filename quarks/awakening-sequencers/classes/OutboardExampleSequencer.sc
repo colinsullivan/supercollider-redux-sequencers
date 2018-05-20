@@ -17,5 +17,9 @@ OutboardExampleSequencer : AwakenedSequencer {
 
     ^pat.asStream();
   }
+
+  initAudioOut {
+    ^false;
+  }
 }
 

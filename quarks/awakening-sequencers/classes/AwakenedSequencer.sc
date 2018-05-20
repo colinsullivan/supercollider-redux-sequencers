@@ -31,7 +31,7 @@ AwakenedSequencer : Object {
     patch,
     stream,
     // a patch needs an audio output channel
-    patchOutputChannel,
+    <audioOut,
     // the MIDI output for this sequencer
     <midiOut,
     // Currently, built to be an AbletonTempoClockController
@@ -94,7 +94,7 @@ AwakenedSequencer : Object {
       ));
     });
 
-    patchOutputChannel = this.create_output_channel();
+    audioOut = this.initAudioOut();
     midiOut = this.initMidiOut();
     patch = this.initPatch();
     stream = this.initStream();
@@ -106,7 +106,7 @@ AwakenedSequencer : Object {
     });
   }
   
-  create_output_channel {
+  initAudioOut {
     arg parentOutputChannel;
     ^MixerChannel.new(
       "AwakenedSequencer[" ++ currentState.sequencerId ++ "]" ,
@@ -213,9 +213,9 @@ AwakenedSequencer : Object {
     arg requeue = false;
     var prevStreamPlayer = streamPlayer;
     //"AwakenedSequencer.queue".postln();
-    //if ((streamPlayer != nil) && (requeue == false), {
-      //streamPlayer.stop();    
-    //});
+    if ((streamPlayer != nil) && (requeue == false), {
+      streamPlayer.stop();    
+    });
     
     stream = this.initStream();
 
@@ -233,27 +233,24 @@ AwakenedSequencer : Object {
       stream: stream
     );
 
-    // if we are playing through a patch, play the patch on the audio output
-    if (patch != false, {
-      patchOutputChannel.play(
+    // if we are playing audio play player on the audio out channel
+    if (audioOut != false, {
+      audioOut.play(
         streamPlayer,
         (
           clock: clock,
           quant: currentState.playQuant
         )
       );
-    }, {
-      // if we are playing through a midi out, just call play on the stream
-      if (midiOut != false, {
-        streamPlayer.play(
-          clock,
-          // doReset: false (continue from where paused)
-          false,
-          currentState.playQuant
-        );
-      }, {
-        "ERROR: Both midiOut and patch are false...".postln();
-      });
+    });
+    // if we are playing through a midi out, just call play on the stream
+    if (midiOut != false, {
+      streamPlayer.play(
+        clock,
+        // doReset: false (continue from where paused)
+        false,
+        currentState.playQuant
+      );
     });
 
     clock.play({
