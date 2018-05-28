@@ -30,7 +30,7 @@
     "abletonlink-redux": "0.0.7",
     "midi": "^0.9.5",
     "redux": "^3.6.0",
-    "supercollider-redux": "0.0.7"
+    "supercollider-redux": "0.0.91"
   },
   "babel": {
     "presets": [
