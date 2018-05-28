@@ -84,7 +84,8 @@ export function sequencer (state, action) {
       if (action.payload.id == state.sequencerId) {
         state = Object.assign({}, state);
         state.nextBeat = action.payload.nextBeat;
-        state.beat = (state.beat + 1) % state.numBeats;
+        state.nextTime = action.payload.nextTime;
+        state.beat = state.beat + 1;
         state.event = Object.assign({}, action.payload);
       }
       
