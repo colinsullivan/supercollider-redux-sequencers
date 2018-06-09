@@ -32,6 +32,7 @@ export function create_default_sequencer (sequencerId, type) {
     clockOffsetSeconds: 0.0,
     beat: 0,
     nextBeat: false,
+    nextTime: 0,
     numBeats: 8,
     playingState: PLAYING_STATES.STOPPED,
     isReady: false,
@@ -110,9 +111,16 @@ export function sequencer (state, action) {
   return state;
 }
 export default function (sequencers = create_default_state(), action) {
-  sequencers = Object.assign({}, sequencers);
+  var dirty = false;
   for (var sequencerId in sequencers) {
-    sequencers[sequencerId] = sequencer(sequencers[sequencerId], action);
+    let seq = sequencer(sequencers[sequencerId], action);
+    if (seq !== sequencers[sequencerId]) {
+      dirty = true;
+      sequencers[sequencerId] = seq;
+    }
+  }
+  if (dirty) {
+    sequencers = Object.assign({}, sequencers);
   }
   return sequencers;
 }

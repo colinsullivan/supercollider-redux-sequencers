@@ -28,8 +28,10 @@
   "homepage": "https://github.com/colinsullivan/awakening-sequencers#readme",
   "dependencies": {
     "abletonlink-redux": "0.0.7",
+    "lodash": "^4.17.10",
     "midi": "^0.9.5",
     "redux": "^3.6.0",
+    "reselect": "^3.0.1",
     "supercollider-redux": "0.0.91"
   },
   "babel": {
