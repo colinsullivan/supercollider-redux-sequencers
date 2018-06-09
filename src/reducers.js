@@ -44,16 +44,17 @@ export function create_default_sequencer (sequencerId, type) {
   }
 }
 export function sequencer (state, action) {
+  var newState;
   if (action.payload && action.payload.sequencerId == state.sequencerId) {
     switch (action.type) {
       case actionTypes.SEQUENCER_QUEUED:
-        state = Object.assign({}, state);
-        if (state.playingState === PLAYING_STATES.PLAYING) {
-          state.playingState = PLAYING_STATES.REQUEUED;
+        newState = Object.assign({}, state);
+        if (newState.playingState === PLAYING_STATES.PLAYING) {
+          newState.playingState = PLAYING_STATES.REQUEUED;
         } else {
-          state.playingState = PLAYING_STATES.QUEUED;
+          newState.playingState = PLAYING_STATES.QUEUED;
         }
-        break;
+        return newState;
 
       case actionTypes.SEQUENCER_PLAYING:
         state = Object.assign({}, state);
@@ -112,15 +113,16 @@ export function sequencer (state, action) {
 }
 export default function (sequencers = create_default_state(), action) {
   var dirty = false;
+  var changedSequencers = {};
   for (var sequencerId in sequencers) {
     let seq = sequencer(sequencers[sequencerId], action);
     if (seq !== sequencers[sequencerId]) {
       dirty = true;
-      sequencers[sequencerId] = seq;
+      changedSequencers[sequencerId] = seq;
     }
   }
   if (dirty) {
-    sequencers = Object.assign({}, sequencers);
+    sequencers = Object.assign({}, sequencers, changedSequencers);
   }
   return sequencers;
 }

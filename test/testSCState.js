@@ -5,7 +5,7 @@
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
  *
  *  @copyright  2018 Colin Sullivan
- *  @license    Licensed under the GPLv3 license.
+ *  @license    Licensed under the MIT license.
  **/
 
 import { createStore, combineReducers } from "redux"
@@ -74,6 +74,7 @@ describe('SCReplicaState', function () {
   });
 
   it("should reselect after sequencer changes playing state", function () {
+    let prevState = state;
     let prevSeqState = seqState;
     let prevSCSeqState = scSeqState;
 
@@ -88,6 +89,8 @@ describe('SCReplicaState', function () {
     seqState = state.sequencers[Object.keys(state.sequencers)[0]];
     scSeqState = scState.sequencers[Object.keys(scState.sequencers)[0]];
 
+    expect(state).to.not.equal(prevState);
+    expect(state.sequencers).to.not.equal(prevState.sequencers);
     expect(seqState).to.not.equal(prevSeqState);
     expect(scSeqState).to.not.equal(prevSCSeqState);
 

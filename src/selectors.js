@@ -5,7 +5,7 @@
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
  *
  *  @copyright  2018 Colin Sullivan
- *  @license    Licensed under the GPLv3 license.
+ *  @license    Licensed under the MIT license.
  **/
 
 import { createSelector, createSelectorCreator, defaultMemoize } from 'reselect';
@@ -25,7 +25,6 @@ export const getSCSequencers = createSelector(
   getSequencers,
   (sequencers) => {
     var simplifiedSequencers = {};
-    console.log("getSCSequencers");
     Object.keys(sequencers).forEach((sequencerId) => {
       simplifiedSequencers[sequencerId] = Object.assign(
         {},
