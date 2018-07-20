@@ -1,13 +1,14 @@
 /**
- *  @file       testOutboardExample.js
+ *  @file       testMetroStopping.js
  *
- *	@desc       Testing the ability to run sequencer output to a MIDI port.
+ *	@desc       testing stopping behavior and known race conditions.
  *
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
  *
- *  @copyright  2017 Colin Sullivan
+ *  @copyright  2018 Colin Sullivan
  *  @license    Licensed under the MIT license.
  **/
+
 
 import { createStore, combineReducers } from "redux"
 import sc from 'supercolliderjs';
@@ -16,47 +17,30 @@ const SCStoreController = supercolliderRedux.SCStoreController
 import awakeningSequencers from "../src/"
 import chai from "chai"
 const expect = chai.expect;
-import midi from 'midi';
 
 function create_default_state () {
   var metroInitialState = awakeningSequencers.create_default_sequencer(
     'metro',
-    'OutboardExampleSequencer'
+    'LongMetronomeSequencer'
   );
-  metroInitialState.numBeats = 4;
-  metroInitialState.stopQuant = [4, 4];
-  metroInitialState.midiOutDeviceName = "(in) SuperCollider";
-  metroInitialState.midiOutPortName = "(in) SuperCollider";
+  metroInitialState.numBeats = 16;
+  metroInitialState.playQuant = [4, 0];
+  metroInitialState.stopQuant = [4, 0];
   return {
     sequencers: {
       'metro': metroInitialState
     }
   };
 }
-
 var rootReducer = combineReducers({
   supercolliderRedux: supercolliderRedux.reducer,
   sequencers: awakeningSequencers.reducer
 });
 
-const MIDI_PORT_INDEX = 4;
-
-describe("Outboard Example", function () {
-  this.timeout(10000);
-
+describe("Metronome Example", function () {
   it("should initialize properly", function (done) {
 
     var store = createStore(rootReducer, create_default_state());
-    this.midiInput = new midi.input();
-
-    this.midiNotesReceived = []
-    this.midiInput.on('message', (deltaTime, message) => {
-      //console.log('m:' + message + ' d:' + deltaTime);
-      this.midiNotesReceived.push(message);
-    });
-    console.log(this.midiInput.getPortName(MIDI_PORT_INDEX));
-    this.midiInput.openPort(MIDI_PORT_INDEX);
-
     this.store = store;
     var unsub = store.subscribe(() => {
       let state = this.store.getState();
@@ -74,7 +58,6 @@ describe("Outboard Example", function () {
       var store, sequencerFactory, clockController;
 
       API.mountDuplexOSC();
-      MIDIClient.init();
 
       s.waitForBoot({
         store = StateStore.getInstance();
@@ -125,6 +108,33 @@ describe("Outboard Example", function () {
     });
   });
 
+  it("should play for 4 beats then queue stop", function (done) {
+    var beat = this.store.getState().sequencers.metro.beat;
+    var unsub = this.store.subscribe(() => {
+      let state = this.store.getState();
+      let newBeat = state.sequencers.metro.beat;
+
+      if (newBeat != beat) {
+        beat = newBeat;
+        if (beat >= 8) {
+          this.store.dispatch(
+            awakeningSequencers.actions.sequencerStopQueued('metro')
+          );
+          unsub();
+          done();
+        }
+      }
+    });
+  });
+
+  it("should have queued stop", function (done) {
+    var state = this.store.getState();
+    expect(
+      state.sequencers.metro.playingState
+    ).to.equal(awakeningSequencers.PLAYING_STATES.STOP_QUEUED);
+    done();
+  });
+
   it("should actually stop playing", function (done) {
     
     var playingState = this.store.getState().sequencers.metro.playingState;
@@ -143,20 +153,29 @@ describe("Outboard Example", function () {
     });
   });
 
-  it("should have received some midi notes", function (done) {
-    expect(this.midiNotesReceived.length).to.be.above(0);
-    done();
+  it('should queue again', function () {
+    this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+    let state = this.store.getState();
+    expect(
+      state.sequencers.metro.playingState
+    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
   });
 
-  //it("should have received midi notes through virtual port", function (done) {
-    //// four notes, note on and off
-    //expect(this.midiNotesReceived.length).to.equal(4 * 2);
-    //done();
-  //});
+  it('should switch directly to playing even though EventStreamPlayer sends stragglers', function (done) {
+    var playingState = this.store.getState().sequencers.metro.playingState;
+    var unsub = this.store.subscribe(() => {
+      let state = this.store.getState();
+      let newPlayingState = state.sequencers.metro.playingState;
 
-  it("Should close midi port", function (done) {
-    this.midiInput.closePort();
-    done();
+      if (newPlayingState != playingState) {
+        playingState = newPlayingState;
+        expect(
+          state.sequencers.metro.playingState
+        ).to.equal(awakeningSequencers.PLAYING_STATES.PLAYING);
+        unsub();
+        done();
+      }
+    });
   });
 
   it("should quit sclang", function (done) {

@@ -14,9 +14,7 @@
 import { createStore, combineReducers } from "redux"
 import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
-import abletonLinkRedux from "abletonlink-redux"
 const SCStoreController = supercolliderRedux.SCStoreController
-const AbletonLinkController = abletonLinkRedux.AbletonLinkController;
 import awakeningSequencers from "../src/"
 import chai from "chai"
 const expect = chai.expect;
@@ -27,7 +25,8 @@ function create_default_state () {
     'MetronomeSequencer'
   );
   metroInitialState.numBeats = 4;
-  metroInitialState.stopQuant = [4, 4];
+  metroInitialState.playQuant = [4, 0];
+  metroInitialState.stopQuant = [4, 0];
   return {
     sequencers: {
       'metro': metroInitialState
@@ -35,54 +34,57 @@ function create_default_state () {
   };
 }
 var rootReducer = combineReducers({
-  abletonlink: abletonLinkRedux.reducer,
   supercolliderRedux: supercolliderRedux.reducer,
   sequencers: awakeningSequencers.reducer
 });
 
 describe("Metronome Example", function () {
-  this.timeout(10000);
-
   it("should initialize properly", function (done) {
 
     var store = createStore(rootReducer, create_default_state());
     this.store = store;
-    this.scStoreController = new SCStoreController(store);
-    this.abletonLinkController = new AbletonLinkController(store, 'abletonlink');
+    var unsub = store.subscribe(() => {
+      let state = this.store.getState();
+      let scStateStoreReadyState = state.supercolliderRedux.scStateStoreReadyState;
+
+      if (scStateStoreReadyState === "READY") {
+        unsub();
+        done();
+      }
+    });
     sc.lang.boot().then((sclang) => {
       this.sclang = sclang;
-      done();
+        this.sclang.interpret(`
+
+      var store, sequencerFactory, clockController;
+
+      API.mountDuplexOSC();
+
+      s.waitForBoot({
+        store = StateStore.getInstance();
+        clockController = ReduxTempoClockController.new((
+          store: store
+        ));
+        sequencerFactory = AwakenedSequencerFactory.getInstance();
+        sequencerFactory.setClockController(clockController);
+        sequencerFactory.setStore(store);
+      });
+
+        `).then(() => {
+          setTimeout(() => {
+            this.scStoreController = new SCStoreController(this.store);
+          }, 2000);
+        }).catch(done);
     });
     
   });
 
-  it("should become ready when SC started", function (done) {
-    var metroReady = this.store.getState().sequencers.metro.isReady;
-    var unsub = this.store.subscribe(() => {
-      let state = this.store.getState();
-      let newMetroReady = state.sequencers.metro.isReady;
-
-      if (newMetroReady != metroReady) {
-        metroReady = newMetroReady;
-        if (metroReady) {
-          unsub();
-          done();
-        }
-      }
-    });
-    this.sclang.interpret(`
-
-  var store, sequencerFactory;
-
-  API.mountDuplexOSC();
-
-  s.waitForBoot({
-    store = StateStore.getInstance();
-    sequencerFactory = AwakenedSequencerFactory.getInstance();
-    sequencerFactory.setStore(store);
-  });
-
-    `).catch(done);
+  it("should become ready soon after SC started", function (done) {
+    setTimeout(() => {
+      var metroReady = this.store.getState().sequencers.metro.isReady;
+      expect(metroReady).to.be.true;
+      done();
+    }, 250);
   });
 
   it("should start playing when queued", function (done) {
@@ -115,7 +117,7 @@ describe("Metronome Example", function () {
 
       if (newBeat != beat) {
         beat = newBeat;
-        if (beat == 0) {
+        if (beat >= 8) {
           this.store.dispatch(
             awakeningSequencers.actions.sequencerStopQueued('metro')
           );
@@ -134,7 +136,7 @@ describe("Metronome Example", function () {
     done();
   });
 
-  it("should actually stop playing on beat 0", function (done) {
+  it("should actually stop playing", function (done) {
     
     var playingState = this.store.getState().sequencers.metro.playingState;
     var unsub = this.store.subscribe(() => {
@@ -143,9 +145,6 @@ describe("Metronome Example", function () {
 
       if (newPlayingState != playingState) {
         playingState = newPlayingState;
-        expect(
-          state.sequencers.metro.beat
-        ).to.equal(0)
         expect(
           state.sequencers.metro.playingState
         ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);

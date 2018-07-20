@@ -85,13 +85,13 @@ AwakenedSequencer : Object {
 
     currentState = this.getStateSlice();
     if (params['clockController'] != nil, {
-      clockController = params['clockController']    
+      clockController = params['clockController']
     }, {
-      //"Creating new ReduxAbletonTempoClockController".postln();
-      clockController = ReduxAbletonTempoClockController.new((
-        store: store,
-        clockOffsetSeconds: currentState.clockOffsetSeconds
-      ));
+      Exception.new("clockController not provided").throw();
+    });
+
+    if (clockController.isReady(), {
+      clock = clockController.clock;
     });
 
     audioOut = this.initAudioOut();
@@ -99,8 +99,10 @@ AwakenedSequencer : Object {
     patch = this.initPatch();
     stream = this.initStream();
 
-    // watch state store for updates
+    // grab initial state
     this.handleStateChange();
+
+    // watch state store for updates
     store.subscribe({
       this.handleStateChange();
     });
@@ -134,23 +136,32 @@ AwakenedSequencer : Object {
 
     //"AwakenedSequencer.handleStateChange".postln();
 
-    if (clock == false, {
-      //"initializing clock...".postln();
+    if (currentState.isReady == false, {
+      if (clock == false, {
+        "looking for clock...".postln();
 
-      if (clockController.isReady(), {
-        clock = clockController.clock;
-        "dispatching ready..".postln();
-        store.dispatch((
-          type: "AWAKENING-SEQUENCERS-SEQ_READY",
-          payload: (
-            sequencerId: sequencerId
-          )
-        ));
-      }, {
-        ^this;
+        if (clockController.isReady(), {
+          clock = clockController.clock;
+        });
+
       });
 
+      // TODO: what else is essential here ?
+      if (clock != false, {
+        if (currentState.playQuant != false, {
+          if (currentState.stopQuant != false, {
+            "dispatching ready..".postln();
+            store.dispatch((
+              type: "AWAKENING-SEQUENCERS-SEQ_READY",
+              payload: (
+                sequencerId: sequencerId
+              )
+            ));
+          });    
+        });    
+      });
     });
+
 
     // if readyness changes
     if (currentState.isReady != lastState.isReady, {
@@ -283,15 +294,16 @@ AwakenedSequencer : Object {
   queueStop {
     //"AwakenedSequencer.queueStop".postln();
     clock.play({
-      var theStreamPlayer = streamPlayer;
-      //"Dispatching...".postln();
-      theStreamPlayer.stop();
-      store.dispatch((
-        type: "AWAKENING-SEQUENCERS-SEQ_STOPPED",
-        payload: (
-          sequencerId: sequencerId
-        )
-      ));
+      // if we are still waiting to stop
+      if (currentState.playingState == "STOP_QUEUED", {
+        this.stop();
+        store.dispatch((
+          type: "AWAKENING-SEQUENCERS-SEQ_STOPPED",
+          payload: (
+            sequencerId: sequencerId
+          )
+        ));
+      });
     }, currentState.stopQuant);
   }
 

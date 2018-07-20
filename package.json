@@ -8,7 +8,7 @@
     "start_parameter_example": "babel-node src/parameter_example.js",
     "start_sampler_example": "babel-node src/example_sampler.js",
     "build": "rm -Rf lib/* && babel src --out-dir lib",
-    "test": "nyc mocha --compilers js:babel-register"
+    "test": "nyc mocha --timeout 10000 --compilers js:babel-register"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
     "midi": "^0.9.5",
     "redux": "^3.6.0",
     "reselect": "^3.0.1",
-    "supercollider-redux": "0.0.91"
+    "supercollider-redux": "0.0.93"
   },
   "babel": {
     "presets": [

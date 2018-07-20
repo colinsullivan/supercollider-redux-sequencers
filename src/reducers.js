@@ -94,7 +94,13 @@ export function sequencer (state, action) {
       break;
 
     case supercolliderRedux.actionTypes.SUPERCOLLIDER_EVENTSTREAMPLAYER_ENDED:
-      if (action.payload.id == state.sequencerId) {
+      if (
+        action.payload.id == state.sequencerId
+        // only care about an EventStreamPlayer ended message if we are
+        // playing, implies a one-shot that ended by itself.  Otherwise
+        // this ended message may race with a manual sequencer stop.
+        && state.playingState === PLAYING_STATES.PLAYING
+      ) {
         state = Object.assign({}, state);
         state.beat = 0;
         state.event = false;

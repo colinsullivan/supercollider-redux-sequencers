@@ -36,7 +36,6 @@ AwakenedSequencerFactory : Object {
   setStore {
     arg theStore;
     store = theStore;
-    this.handleStateChange();
     store.subscribe({
       this.handleStateChange();
     });
