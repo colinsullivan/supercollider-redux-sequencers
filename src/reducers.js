@@ -62,8 +62,11 @@ export function sequencer (state, action) {
         break;
 
       case actionTypes.SEQUENCER_STOPPED:
-        state = Object.assign({}, state);
-        state.playingState = PLAYING_STATES.STOPPED;
+        // this is sent from the AwakeningSequencer scheduled stop
+        if (state.playingState === PLAYING_STATES.STOP_QUEUED) {
+          state = Object.assign({}, state);
+          state.playingState = PLAYING_STATES.STOPPED;
+        }
         break;
 
       case actionTypes.SEQUENCER_STOP_QUEUED:

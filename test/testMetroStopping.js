@@ -10,7 +10,8 @@
  **/
 
 
-import { createStore, combineReducers } from "redux"
+import { createStore, combineReducers, applyMiddleware } from "redux"
+import logger from 'redux-logger'
 import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
 const SCStoreController = supercolliderRedux.SCStoreController
@@ -26,9 +27,18 @@ function create_default_state () {
   metroInitialState.numBeats = 16;
   metroInitialState.playQuant = [4, 0];
   metroInitialState.stopQuant = [4, 0];
+
+  var stopShorterMetro = awakeningSequencers.create_default_sequencer(
+    'stopShorterMetro',
+    'LongMetronomeSequencer'
+  );
+  metroInitialState.numBeats = 16;
+  metroInitialState.playQuant = [4, 1];
+  metroInitialState.stopQuant = [2, 0];
   return {
     sequencers: {
-      'metro': metroInitialState
+      'metro': metroInitialState,
+      'stopShorterMetro': stopShorterMetro
     }
   };
 }
@@ -40,7 +50,7 @@ var rootReducer = combineReducers({
 describe("Metronome Example", function () {
   it("should initialize properly", function (done) {
 
-    var store = createStore(rootReducer, create_default_state());
+    var store = createStore(rootReducer, create_default_state(), applyMiddleware(logger));
     this.store = store;
     var unsub = store.subscribe(() => {
       let state = this.store.getState();
@@ -163,6 +173,9 @@ describe("Metronome Example", function () {
 
   it('should switch directly to playing even though EventStreamPlayer sends stragglers', function (done) {
     var playingState = this.store.getState().sequencers.metro.playingState;
+    expect(
+      playingState
+    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
     var unsub = this.store.subscribe(() => {
       let state = this.store.getState();
       let newPlayingState = state.sequencers.metro.playingState;
@@ -172,10 +185,87 @@ describe("Metronome Example", function () {
         expect(
           state.sequencers.metro.playingState
         ).to.equal(awakeningSequencers.PLAYING_STATES.PLAYING);
+
         unsub();
         done();
       }
     });
+  });
+
+  it('stopShorterMetro should play', function (done) {
+    var state = this.store.getState();
+
+    this.store.dispatch(
+      awakeningSequencers.actions.sequencerQueued('stopShorterMetro')
+    );
+    state = this.store.getState()
+    expect(
+      state.sequencers.stopShorterMetro.playingState
+    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
+
+    var unsub = this.store.subscribe(() => {
+      var newState = this.store.getState();
+
+      if (newState.sequencers.stopShorterMetro.playingState !== state.sequencers.stopShorterMetro.playingState) {
+        expect(
+          newState.sequencers.stopShorterMetro.playingState
+        ).to.equal(awakeningSequencers.PLAYING_STATES.PLAYING);
+
+        unsub();
+        done();
+      }
+    })
+  });
+
+  it('should immediately STOP_QUEUED when STOP_QUEUED', function () {
+    var state = this.store.getState();
+    this.store.dispatch(
+      awakeningSequencers.actions.sequencerStopQueued('stopShorterMetro')
+    );
+    state = this.store.getState()
+    expect(
+      state.sequencers.stopShorterMetro.playingState
+    ).to.equal(awakeningSequencers.PLAYING_STATES.STOP_QUEUED);
+  });
+
+  it('should go from STOP_QUEUED TO QUEUED when queued', function () {
+    var state;
+    this.store.dispatch(
+      awakeningSequencers.actions.sequencerQueued('stopShorterMetro')
+    );
+    state = this.store.getState()
+    expect(
+      state.sequencers.stopShorterMetro.playingState
+    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
+  });
+
+  it('should go from queued to playing when even if STOPPED action is dispatched', function (done) {
+    var state = this.store.getState();
+    expect(
+      state.sequencers.stopShorterMetro.playingState
+    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
+    
+    var unsub = this.store.subscribe(() => {
+      var newState = this.store.getState();
+
+      if (
+        state.sequencers.stopShorterMetro.playingState !== newState.sequencers.stopShorterMetro.playingState
+      ) {
+        expect(
+          newState.sequencers.stopShorterMetro.playingState
+        ).to.equal(awakeningSequencers.PLAYING_STATES.PLAYING);
+        unsub();
+        done();
+      }
+    });
+
+    // this is simulating something that can happen in SC under conditions where
+    // the SC timer stop timer fires...Tried to reproduce with the
+    // `stopShorterMetro` timings but ended up just dispatching the action
+    // manually from here
+    this.store.dispatch(
+      awakeningSequencers.actions.sequencerStopped('stopShorterMetro')
+    );
   });
 
   it("should quit sclang", function (done) {
