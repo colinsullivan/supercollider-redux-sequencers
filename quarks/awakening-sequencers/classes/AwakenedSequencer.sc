@@ -150,7 +150,7 @@ AwakenedSequencer : Object {
       if (clock != false, {
         if (currentState.playQuant != false, {
           if (currentState.stopQuant != false, {
-            "dispatching ready..".postln();
+            //"AwakeningSequencer: dispatching ready..".postln();
             store.dispatch((
               type: "AWAKENING-SEQUENCERS-SEQ_READY",
               payload: (
@@ -224,11 +224,9 @@ AwakenedSequencer : Object {
     arg requeue = false;
     var prevStreamPlayer = streamPlayer;
     //"AwakenedSequencer.queue".postln();
-    if ((streamPlayer != nil) && (requeue == false), {
-      streamPlayer.stop();    
+    if (requeue == false, {
+      this.stop();
     });
-    
-    stream = this.initStream();
 
     /**
      *  The ReduxEventStreamPlayer instance will dispatch next beat
