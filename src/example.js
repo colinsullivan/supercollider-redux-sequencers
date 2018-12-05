@@ -17,9 +17,7 @@
 import { createStore, combineReducers } from "redux"
 import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
-import abletonLinkRedux from "abletonlink-redux"
 const SCStoreController = supercolliderRedux.SCStoreController;
-const AbletonLinkController = abletonLinkRedux.AbletonLinkController;
 import awakeningSequencers from "."
 
 function create_default_state () {
@@ -34,7 +32,6 @@ function create_default_state () {
 }
 
 var rootReducer = combineReducers({
-  [abletonLinkRedux.DEFAULT_MOUNT_POINT]: abletonLinkRedux.reducer,
   [supercolliderRedux.DEFAULT_MOUNT_POINT]: supercolliderRedux.reducer,
   sequencers: awakeningSequencers.reducer
 });
@@ -44,7 +41,6 @@ sc.lang.boot().then((lang) => {
   var sclang = lang;
   sclang.interpret('API.mountDuplexOSC();').then(() => {
     var scStoreController = new SCStoreController(store);
-    var abletonLinkController = new AbletonLinkController(store, 'abletonlink');
     
     let metroReady = false;
     store.subscribe(() => {

@@ -17,8 +17,7 @@
   "keywords": [
     "node.js",
     "supercollider",
-    "supercollider-redux",
-    "abletonlink-redux"
+    "supercollider-redux"
   ],
   "author": "Colin Sullivan <colin [at] colin-sullivan.net>",
   "license": "MIT",
@@ -27,7 +26,6 @@
   },
   "homepage": "https://github.com/colinsullivan/awakening-sequencers#readme",
   "dependencies": {
-    "abletonlink-redux": "0.0.7",
     "lodash": "^4.17.10",
     "midi": "^0.9.5",
     "redux": "^3.6.0",
@@ -36,7 +34,7 @@
   },
   "babel": {
     "presets": [
-      "es2015"
+      "@babel/preset-env"
     ]
   },
   "eslintConfig": {
@@ -61,7 +59,9 @@
     }
   },
   "devDependencies": {
-    "babel-register": "^6.24.1",
+    "@babel/cli": "^7.2.0",
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
     "chai": "^4.1.1",
     "mocha": "^3.5.0",
     "nyc": "^11.8.0",
