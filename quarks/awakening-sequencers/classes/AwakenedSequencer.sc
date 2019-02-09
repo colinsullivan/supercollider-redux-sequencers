@@ -134,12 +134,8 @@ AwakenedSequencer : Object {
       lastState = currentState;
     currentState = this.getStateSlice();
 
-    //"AwakenedSequencer.handleStateChange".postln();
-
     if (currentState.isReady == false, {
       if (clock == false, {
-        "looking for clock...".postln();
-
         if (clockController.isReady(), {
           clock = clockController.clock;
         });
@@ -150,7 +146,6 @@ AwakenedSequencer : Object {
       if (clock != false, {
         if (currentState.playQuant != false, {
           if (currentState.stopQuant != false, {
-            //"AwakeningSequencer: dispatching ready..".postln();
             store.dispatch((
               type: "AWAKENING-SEQUENCERS-SEQ_READY",
               payload: (
@@ -182,12 +177,7 @@ AwakenedSequencer : Object {
 
     // if playing state has changed
     if (currentState.playingState != lastState.playingState, {
-      //"AwakenedSequencer::playingState changed".postln();
-      //"lastState.playingState:".postln;
-      //lastState.playingState.postln;
       lastState.playingState = currentState.playingState;
-      //"currentState.playingState:".postln;
-      //currentState.playingState.postln;
       switch(currentState.playingState)
         {"REQUEUED"} {
           this.queue(true);
@@ -223,7 +213,6 @@ AwakenedSequencer : Object {
   queue {
     arg requeue = false;
     var prevStreamPlayer = streamPlayer;
-    //"AwakenedSequencer.queue".postln();
     if (requeue == false, {
       this.stop();
     });
@@ -263,7 +252,6 @@ AwakenedSequencer : Object {
     });
 
     clock.play({
-      //"AwakenedSequencer: queued clock playing...".postln();
       // if we're still queued or requeued
       if (
         (currentState.playingState == "QUEUED")
@@ -273,7 +261,6 @@ AwakenedSequencer : Object {
           prevStreamPlayer.stop();    
         });
         // inform state store we've started playing
-        //"Dispatching...".postln();
         store.dispatch((
           type: "AWAKENING-SEQUENCERS-SEQ_PLAYING",
           payload: (
@@ -284,13 +271,7 @@ AwakenedSequencer : Object {
     }, currentState.playQuant);
   }
 
-  //play {
-    //"AwakenedSequencer.play".postln();
-
-  //}
-
   queueStop {
-    //"AwakenedSequencer.queueStop".postln();
     clock.play({
       // if we are still waiting to stop
       if (currentState.playingState == "STOP_QUEUED", {
@@ -306,7 +287,6 @@ AwakenedSequencer : Object {
   }
 
   stop {
-    //"AwakenedSequencer.stop".postln();
     // stop immediately
     if (streamPlayer != nil, {
       streamPlayer.stop();    

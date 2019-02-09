@@ -35,6 +35,7 @@ AwakenedSequencerFactory : Object {
 
   setStore {
     arg theStore;
+    //"AwakenedSequencerFactory.setStore".postln();
     store = theStore;
     store.subscribe({
       this.handleStateChange();
@@ -58,6 +59,7 @@ AwakenedSequencerFactory : Object {
 
   handleStateChange {
     var state = store.getState();
+    //"AwakenedSequencerFactory.handleStateChange".postln();
     
     if ((state.sequencers != nil), {
       // for each sequencer in state
