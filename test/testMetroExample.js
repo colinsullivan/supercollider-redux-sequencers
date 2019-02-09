@@ -73,7 +73,7 @@ describe("Metronome Example", function () {
         `).then(() => {
           setTimeout(() => {
             this.scStoreController = new SCStoreController(this.store);
-          }, 2000);
+          }, 4000);
         }).catch(done);
     });
     
@@ -157,7 +157,9 @@ describe("Metronome Example", function () {
   it("should quit sclang", function (done) {
     this.sclang.interpret('s.quit();').then(() => {
       this.sclang.quit().then(() => {
-        setTimeout(done, 1000);
+        setTimeout(function () {
+          done();
+        }, 1000);
       }).catch(done);
     }).catch(done);
   });

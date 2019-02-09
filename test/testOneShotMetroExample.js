@@ -74,7 +74,7 @@ describe("Metronome Example", function () {
         `).then(() => {
           setTimeout(() => {
             this.scStoreController = new SCStoreController(this.store);
-          }, 2000);
+          }, 4000);
         }).catch(done);
     });
     

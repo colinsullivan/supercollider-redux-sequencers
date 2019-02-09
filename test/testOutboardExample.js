@@ -39,7 +39,7 @@ var rootReducer = combineReducers({
   sequencers: awakeningSequencers.reducer
 });
 
-const MIDI_PORT_INDEX = 4;
+const MIDI_PORT_INDEX = 3;
 
 describe("Outboard Example", function () {
   this.timeout(10000);
@@ -89,7 +89,7 @@ describe("Outboard Example", function () {
         `).then(() => {
           setTimeout(() => {
             this.scStoreController = new SCStoreController(this.store);
-          }, 2000);
+          }, 4000);
         }).catch(done);
     });
     

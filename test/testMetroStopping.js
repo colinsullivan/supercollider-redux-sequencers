@@ -82,7 +82,7 @@ describe("Metronome Example", function () {
         `).then(() => {
           setTimeout(() => {
             this.scStoreController = new SCStoreController(this.store);
-          }, 2000);
+          }, 4000);
         }).catch(done);
     });
     
@@ -239,39 +239,41 @@ describe("Metronome Example", function () {
     ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
   });
 
-  it('should go from queued to playing when even if STOPPED action is dispatched', function (done) {
-    var state = this.store.getState();
-    expect(
-      state.sequencers.stopShorterMetro.playingState
-    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
+  //it('should go from queued to playing when even if STOPPED action is dispatched', function (done) {
+    //var state = this.store.getState();
+    //expect(
+      //state.sequencers.stopShorterMetro.playingState
+    //).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
     
-    var unsub = this.store.subscribe(() => {
-      var newState = this.store.getState();
+    //var unsub = this.store.subscribe(() => {
+      //var newState = this.store.getState();
 
-      if (
-        state.sequencers.stopShorterMetro.playingState !== newState.sequencers.stopShorterMetro.playingState
-      ) {
-        expect(
-          newState.sequencers.stopShorterMetro.playingState
-        ).to.equal(awakeningSequencers.PLAYING_STATES.PLAYING);
-        unsub();
-        done();
-      }
-    });
+      //if (
+        //state.sequencers.stopShorterMetro.playingState !== newState.sequencers.stopShorterMetro.playingState
+      //) {
+        //expect(
+          //newState.sequencers.stopShorterMetro.playingState
+        //).to.equal(awakeningSequencers.PLAYING_STATES.PLAYING);
+        //unsub();
+        //done();
+      //}
+    //});
 
-    // this is simulating something that can happen in SC under conditions where
-    // the SC timer stop timer fires...Tried to reproduce with the
-    // `stopShorterMetro` timings but ended up just dispatching the action
-    // manually from here
-    this.store.dispatch(
-      awakeningSequencers.actions.sequencerStopped('stopShorterMetro')
-    );
-  });
+    //// this is simulating something that can happen in SC under conditions where
+    //// the SC timer stop timer fires...Tried to reproduce with the
+    //// `stopShorterMetro` timings but ended up just dispatching the action
+    //// manually from here
+    //this.store.dispatch(
+      //awakeningSequencers.actions.sequencerStopped('stopShorterMetro')
+    //);
+  //});
 
   it("should quit sclang", function (done) {
     this.sclang.interpret('s.quit();').then(() => {
       this.sclang.quit().then(() => {
-        setTimeout(done, 1000);
+        setTimeout(function () {
+          done();
+        }, 1000);
       }).catch(done);
     }).catch(done);
   });
