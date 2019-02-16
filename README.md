@@ -30,7 +30,4 @@ It is possible to run Node.js and a child SuperCollider process using [supercoll
 
 ## Unit Tests
 
-There are two unit tests: `testMetroExample.js` and `testOneShotMetroExample.js`.  Both of these have repeated code and can only be run one at a time.  To run:
-
-    $ npm run build && npm run test test/testMetroExample.js
-    $ npm run build && npm run test test/testOneShotMetroExample.js
+    $ npm run test
