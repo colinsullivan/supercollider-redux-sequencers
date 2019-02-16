@@ -30,7 +30,8 @@
     "midi": "^0.9.5",
     "redux": "^3.6.0",
     "reselect": "^3.0.1",
-    "supercollider-redux": "^0.0.96"
+    "supercollider-redux": "0.0.97",
+    "supercolliderjs": "^0.14.2"
   },
   "babel": {
     "presets": [

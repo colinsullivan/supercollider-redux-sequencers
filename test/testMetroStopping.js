@@ -12,12 +12,12 @@
 
 import { createStore, combineReducers, applyMiddleware } from "redux"
 import logger from 'redux-logger'
-import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
-const SCStoreController = supercolliderRedux.SCStoreController
 import awakeningSequencers from "../src/"
 import chai from "chai"
 const expect = chai.expect;
+
+import { shouldStartSuperCollider, shouldExitSuperCollider } from './lib';
 
 function create_default_state () {
   var metroInitialState = awakeningSequencers.create_default_sequencer(
@@ -48,45 +48,12 @@ var rootReducer = combineReducers({
 });
 
 describe("Metronome Example", function () {
-  it("should initialize properly", function (done) {
-
+  it('should init store', function () {
     var store = createStore(rootReducer, create_default_state(), applyMiddleware(logger));
     this.store = store;
-    var unsub = store.subscribe(() => {
-      let state = this.store.getState();
-      let scStateStoreReadyState = state.supercolliderRedux.scStateStoreReadyState;
-
-      if (scStateStoreReadyState === "READY") {
-        unsub();
-        done();
-      }
-    });
-    sc.lang.boot().then((sclang) => {
-      this.sclang = sclang;
-        this.sclang.interpret(`
-
-      var store, sequencerFactory, clockController;
-
-      API.mountDuplexOSC();
-
-      s.waitForBoot({
-        store = StateStore.getInstance();
-        clockController = ReduxTempoClockController.new((
-          store: store
-        ));
-        sequencerFactory = AwakenedSequencerFactory.getInstance();
-        sequencerFactory.setClockController(clockController);
-        sequencerFactory.setStore(store);
-      });
-
-        `).then(() => {
-          setTimeout(() => {
-            this.scStoreController = new SCStoreController(this.store);
-          }, 4000);
-        }).catch(done);
-    });
-    
   });
+
+  shouldStartSuperCollider();
 
   it("should become ready soon after SC started", function (done) {
     setTimeout(() => {
@@ -239,42 +206,5 @@ describe("Metronome Example", function () {
     ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
   });
 
-  //it('should go from queued to playing when even if STOPPED action is dispatched', function (done) {
-    //var state = this.store.getState();
-    //expect(
-      //state.sequencers.stopShorterMetro.playingState
-    //).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
-    
-    //var unsub = this.store.subscribe(() => {
-      //var newState = this.store.getState();
-
-      //if (
-        //state.sequencers.stopShorterMetro.playingState !== newState.sequencers.stopShorterMetro.playingState
-      //) {
-        //expect(
-          //newState.sequencers.stopShorterMetro.playingState
-        //).to.equal(awakeningSequencers.PLAYING_STATES.PLAYING);
-        //unsub();
-        //done();
-      //}
-    //});
-
-    //// this is simulating something that can happen in SC under conditions where
-    //// the SC timer stop timer fires...Tried to reproduce with the
-    //// `stopShorterMetro` timings but ended up just dispatching the action
-    //// manually from here
-    //this.store.dispatch(
-      //awakeningSequencers.actions.sequencerStopped('stopShorterMetro')
-    //);
-  //});
-
-  it("should quit sclang", function (done) {
-    this.sclang.interpret('s.quit();').then(() => {
-      this.sclang.quit().then(() => {
-        setTimeout(function () {
-          done();
-        }, 1000);
-      }).catch(done);
-    }).catch(done);
-  });
+  shouldExitSuperCollider();
 });

@@ -10,13 +10,13 @@
  **/
 
 import { createStore, combineReducers } from "redux"
-import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
-const SCStoreController = supercolliderRedux.SCStoreController
 import awakeningSequencers from "../src/"
 import chai from "chai"
 const expect = chai.expect;
 import midi from 'midi';
+
+import { shouldStartSuperCollider, shouldExitSuperCollider } from './lib';
 
 function create_default_state () {
   var metroInitialState = awakeningSequencers.create_default_sequencer(
@@ -39,61 +39,33 @@ var rootReducer = combineReducers({
   sequencers: awakeningSequencers.reducer
 });
 
-const MIDI_PORT_INDEX = 3;
+const MIDI_PORT_INDEX = 2;
 
 describe("Outboard Example", function () {
-  this.timeout(10000);
 
-  it("should initialize properly", function (done) {
-
+  it('should init store', function () {
     var store = createStore(rootReducer, create_default_state());
+    this.store = store;
+  });
+
+  it('should init test MIDI input', function () {
     this.midiInput = new midi.input();
+    const numPorts = this.midiInput.getPortCount();
+    let i = 0;
+    while (i < numPorts) {
+      console.log(`MIDI port index ${i}: ${this.midiInput.getPortName(i)}`);
+      i += 1;
+    }
 
     this.midiNotesReceived = []
     this.midiInput.on('message', (deltaTime, message) => {
       //console.log('m:' + message + ' d:' + deltaTime);
       this.midiNotesReceived.push(message);
     });
-    console.log(this.midiInput.getPortName(MIDI_PORT_INDEX));
     this.midiInput.openPort(MIDI_PORT_INDEX);
-
-    this.store = store;
-    var unsub = store.subscribe(() => {
-      let state = this.store.getState();
-      let scStateStoreReadyState = state.supercolliderRedux.scStateStoreReadyState;
-
-      if (scStateStoreReadyState === "READY") {
-        unsub();
-        done();
-      }
-    });
-    sc.lang.boot().then((sclang) => {
-      this.sclang = sclang;
-        this.sclang.interpret(`
-
-      var store, sequencerFactory, clockController;
-
-      API.mountDuplexOSC();
-      MIDIClient.init();
-
-      s.waitForBoot({
-        store = StateStore.getInstance();
-        clockController = ReduxTempoClockController.new((
-          store: store
-        ));
-        sequencerFactory = AwakenedSequencerFactory.getInstance();
-        sequencerFactory.setClockController(clockController);
-        sequencerFactory.setStore(store);
-      });
-
-        `).then(() => {
-          setTimeout(() => {
-            this.scStoreController = new SCStoreController(this.store);
-          }, 4000);
-        }).catch(done);
-    });
-    
   });
+
+  shouldStartSuperCollider()
 
   it("should become ready soon after SC started", function (done) {
     setTimeout(() => {
@@ -148,22 +120,10 @@ describe("Outboard Example", function () {
     done();
   });
 
-  //it("should have received midi notes through virtual port", function (done) {
-    //// four notes, note on and off
-    //expect(this.midiNotesReceived.length).to.equal(4 * 2);
-    //done();
-  //});
-
   it("Should close midi port", function (done) {
     this.midiInput.closePort();
     done();
   });
 
-  it("should quit sclang", function (done) {
-    this.sclang.interpret('s.quit();').then(() => {
-      this.sclang.quit().then(() => {
-        setTimeout(done, 1000);
-      }).catch(done);
-    }).catch(done);
-  });
+  shouldExitSuperCollider();
 });

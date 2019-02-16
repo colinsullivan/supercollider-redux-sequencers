@@ -12,12 +12,12 @@
  **/
 
 import { createStore, combineReducers } from "redux"
-import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
-const SCStoreController = supercolliderRedux.SCStoreController;
 import awakeningSequencers from "../src/"
 import chai from "chai"
 const expect = chai.expect;
+
+import { shouldStartSuperCollider, shouldExitSuperCollider } from './lib';
 
 function create_default_state () {
   var metroInitialState = awakeningSequencers.create_default_sequencer(
@@ -40,45 +40,13 @@ var rootReducer = combineReducers({
 describe("Metronome Example", function () {
   this.timeout(10000);
 
-  it("should initialize properly", function (done) {
-
+  it('should init store', function () {
     var store = createStore(rootReducer, create_default_state());
     this.store = store;
-    var unsub = store.subscribe(() => {
-      let state = this.store.getState();
-      let scStateStoreReadyState = state.supercolliderRedux.scStateStoreReadyState;
-
-      if (scStateStoreReadyState === "READY") {
-        unsub();
-        done();
-      }
-    });
-    sc.lang.boot().then((sclang) => {
-      this.sclang = sclang;
-        this.sclang.interpret(`
-
-      var store, sequencerFactory, clockController;
-
-      API.mountDuplexOSC();
-
-      s.waitForBoot({
-        store = StateStore.getInstance();
-        clockController = ReduxTempoClockController.new((
-          store: store
-        ));
-        sequencerFactory = AwakenedSequencerFactory.getInstance();
-        sequencerFactory.setClockController(clockController);
-        sequencerFactory.setStore(store);
-      });
-
-        `).then(() => {
-          setTimeout(() => {
-            this.scStoreController = new SCStoreController(this.store);
-          }, 4000);
-        }).catch(done);
-    });
-    
   });
+
+  shouldStartSuperCollider();
+
 
   it("should become ready soon after SC started", function (done) {
     setTimeout(() => {
@@ -282,12 +250,5 @@ describe("Metronome Example", function () {
       });
     }
   });
-
-  it("should quit sclang", function (done) {
-    this.sclang.interpret('s.quit();').then(() => {
-      this.sclang.quit().then(() => {
-        setTimeout(done, 1000);
-      }).catch(done);
-    }).catch(done);
-  });
+  shouldExitSuperCollider();
 });
