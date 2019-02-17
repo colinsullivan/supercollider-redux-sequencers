@@ -11,7 +11,7 @@ before_install:
   - echo $PATH
   - export NVM_CURRENT=$(nvm current)
   - echo $NVM_CURRENT
-script: sudo -E su $USER -c "source $HOME/.nvm/nvm.sh; nvm current use $NVM_CURRENT; npm run test;"
+script: sudo -E su $USER -c "source $HOME/.nvm/nvm.sh; nvm use $NVM_CURRENT; npm run test;"
 cache:
   directories:
     - $HOME/supercollider
