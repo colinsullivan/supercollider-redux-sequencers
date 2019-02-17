@@ -9,7 +9,9 @@ before_install:
   - sudo usermod -a -G audio $USER
   - sudo -E su $USER -c "groups"
   - echo $PATH
-script: sudo -E su $USER -c "source $HOME/.nvm/nvm.sh; nvm current use $(nvm current); npm run test;"
+  - export NVM_CURRENT=$(nvm current)
+  - echo $NVM_CURRENT
+script: sudo -E su $USER -c "source $HOME/.nvm/nvm.sh; nvm current use $NVM_CURRENT; npm run test;"
 cache:
   directories:
     - $HOME/supercollider
