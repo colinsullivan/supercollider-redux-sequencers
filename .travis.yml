@@ -6,6 +6,7 @@ before_install:
   - $TRAVIS_BUILD_DIR/.travis/install_supercollider.sh
   - $TRAVIS_BUILD_DIR/.travis/install_supercolliderjs_config.sh
   - $TRAVIS_BUILD_DIR/.travis/install_quark.sh
+script: sudo -E su $USER -g audio 'npm run test'
 cache:
   directories:
     - $HOME/supercollider
