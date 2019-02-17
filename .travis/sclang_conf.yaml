@@ -1,6 +1,7 @@
 includePaths:
     -   /home/travis/.local/share/SuperCollider/downloaded-quarks/API
     -   /home/travis/.local/share/SuperCollider/downloaded-quarks/supercollider-redux/quarks/supercollider-redux
+    -   /home/travis/build/colinsullivan/awakening-sequencers/quarks/awakening-sequencers
 excludePaths:
     []
 postInlineWarnings: false
