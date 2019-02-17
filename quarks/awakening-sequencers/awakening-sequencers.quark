@@ -6,5 +6,5 @@
   version:    0.88,
 //  helpdoc:    "",
   url:      "https://github.com/colinsullivan/awakening-sequencers",
-  dependencies:  #["https://github.com/colinsullivan/supercollider-redux.git@tags/v0.0.97"]
+  dependencies:  #["https://github.com/colinsullivan/supercollider-redux.git@tags/v0.0.97", "API@tags/2.0.2"]
 )
