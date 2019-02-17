@@ -8,7 +8,8 @@ before_install:
   - $TRAVIS_BUILD_DIR/.travis/install_quark.sh
   - sudo usermod -a -G audio $USER
   - sudo -E su $USER -c "groups"
-script: sudo -E su $USER -c "PATH=$PATH nvm current use $(nvm current); npm run test;"
+  - echo $PATH
+script: sudo -E su $USER -c "PATH=$(echo $PATH) nvm current use $(nvm current); npm run test;"
 cache:
   directories:
     - $HOME/supercollider
