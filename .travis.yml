@@ -8,7 +8,7 @@ before_install:
   - $TRAVIS_BUILD_DIR/.travis/install_quark.sh
   - export NPM=`which npm`
   - sudo usermod -a -G audio $USER
-script: sudo -E su $USER -c '$NPM run test'
+script: sudo -E -u $USER bash -c 'npm run test'
 cache:
   directories:
     - $HOME/supercollider
