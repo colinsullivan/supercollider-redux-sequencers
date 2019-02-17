@@ -3,12 +3,11 @@ language: node_js
 node_js:
   - node
 before_install:
-  - $TRAVIS_BUILD_DIR/.travis/install_supercollider.sh
+  #- $TRAVIS_BUILD_DIR/.travis/install_supercollider.sh
   - $TRAVIS_BUILD_DIR/.travis/install_supercolliderjs_config.sh
   - $TRAVIS_BUILD_DIR/.travis/install_quark.sh
   - sudo usermod -a -G audio $USER
-  - which npm
-script: sudo -E -u $USER bash -c "/usr/local/bin/npm run test"
+script: sudo -E -u $USER bash -c "/usr/bin/npm run test"
 cache:
   directories:
     - $HOME/supercollider
