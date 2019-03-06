@@ -18,6 +18,8 @@ import midi from 'midi';
 
 import { shouldStartSuperCollider, shouldExitSuperCollider } from './lib';
 
+const MIDI_PORT_INDEX = 1;
+
 function create_default_state () {
   var metroInitialState = awakeningSequencers.create_default_sequencer(
     'metro',
@@ -38,8 +40,6 @@ var rootReducer = combineReducers({
   supercolliderRedux: supercolliderRedux.reducer,
   sequencers: awakeningSequencers.reducer
 });
-
-const MIDI_PORT_INDEX = 2;
 
 describe("Outboard Example", function () {
 

@@ -206,5 +206,19 @@ describe("Metronome Example", function () {
     ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
   });
 
+  it('should remain queued if a straggler stop message comes in', function () {
+    let state = this.store.getState();
+    expect(
+      state.sequencers.stopShorterMetro.playingState
+    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
+    this.store.dispatch(
+      awakeningSequencers.actions.sequencerStopped('stopShorterMetro')
+    );
+    state = this.store.getState();
+    expect(
+      state.sequencers.stopShorterMetro.playingState
+    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
+  });
+
   shouldExitSuperCollider();
 });

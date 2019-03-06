@@ -126,56 +126,57 @@ describe("Metronome Example", function () {
     });
   });
 
-  it("should not play when queued then stopped", function (done) {
-    var beat = null;
-    var playingState = this.store.getState().sequencers.metro.playingState;
+  // TODO: Develop a different action type for this behavior
+  //it("should not play when queued then stopped", function (done) {
+    //var beat = null;
+    //var playingState = this.store.getState().sequencers.metro.playingState;
 
-    var unsub = this.store.subscribe(() => {
-      let state = this.store.getState();
-      let newPlayingState = state.sequencers.metro.playingState;
-      let newBeat = state.sequencers.metro.beat;
+    //var unsub = this.store.subscribe(() => {
+      //let state = this.store.getState();
+      //let newPlayingState = state.sequencers.metro.playingState;
+      //let newBeat = state.sequencers.metro.beat;
 
-      if (beat != null && newBeat != beat) {
-        unsub();
-        done("Beat should not have changed");
-      }
+      //if (beat != null && newBeat != beat) {
+        //unsub();
+        //done("Beat should not have changed");
+      //}
 
-      if (newPlayingState != playingState) {
-        playingState = newPlayingState;
-        // if it is queued
-        if (playingState == awakeningSequencers.PLAYING_STATES.QUEUED) {
-          beat = this.store.getState().sequencers.metro.beat;
+      //if (newPlayingState != playingState) {
+        //playingState = newPlayingState;
+        //// if it is queued
+        //if (playingState == awakeningSequencers.PLAYING_STATES.QUEUED) {
+          //beat = this.store.getState().sequencers.metro.beat;
 
-        } else {
+        //} else {
 
-          // otherwise, it should just stop
-          expect(
-            playingState, 'sequencer should have changed to stopped'
-          ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
+          //// otherwise, it should just stop
+          //expect(
+            //playingState, 'sequencer should have changed to stopped'
+          //).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
          
-          // and stay stopped
-          setTimeout(() => {
-            expect(
-              playingState, 'sequencer should have remain stopped'
-            ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
-            unsub();
-            done();
-          }, 2000);
-        }
+          //// and stay stopped
+          //setTimeout(() => {
+            //expect(
+              //playingState, 'sequencer should have remain stopped'
+            //).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
+            //unsub();
+            //done();
+          //}, 2000);
+        //}
 
-      }
-    });
-    // first queue
-    setTimeout(() => {
-      this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
-      // shortly after stop
-      setTimeout(() => {
-        this.store.dispatch(
-          awakeningSequencers.actions.sequencerStopped('metro')
-        );
-      }, 50);
-    }, 50);
-  });
+      //}
+    //});
+    //// first queue
+    //setTimeout(() => {
+      //this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+      //// shortly after stop
+      //setTimeout(() => {
+        //this.store.dispatch(
+          //awakeningSequencers.actions.sequencerStopped('metro')
+        //);
+      //}, 50);
+    //}, 50);
+  //});
 
   it("should loop when queued while playing", function (done) {
     var playingState = this.store.getState().sequencers.metro.playingState;
