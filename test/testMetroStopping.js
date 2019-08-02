@@ -19,6 +19,8 @@ const expect = chai.expect;
 
 import { shouldStartSuperCollider, shouldExitSuperCollider } from './lib';
 
+const DEBUG = false;
+
 function create_default_state () {
   var metroInitialState = awakeningSequencers.create_default_sequencer(
     'metro',
@@ -47,9 +49,13 @@ var rootReducer = combineReducers({
   sequencers: awakeningSequencers.reducer
 });
 
-describe("Metronome Example", function () {
+describe("Metronome Stopping Example", function () {
   it('should init store', function () {
-    var store = createStore(rootReducer, create_default_state(), applyMiddleware(logger));
+    let middleware = [];
+    if (DEBUG) {
+      middleware = [logger];
+    }
+    var store = createStore(rootReducer, create_default_state(), applyMiddleware(...middleware));
     this.store = store;
   });
 

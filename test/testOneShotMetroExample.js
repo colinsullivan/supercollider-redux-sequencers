@@ -37,7 +37,7 @@ var rootReducer = combineReducers({
   sequencers: awakeningSequencers.reducer
 });
 
-describe("Metronome Example", function () {
+describe("One Shot Metronome Example", function () {
   this.timeout(10000);
 
   it('should init store', function () {

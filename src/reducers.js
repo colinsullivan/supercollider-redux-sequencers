@@ -38,6 +38,9 @@ export function create_default_sequencer (sequencerId, type) {
     isReady: false,
     playQuant: [4, 0],
     stopQuant: [8, 0],
+    propQuant: [4, 4],
+    lastPropChangeQueuedAt: false,
+    lastPropChangeAt: false,
     event: false,
     midiOutDeviceName: false,
     midiOutPortName: false
@@ -82,7 +85,22 @@ export function sequencer (state, action) {
         state = Object.assign({}, state);
         state.isReady = true;
         break;
-      
+
+      case actionTypes.SEQUENCER_PROP_CHANGE_QUEUED:
+        state = {
+          ...state,
+          lastPropChangeQueuedAt: (new Date()).getTime(),
+          ...action.payload.props
+        };
+        break;
+
+      case actionTypes.SEQUENCER_PROP_CHANGED:
+        state = {
+          ...state,
+          lastPropChangeAt: (new Date()).getTime()
+        };
+        break;
+
       default:
         break;
     }

@@ -11,13 +11,16 @@
  *  @license    Licensed under the MIT license.
  **/
 
-import { createStore, combineReducers } from "redux"
+import { createStore, combineReducers, applyMiddleware } from "redux"
+import logger from 'redux-logger'
 import supercolliderRedux from "supercollider-redux"
 import awakeningSequencers from "../src/"
 import chai from "chai"
 const expect = chai.expect;
 
 import { shouldExitSuperCollider, shouldStartSuperCollider } from './lib';
+
+const DEBUG = true;
 
 function create_default_state () {
   var metroInitialState = awakeningSequencers.create_default_sequencer(
@@ -27,6 +30,8 @@ function create_default_state () {
   metroInitialState.numBeats = 4;
   metroInitialState.playQuant = [4, 0];
   metroInitialState.stopQuant = [4, 0];
+  metroInitialState.propQuant = [4, 4];
+  metroInitialState.arbitraryProperty = "Hello";
   return {
     sequencers: {
       'metro': metroInitialState
@@ -41,7 +46,11 @@ var rootReducer = combineReducers({
 describe("Metronome Example", function () {
 
   it('should init store', function () {
-    var store = createStore(rootReducer, create_default_state());
+    let middleware = [];
+    if (DEBUG) {
+      middleware = [logger];
+    }
+    var store = createStore(rootReducer, create_default_state(), applyMiddleware(...middleware));
     this.store = store;
   });
 
@@ -120,6 +129,128 @@ describe("Metronome Example", function () {
         done();
       }
     });
+  });
+
+
+  it('should queue a change in parameter', function (done) {
+    const prevState = this.store.getState().sequencers.metro;
+    const newPropValue = 'hello2';
+    var unsub = this.store.subscribe(() => {
+      const state = this.store.getState().sequencers.metro;
+
+      // lastPropChangeQueuedAt should update
+      expect(
+        state.lastPropChangeQueuedAt
+      ).to.not.equal(prevState.lastPropChangeQueuedAt);
+
+      // property should be set immediately
+      expect(state.arbitraryProperty).to.equal(newPropValue);
+
+      unsub();
+      done();
+    });
+
+    this.store.dispatch(
+      awakeningSequencers.actions.sequencerPropChangeQueued('metro', {
+        arbitraryProperty: newPropValue
+      })
+    );
+
+  });
+
+  it('should fire a propChanged after some time', function (done) {
+    const prevState = this.store.getState().sequencers.metro;
+    var unsub = this.store.subscribe(() => {
+      const state = this.store.getState().sequencers.metro;
+
+      if (state !== prevState) {
+        expect(
+          state.lastPropChangeAt
+        ).to.not.equal(prevState.lastPropChangeAt);
+
+        unsub();
+        done();
+      }
+
+    })
+  });
+
+  it('should queue a change in parameter multiple times', function (done) {
+    let prevState = this.store.getState().sequencers.metro;
+    let newPropValue = 'hello3';
+    const finalPropValue = 'hello5';
+    var unsub = this.store.subscribe(() => {
+      const state = this.store.getState().sequencers.metro;
+
+      // If sequencer changed, checks it is in proper state
+      if (state !== prevState) {
+        // property should be set immediately
+        expect(state.arbitraryProperty).to.equal(newPropValue);
+
+        if (newPropValue !== finalPropValue) {
+          // lastPropChangeQueuedAt should update
+          expect(
+            state.lastPropChangeQueuedAt
+          ).to.not.equal(prevState.lastPropChangeQueuedAt);
+
+          // lastPropChangeAt should not update
+          expect(
+            state.lastPropChangeAt
+          ).to.equal(prevState.lastPropChangeAt);
+        } else {
+          // lastPropChangeQueuedAt should update once
+          if (state.lastPropChangeQueuedAt !== prevState.lastPropChangeQueuedAt) {
+            expect(
+              state.lastPropChangeAt
+            ).to.equal(prevState.lastPropChangeAt);
+          } else {
+            expect(
+              state.lastPropChangeAt
+            ).to.not.equal(prevState.lastPropChangeAt);
+            const finalLastPropChangeAt = state.lastPropChangeAt;
+            unsub();
+            // expect no more changes
+            setTimeout(() => {
+              const finalState = this.store.getState().sequencers.metro;
+              expect(finalState.lastPropChangeAt).to.equal(
+                finalLastPropChangeAt
+              );
+              done();
+            }, 4000);
+          }
+        }
+
+      }
+
+      prevState = this.store.getState().sequencers.metro;
+    });
+    
+    this.store.dispatch(
+      awakeningSequencers.actions.sequencerPropChangeQueued('metro', {
+        arbitraryProperty: newPropValue
+      })
+    );
+
+    setTimeout(() => {
+      
+      newPropValue = 'hello4';
+      this.store.dispatch(
+        awakeningSequencers.actions.sequencerPropChangeQueued('metro', {
+          arbitraryProperty: newPropValue
+        })
+      );
+
+      setTimeout(() => {
+        newPropValue = 'hello5';
+        this.store.dispatch(
+          awakeningSequencers.actions.sequencerPropChangeQueued('metro', {
+            arbitraryProperty: newPropValue
+          })
+        );
+      }, 1000);
+
+    }, 1000);
+    
   });
 
 

@@ -196,6 +196,11 @@ AwakenedSequencer : Object {
         }
     });
 
+    // if prop change has been queued
+    if (currentState.lastPropChangeQueuedAt != lastState.lastPropChangeQueuedAt, {
+      this.queuePropChange();    
+    });
+
   }
 
   initStream {
@@ -292,5 +297,19 @@ AwakenedSequencer : Object {
       streamPlayer.stop();    
     });
     stream = this.initStream();
+  }
+
+  queuePropChange {
+    var lastPropChangeQueuedAt = currentState.lastPropChangeQueuedAt;
+    clock.play({
+      if (currentState.lastPropChangeQueuedAt == lastPropChangeQueuedAt, {
+        store.dispatch((
+          type: "AWAKENING-SEQUENCERS-SEQUENCER_PROP_CHANGED",
+          payload: (
+            sequencerId: sequencerId
+          )
+        ));
+      });
+    }, currentState.propQuant);
   }
 }

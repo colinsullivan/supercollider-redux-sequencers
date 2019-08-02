@@ -46,3 +46,13 @@ export function sequencerStopQueued (sequencerId) {
     }
   }
 }
+
+export function sequencerPropChangeQueued (sequencerId, props = {}) {
+  return {
+    type: actionTypes.SEQUENCER_PROP_CHANGE_QUEUED,
+    payload: {
+      sequencerId,
+      props
+    }
+  };
+}
