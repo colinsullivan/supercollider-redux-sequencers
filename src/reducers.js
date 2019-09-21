@@ -46,6 +46,9 @@ export function create_default_sequencer (sequencerId, type) {
     midiOutPortName: false
   }
 }
+function create_timestamp () {
+  return (new Date().getTime()) / 1000.0;
+}
 export function sequencer (state, action) {
   var newState;
   if (action.payload && action.payload.sequencerId == state.sequencerId) {
@@ -89,7 +92,7 @@ export function sequencer (state, action) {
       case actionTypes.SEQUENCER_PROP_CHANGE_QUEUED:
         state = {
           ...state,
-          lastPropChangeQueuedAt: (new Date()).getTime(),
+          lastPropChangeQueuedAt: create_timestamp(),
           ...action.payload.props
         };
         break;
@@ -97,7 +100,7 @@ export function sequencer (state, action) {
       case actionTypes.SEQUENCER_PROP_CHANGED:
         state = {
           ...state,
-          lastPropChangeAt: (new Date()).getTime()
+          lastPropChangeAt: create_timestamp()
         };
         break;
 
