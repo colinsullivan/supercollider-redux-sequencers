@@ -1,6 +1,6 @@
 {
   "name": "awakening-sequencers",
-  "version": "0.8.12",
+  "version": "0.8.13",
   "description": "Components for building generative music systems involving sequenced events.",
   "main": "lib/index.js",
   "scripts": {
