@@ -42,11 +42,11 @@ AwakenedSequencer : Object {
     // if this sequencer uses buffers this is a reference to the
     // `BufferManager` instance
     bufManager,
-    clock = false;
+    clock = false,
+    params;
 
   *new {
     arg params;
-
     ^super.new.init(params);
   }
 
@@ -70,8 +70,9 @@ AwakenedSequencer : Object {
   }
 
   init {
-    arg params;
+    arg inParams;
 
+    params = inParams;
     store = params['store'];
     sequencerId = params['sequencerId'];
 
