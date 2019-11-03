@@ -11,7 +11,7 @@
  **/
 
 import * as actionTypes from "./actionTypes";
-import supercolliderRedux from "supercollider-redux";
+import SCRedux from "supercollider-redux";
 
 export var PLAYING_STATES = {
   STOPPED: "STOPPED",
@@ -115,7 +115,7 @@ export function sequencer(state, action) {
   }
 
   switch (action.type) {
-    case supercolliderRedux.actionTypes
+    case SCRedux.actionTypes
       .SUPERCOLLIDER_EVENTSTREAMPLAYER_NEXTBEAT:
       if (action.payload.id == state.sequencerId) {
         newState = {
@@ -128,7 +128,7 @@ export function sequencer(state, action) {
       }
       break;
 
-    case supercolliderRedux.actionTypes.SUPERCOLLIDER_EVENTSTREAMPLAYER_ENDED:
+    case SCRedux.actionTypes.SUPERCOLLIDER_EVENTSTREAMPLAYER_ENDED:
       if (
         action.payload.id == state.sequencerId &&
         // only care about an EventStreamPlayer ended message if we are

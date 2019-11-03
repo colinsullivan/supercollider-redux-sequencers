@@ -15,8 +15,8 @@
 import path from "path";
 import { createStore, combineReducers } from "redux";
 import sc from "supercolliderjs";
-import supercolliderRedux from "supercollider-redux";
-const SCStoreController = supercolliderRedux.SCStoreController;
+import SCRedux from "supercollider-redux";
+const SCStoreController = SCRedux.SCStoreController;
 import SCReduxSequencers from ".";
 
 function create_default_state() {
@@ -31,7 +31,7 @@ function create_default_state() {
 }
 
 var rootReducer = combineReducers({
-  [supercolliderRedux.DEFAULT_MOUNT_POINT]: supercolliderRedux.reducer,
+  [SCRedux.DEFAULT_MOUNT_POINT]: SCRedux.reducer,
   sequencers: SCReduxSequencers.reducer
 });
 

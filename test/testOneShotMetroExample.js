@@ -12,7 +12,7 @@
  **/
 
 import { createStore, combineReducers } from "redux";
-import supercolliderRedux from "supercollider-redux";
+import SCRedux from "supercollider-redux";
 import SCReduxSequencers from "../src/";
 import chai from "chai";
 const expect = chai.expect;
@@ -33,7 +33,7 @@ function create_default_state() {
   };
 }
 var rootReducer = combineReducers({
-  supercolliderRedux: supercolliderRedux.reducer,
+  SCRedux: SCRedux.reducer,
   sequencers: SCReduxSequencers.reducer
 });
 

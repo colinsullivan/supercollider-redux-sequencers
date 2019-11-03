@@ -1,12 +1,12 @@
 import sc from "supercolliderjs";
 
-import supercolliderRedux from "supercollider-redux";
+import SCRedux from "supercollider-redux";
 export function shouldStartSuperCollider() {
   it("should initialize properly", function(done) {
     var unsub = this.store.subscribe(() => {
       let state = this.store.getState();
       let scStateStoreReadyState =
-        state.supercolliderRedux.scStateStoreReadyState;
+        state.SCRedux.scStateStoreReadyState;
 
       if (scStateStoreReadyState === "READY") {
         unsub();
@@ -44,7 +44,7 @@ export function shouldStartSuperCollider() {
           )
           .then(() => {
             setTimeout(() => {
-              this.scStoreController = new supercolliderRedux.SCStoreController(
+              this.scStoreController = new SCRedux.SCStoreController(
                 this.store
               );
             }, 4000);
