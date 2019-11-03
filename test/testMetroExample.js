@@ -11,21 +11,21 @@
  *  @license    Licensed under the MIT license.
  **/
 
-import { createStore, combineReducers, applyMiddleware } from "redux"
-import logger from 'redux-logger'
-import supercolliderRedux from "supercollider-redux"
-import SCReduxSequencers from "../src/"
-import chai from "chai"
+import { createStore, combineReducers, applyMiddleware } from "redux";
+import logger from "redux-logger";
+import supercolliderRedux from "supercollider-redux";
+import SCReduxSequencers from "../src/";
+import chai from "chai";
 const expect = chai.expect;
 
-import { shouldExitSuperCollider, shouldStartSuperCollider } from './lib';
+import { shouldExitSuperCollider, shouldStartSuperCollider } from "./lib";
 
 const DEBUG = true;
 
-function create_default_state () {
+function create_default_state() {
   var metroInitialState = SCReduxSequencers.create_default_sequencer(
-    'metro',
-    'MetronomeSequencer'
+    "metro",
+    "MetronomeSequencer"
   );
   metroInitialState.numBeats = 4;
   metroInitialState.playQuant = [4, 0];
@@ -34,7 +34,7 @@ function create_default_state () {
   metroInitialState.arbitraryProperty = "Hello";
   return {
     sequencers: {
-      'metro': metroInitialState
+      metro: metroInitialState
     }
   };
 }
@@ -43,20 +43,23 @@ var rootReducer = combineReducers({
   sequencers: SCReduxSequencers.reducer
 });
 
-describe("Metronome Example", function () {
-
-  it('should init store', function () {
+describe("Metronome Example", function() {
+  it("should init store", function() {
     let middleware = [];
     if (DEBUG) {
       middleware = [logger];
     }
-    var store = createStore(rootReducer, create_default_state(), applyMiddleware(...middleware));
+    var store = createStore(
+      rootReducer,
+      create_default_state(),
+      applyMiddleware(...middleware)
+    );
     this.store = store;
   });
 
   shouldStartSuperCollider();
 
-  it("should become ready soon after SC started", function (done) {
+  it("should become ready soon after SC started", function(done) {
     setTimeout(() => {
       var metroReady = this.store.getState().sequencers.metro.isReady;
       expect(metroReady).to.be.true;
@@ -64,8 +67,8 @@ describe("Metronome Example", function () {
     }, 250);
   });
 
-  it("should start playing when queued", function (done) {
-    this.store.dispatch(SCReduxSequencers.actions.sequencerQueued('metro'));
+  it("should start playing when queued", function(done) {
+    this.store.dispatch(SCReduxSequencers.actions.sequencerQueued("metro"));
     var currentState = this.store.getState().sequencers.metro;
     var playingState = currentState.playingState;
     var unsub = this.store.subscribe(() => {
@@ -75,7 +78,7 @@ describe("Metronome Example", function () {
       if (newPlayingState != playingState) {
         expect(
           newState,
-          'object reference did not change, it is mutable'
+          "object reference did not change, it is mutable"
         ).to.not.equal(currentState);
         playingState = newPlayingState;
         if (playingState == SCReduxSequencers.PLAYING_STATES.PLAYING) {
@@ -86,7 +89,7 @@ describe("Metronome Example", function () {
     });
   });
 
-  it("should play for 4 beats then queue stop", function (done) {
+  it("should play for 4 beats then queue stop", function(done) {
     var beat = this.store.getState().sequencers.metro.beat;
     var unsub = this.store.subscribe(() => {
       let state = this.store.getState();
@@ -96,7 +99,7 @@ describe("Metronome Example", function () {
         beat = newBeat;
         if (beat >= 8) {
           this.store.dispatch(
-            SCReduxSequencers.actions.sequencerStopQueued('metro')
+            SCReduxSequencers.actions.sequencerStopQueued("metro")
           );
           unsub();
           done();
@@ -105,16 +108,15 @@ describe("Metronome Example", function () {
     });
   });
 
-  it("should have queued stop", function (done) {
+  it("should have queued stop", function(done) {
     var state = this.store.getState();
-    expect(
-      state.sequencers.metro.playingState
-    ).to.equal(SCReduxSequencers.PLAYING_STATES.STOP_QUEUED);
+    expect(state.sequencers.metro.playingState).to.equal(
+      SCReduxSequencers.PLAYING_STATES.STOP_QUEUED
+    );
     done();
   });
 
-  it("should actually stop playing", function (done) {
-    
+  it("should actually stop playing", function(done) {
     var playingState = this.store.getState().sequencers.metro.playingState;
     var unsub = this.store.subscribe(() => {
       let state = this.store.getState();
@@ -122,26 +124,25 @@ describe("Metronome Example", function () {
 
       if (newPlayingState != playingState) {
         playingState = newPlayingState;
-        expect(
-          state.sequencers.metro.playingState
-        ).to.equal(SCReduxSequencers.PLAYING_STATES.STOPPED);
+        expect(state.sequencers.metro.playingState).to.equal(
+          SCReduxSequencers.PLAYING_STATES.STOPPED
+        );
         unsub();
         done();
       }
     });
   });
 
-
-  it('should queue a change in parameter', function (done) {
+  it("should queue a change in parameter", function(done) {
     const prevState = this.store.getState().sequencers.metro;
-    const newPropValue = 'hello2';
+    const newPropValue = "hello2";
     var unsub = this.store.subscribe(() => {
       const state = this.store.getState().sequencers.metro;
 
       // lastPropChangeQueuedAt should update
-      expect(
-        state.lastPropChangeQueuedAt
-      ).to.not.equal(prevState.lastPropChangeQueuedAt);
+      expect(state.lastPropChangeQueuedAt).to.not.equal(
+        prevState.lastPropChangeQueuedAt
+      );
 
       // property should be set immediately
       expect(state.arbitraryProperty).to.equal(newPropValue);
@@ -151,34 +152,30 @@ describe("Metronome Example", function () {
     });
 
     this.store.dispatch(
-      SCReduxSequencers.actions.sequencerPropChangeQueued('metro', {
+      SCReduxSequencers.actions.sequencerPropChangeQueued("metro", {
         arbitraryProperty: newPropValue
       })
     );
-
   });
 
-  it('should fire a propChanged after some time', function (done) {
+  it("should fire a propChanged after some time", function(done) {
     const prevState = this.store.getState().sequencers.metro;
     var unsub = this.store.subscribe(() => {
       const state = this.store.getState().sequencers.metro;
 
       if (state !== prevState) {
-        expect(
-          state.lastPropChangeAt
-        ).to.not.equal(prevState.lastPropChangeAt);
+        expect(state.lastPropChangeAt).to.not.equal(prevState.lastPropChangeAt);
 
         unsub();
         done();
       }
-
-    })
+    });
   });
 
-  it('should queue a change in parameter multiple times', function (done) {
+  it("should queue a change in parameter multiple times", function(done) {
     let prevState = this.store.getState().sequencers.metro;
-    let newPropValue = 'hello3';
-    const finalPropValue = 'hello5';
+    let newPropValue = "hello3";
+    const finalPropValue = "hello5";
     var unsub = this.store.subscribe(() => {
       const state = this.store.getState().sequencers.metro;
 
@@ -189,24 +186,22 @@ describe("Metronome Example", function () {
 
         if (newPropValue !== finalPropValue) {
           // lastPropChangeQueuedAt should update
-          expect(
-            state.lastPropChangeQueuedAt
-          ).to.not.equal(prevState.lastPropChangeQueuedAt);
+          expect(state.lastPropChangeQueuedAt).to.not.equal(
+            prevState.lastPropChangeQueuedAt
+          );
 
           // lastPropChangeAt should not update
-          expect(
-            state.lastPropChangeAt
-          ).to.equal(prevState.lastPropChangeAt);
+          expect(state.lastPropChangeAt).to.equal(prevState.lastPropChangeAt);
         } else {
           // lastPropChangeQueuedAt should update once
-          if (state.lastPropChangeQueuedAt !== prevState.lastPropChangeQueuedAt) {
-            expect(
-              state.lastPropChangeAt
-            ).to.equal(prevState.lastPropChangeAt);
+          if (
+            state.lastPropChangeQueuedAt !== prevState.lastPropChangeQueuedAt
+          ) {
+            expect(state.lastPropChangeAt).to.equal(prevState.lastPropChangeAt);
           } else {
-            expect(
-              state.lastPropChangeAt
-            ).to.not.equal(prevState.lastPropChangeAt);
+            expect(state.lastPropChangeAt).to.not.equal(
+              prevState.lastPropChangeAt
+            );
             const finalLastPropChangeAt = state.lastPropChangeAt;
             unsub();
             // expect no more changes
@@ -219,41 +214,35 @@ describe("Metronome Example", function () {
             }, 4000);
           }
         }
-
       }
 
       prevState = this.store.getState().sequencers.metro;
     });
-    
+
     this.store.dispatch(
-      SCReduxSequencers.actions.sequencerPropChangeQueued('metro', {
+      SCReduxSequencers.actions.sequencerPropChangeQueued("metro", {
         arbitraryProperty: newPropValue
       })
     );
 
     setTimeout(() => {
-      
-      newPropValue = 'hello4';
+      newPropValue = "hello4";
       this.store.dispatch(
-        SCReduxSequencers.actions.sequencerPropChangeQueued('metro', {
+        SCReduxSequencers.actions.sequencerPropChangeQueued("metro", {
           arbitraryProperty: newPropValue
         })
       );
 
       setTimeout(() => {
-        newPropValue = 'hello5';
+        newPropValue = "hello5";
         this.store.dispatch(
-          SCReduxSequencers.actions.sequencerPropChangeQueued('metro', {
+          SCReduxSequencers.actions.sequencerPropChangeQueued("metro", {
             arbitraryProperty: newPropValue
           })
         );
       }, 1000);
-
     }, 1000);
-    
   });
 
-
   shouldExitSuperCollider();
-
 });

@@ -12,21 +12,19 @@
  *  @license    Licensed under the MIT license.
  **/
 
-
-
-import path from 'path'
-import { createStore, combineReducers } from "redux"
-import sc from 'supercolliderjs';
-import supercolliderRedux from "supercollider-redux"
+import path from "path";
+import { createStore, combineReducers } from "redux";
+import sc from "supercolliderjs";
+import supercolliderRedux from "supercollider-redux";
 const SCStoreController = supercolliderRedux.SCStoreController;
-import SCReduxSequencers from "."
+import SCReduxSequencers from ".";
 
-function create_default_state () {
+function create_default_state() {
   return {
     sequencers: {
-      'sampler': SCReduxSequencers.create_default_sequencer(
-        'sampler',
-        'SamplerExampleSequencer'
+      sampler: SCReduxSequencers.create_default_sequencer(
+        "sampler",
+        "SamplerExampleSequencer"
       )
     }
   };
@@ -38,8 +36,8 @@ var rootReducer = combineReducers({
 });
 
 var store = createStore(rootReducer, create_default_state());
-sc.lang.boot().then((sclang) => {
-  sclang.interpret('API.mountDuplexOSC();').then(() => {
+sc.lang.boot().then(sclang => {
+  sclang.interpret("API.mountDuplexOSC();").then(() => {
     var scStoreController = new SCStoreController(store);
 
     let isReady = false;
@@ -50,7 +48,7 @@ sc.lang.boot().then((sclang) => {
       if (newIsReady != isReady) {
         console.log("Queueing...");
         isReady = newIsReady;
-        store.dispatch(SCReduxSequencers.actions.sequencerQueued('sampler'));
+        store.dispatch(SCReduxSequencers.actions.sequencerQueued("sampler"));
       }
     });
 
@@ -69,7 +67,7 @@ sc.lang.boot().then((sclang) => {
   };
 
   bufManager = BufferManager.new((
-    rootDir: "${path.resolve('./')}",
+    rootDir: "${path.resolve("./")}",
     doneLoadingCallback: samples_done_loading
   ));
 
@@ -87,8 +85,7 @@ sc.lang.boot().then((sclang) => {
     }, 1000);
 
     setTimeout(() => {
-      store.dispatch(SCReduxSequencers.actions.sequencerStopQueued('sampler'));
+      store.dispatch(SCReduxSequencers.actions.sequencerStopQueued("sampler"));
     }, 10000);
-
   });
 });

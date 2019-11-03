@@ -12,20 +12,18 @@
  *  @license    Licensed under the MIT license.
  **/
 
-
-
-import { createStore, combineReducers } from "redux"
-import sc from 'supercolliderjs';
-import supercolliderRedux from "supercollider-redux"
+import { createStore, combineReducers } from "redux";
+import sc from "supercolliderjs";
+import supercolliderRedux from "supercollider-redux";
 const SCStoreController = supercolliderRedux.SCStoreController;
-import SCReduxSequencers from "."
+import SCReduxSequencers from ".";
 
-function create_default_state () {
+function create_default_state() {
   return {
     sequencers: {
-      'metro': SCReduxSequencers.create_default_sequencer(
-        'metro',
-        'MetronomeSequencer'
+      metro: SCReduxSequencers.create_default_sequencer(
+        "metro",
+        "MetronomeSequencer"
       )
     }
   };
@@ -37,11 +35,11 @@ var rootReducer = combineReducers({
 });
 
 var store = createStore(rootReducer, create_default_state());
-sc.lang.boot().then((lang) => {
+sc.lang.boot().then(lang => {
   var sclang = lang;
-  sclang.interpret('API.mountDuplexOSC();').then(() => {
+  sclang.interpret("API.mountDuplexOSC();").then(() => {
     var scStoreController = new SCStoreController(store);
-    
+
     let metroReady = false;
     store.subscribe(() => {
       let state = store.getState();
@@ -50,7 +48,7 @@ sc.lang.boot().then((lang) => {
       if (newMetroReady != metroReady) {
         console.log("Queueing metronome...");
         metroReady = newMetroReady;
-        store.dispatch(SCReduxSequencers.actions.sequencerQueued('metro'));
+        store.dispatch(SCReduxSequencers.actions.sequencerQueued("metro"));
       }
     });
 
@@ -73,7 +71,7 @@ sc.lang.boot().then((lang) => {
     }, 1000);
 
     setTimeout(() => {
-      store.dispatch(SCReduxSequencers.actions.sequencerStopQueued('metro'));
+      store.dispatch(SCReduxSequencers.actions.sequencerStopQueued("metro"));
     }, 10000);
   });
 });
