@@ -1,7 +1,7 @@
 {
-  "name": "awakening-sequencers",
+  "name": "supercollider-redux-sequencers",
   "version": "0.8.13",
-  "description": "Components for building generative music systems involving sequenced events.",
+  "description": "Components for building generative music systems using JavaScript and SuperCollider.",
   "main": "lib/index.js",
   "scripts": {
     "start_example": "babel-node src/example.js",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/colinsullivan/awakening-sequencers.git"
+    "url": "git+https://github.com/colinsullivan/supercollider-redux-sequencers.git"
   },
   "keywords": [
     "node.js",
@@ -22,9 +22,9 @@
   "author": "Colin Sullivan <colin [at] colin-sullivan.net>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/colinsullivan/awakening-sequencers/issues"
+    "url": "https://github.com/colinsullivan/supercollider-redux-sequencers/issues"
   },
-  "homepage": "https://github.com/colinsullivan/awakening-sequencers#readme",
+  "homepage": "https://github.com/colinsullivan/supercollider-redux-sequencers#readme",
   "dependencies": {
     "lodash": "^4.17.11",
     "midi": "^0.9.5",

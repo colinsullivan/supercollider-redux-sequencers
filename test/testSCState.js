@@ -12,11 +12,11 @@ import { createStore, combineReducers } from "redux"
 import { expect } from 'chai';
 
 import supercolliderRedux from 'supercollider-redux';
-import awakeningSequencers from "../src/"
+import SCReduxSequencers from "../src/"
 import { getSCState } from '../src/selectors';
 
 function create_default_state () {
-  var metroInitialState = awakeningSequencers.create_default_sequencer(
+  var metroInitialState = SCReduxSequencers.create_default_sequencer(
     'metro',
     'MetronomeSequencer'
   );
@@ -29,7 +29,7 @@ function create_default_state () {
   };
 }
 var rootReducer = combineReducers({
-  sequencers: awakeningSequencers.reducer
+  sequencers: SCReduxSequencers.reducer
 });
 
 describe('SCReplicaState', function () {
@@ -80,7 +80,7 @@ describe('SCReplicaState', function () {
 
     // queue sequencer
     store.dispatch(
-      awakeningSequencers.actions.sequencerQueued(
+      SCReduxSequencers.actions.sequencerQueued(
         seqState.sequencerId
       )
     );
@@ -98,7 +98,7 @@ describe('SCReplicaState', function () {
     prevSCSeqState = scSeqState;
 
     store.dispatch(
-      awakeningSequencers.actions.sequencerPlaying(
+      SCReduxSequencers.actions.sequencerPlaying(
         seqState.sequencerId
       )
     );

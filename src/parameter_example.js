@@ -18,10 +18,10 @@ import { createStore, combineReducers } from "redux"
 import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
 const SCStoreController = supercolliderRedux.SCStoreController;
-import awakeningSequencers from "."
+import SCReduxSequencers from "."
 
 function create_default_state () {
-  var paramExampleSeq = awakeningSequencers.create_default_sequencer(
+  var paramExampleSeq = SCReduxSequencers.create_default_sequencer(
     'paramexample',
     'ParamExampleSequencer'
   );
@@ -37,7 +37,7 @@ var rootReducer = combineReducers({
   [supercolliderRedux.DEFAULT_MOUNT_POINT]: supercolliderRedux.reducer,
   sequencers: function (state, action) {
 
-    state = awakeningSequencers.reducer(state, action);
+    state = SCReduxSequencers.reducer(state, action);
 
     switch (action.type) {
       case "PARAM_EXAMPLE_LEGATO":
@@ -71,7 +71,7 @@ sc.lang.boot().then((sclang) => {
       if (newIsReady != paramexampleReady) {
         console.log("Queueing metronome...");
         paramexampleReady = newIsReady;
-        store.dispatch(awakeningSequencers.actions.sequencerQueued('paramexample'));
+        store.dispatch(SCReduxSequencers.actions.sequencerQueued('paramexample'));
       }
     });
 
@@ -82,7 +82,7 @@ sc.lang.boot().then((sclang) => {
 
     s.waitForBoot({
       store = StateStore.getInstance();
-      sequencerFactory = AwakenedSequencerFactory.getInstance();
+      sequencerFactory = SCReduxSequencerFactory.getInstance();
       sequencerFactory.setStore(store);
     })
     `);
@@ -103,7 +103,7 @@ sc.lang.boot().then((sclang) => {
         });
 
         setTimeout(() => {
-          store.dispatch(awakeningSequencers.actions.sequencerStopQueued('paramexample'));
+          store.dispatch(SCReduxSequencers.actions.sequencerStopQueued('paramexample'));
         }, 6000);
 
       }, 6000);

@@ -31,7 +31,7 @@ export function shouldStartSuperCollider () {
         clockController = ReduxTempoClockController.new((
           store: store
         ));
-        sequencerFactory = AwakenedSequencerFactory.getInstance();
+        sequencerFactory = SCReduxSequencerFactory.getInstance();
         sequencerFactory.setClockController(clockController);
         sequencerFactory.setStore(store);
       });

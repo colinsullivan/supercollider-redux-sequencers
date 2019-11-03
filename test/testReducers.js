@@ -11,13 +11,13 @@
 import { createStore, combineReducers } from "redux";
 import { expect } from "chai";
 
-import awakeningSequencers from "../src/";
+import SCReduxSequencers from "../src/";
 
-const { actionTypes } = awakeningSequencers;
+const { actionTypes } = SCReduxSequencers;
 
 function create_default_state() {
   var metroInitialState = {
-    ...awakeningSequencers.create_default_sequencer(
+    ...SCReduxSequencers.create_default_sequencer(
       "metro",
       "MetronomeSequencer"
     ),
@@ -25,7 +25,7 @@ function create_default_state() {
   };
   metroInitialState.numBeats = 4;
   metroInitialState.stopQuant = [4, 4];
-  var metroTwoInitialState = awakeningSequencers.create_default_sequencer(
+  var metroTwoInitialState = SCReduxSequencers.create_default_sequencer(
     "metro_two",
     "MetronomeSequencer"
   );
@@ -40,7 +40,7 @@ function create_default_state() {
 }
 
 var rootReducer = combineReducers({
-  sequencers: awakeningSequencers.reducer
+  sequencers: SCReduxSequencers.reducer
 });
 
 describe("reducers", function() {
@@ -57,7 +57,7 @@ describe("reducers", function() {
   it("should change sequencers list after sequencer is queued", function() {
     prevState = state;
 
-    store.dispatch(awakeningSequencers.actions.sequencerQueued("metro"));
+    store.dispatch(SCReduxSequencers.actions.sequencerQueued("metro"));
 
     state = store.getState();
 
@@ -79,7 +79,7 @@ describe("reducers", function() {
 
     expect(prevState.sequencers.metro.myParam).to.equal('one');
 
-    store.dispatch(awakeningSequencers.actions.sequencerPropChangeQueued('metro', {
+    store.dispatch(SCReduxSequencers.actions.sequencerPropChangeQueued('metro', {
       myParam: 'two'
     }));
 

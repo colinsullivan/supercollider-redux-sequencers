@@ -13,7 +13,7 @@
 import { createStore, combineReducers, applyMiddleware } from "redux"
 import logger from 'redux-logger'
 import supercolliderRedux from "supercollider-redux"
-import awakeningSequencers from "../src/"
+import SCReduxSequencers from "../src/"
 import chai from "chai"
 const expect = chai.expect;
 
@@ -22,7 +22,7 @@ import { shouldStartSuperCollider, shouldExitSuperCollider } from './lib';
 const DEBUG = false;
 
 function create_default_state () {
-  var metroInitialState = awakeningSequencers.create_default_sequencer(
+  var metroInitialState = SCReduxSequencers.create_default_sequencer(
     'metro',
     'LongMetronomeSequencer'
   );
@@ -30,7 +30,7 @@ function create_default_state () {
   metroInitialState.playQuant = [4, 0];
   metroInitialState.stopQuant = [4, 0];
 
-  var stopShorterMetro = awakeningSequencers.create_default_sequencer(
+  var stopShorterMetro = SCReduxSequencers.create_default_sequencer(
     'stopShorterMetro',
     'LongMetronomeSequencer'
   );
@@ -46,7 +46,7 @@ function create_default_state () {
 }
 var rootReducer = combineReducers({
   supercolliderRedux: supercolliderRedux.reducer,
-  sequencers: awakeningSequencers.reducer
+  sequencers: SCReduxSequencers.reducer
 });
 
 describe("Metronome Stopping Example", function () {
@@ -70,7 +70,7 @@ describe("Metronome Stopping Example", function () {
   });
 
   it("should start playing when queued", function (done) {
-    this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+    this.store.dispatch(SCReduxSequencers.actions.sequencerQueued('metro'));
     var currentState = this.store.getState().sequencers.metro;
     var playingState = currentState.playingState;
     var unsub = this.store.subscribe(() => {
@@ -83,7 +83,7 @@ describe("Metronome Stopping Example", function () {
           'object reference did not change, it is mutable'
         ).to.not.equal(currentState);
         playingState = newPlayingState;
-        if (playingState == awakeningSequencers.PLAYING_STATES.PLAYING) {
+        if (playingState == SCReduxSequencers.PLAYING_STATES.PLAYING) {
           unsub();
           done();
         }
@@ -101,7 +101,7 @@ describe("Metronome Stopping Example", function () {
         beat = newBeat;
         if (beat >= 8) {
           this.store.dispatch(
-            awakeningSequencers.actions.sequencerStopQueued('metro')
+            SCReduxSequencers.actions.sequencerStopQueued('metro')
           );
           unsub();
           done();
@@ -114,7 +114,7 @@ describe("Metronome Stopping Example", function () {
     var state = this.store.getState();
     expect(
       state.sequencers.metro.playingState
-    ).to.equal(awakeningSequencers.PLAYING_STATES.STOP_QUEUED);
+    ).to.equal(SCReduxSequencers.PLAYING_STATES.STOP_QUEUED);
     done();
   });
 
@@ -129,7 +129,7 @@ describe("Metronome Stopping Example", function () {
         playingState = newPlayingState;
         expect(
           state.sequencers.metro.playingState
-        ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
+        ).to.equal(SCReduxSequencers.PLAYING_STATES.STOPPED);
         unsub();
         done();
       }
@@ -137,18 +137,18 @@ describe("Metronome Stopping Example", function () {
   });
 
   it('should queue again', function () {
-    this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+    this.store.dispatch(SCReduxSequencers.actions.sequencerQueued('metro'));
     let state = this.store.getState();
     expect(
       state.sequencers.metro.playingState
-    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
+    ).to.equal(SCReduxSequencers.PLAYING_STATES.QUEUED);
   });
 
   it('should switch directly to playing even though EventStreamPlayer sends stragglers', function (done) {
     var playingState = this.store.getState().sequencers.metro.playingState;
     expect(
       playingState
-    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
+    ).to.equal(SCReduxSequencers.PLAYING_STATES.QUEUED);
     var unsub = this.store.subscribe(() => {
       let state = this.store.getState();
       let newPlayingState = state.sequencers.metro.playingState;
@@ -157,7 +157,7 @@ describe("Metronome Stopping Example", function () {
         playingState = newPlayingState;
         expect(
           state.sequencers.metro.playingState
-        ).to.equal(awakeningSequencers.PLAYING_STATES.PLAYING);
+        ).to.equal(SCReduxSequencers.PLAYING_STATES.PLAYING);
 
         unsub();
         done();
@@ -169,12 +169,12 @@ describe("Metronome Stopping Example", function () {
     var state = this.store.getState();
 
     this.store.dispatch(
-      awakeningSequencers.actions.sequencerQueued('stopShorterMetro')
+      SCReduxSequencers.actions.sequencerQueued('stopShorterMetro')
     );
     state = this.store.getState()
     expect(
       state.sequencers.stopShorterMetro.playingState
-    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
+    ).to.equal(SCReduxSequencers.PLAYING_STATES.QUEUED);
 
     var unsub = this.store.subscribe(() => {
       var newState = this.store.getState();
@@ -182,7 +182,7 @@ describe("Metronome Stopping Example", function () {
       if (newState.sequencers.stopShorterMetro.playingState !== state.sequencers.stopShorterMetro.playingState) {
         expect(
           newState.sequencers.stopShorterMetro.playingState
-        ).to.equal(awakeningSequencers.PLAYING_STATES.PLAYING);
+        ).to.equal(SCReduxSequencers.PLAYING_STATES.PLAYING);
 
         unsub();
         done();
@@ -193,37 +193,37 @@ describe("Metronome Stopping Example", function () {
   it('should immediately STOP_QUEUED when STOP_QUEUED', function () {
     var state = this.store.getState();
     this.store.dispatch(
-      awakeningSequencers.actions.sequencerStopQueued('stopShorterMetro')
+      SCReduxSequencers.actions.sequencerStopQueued('stopShorterMetro')
     );
     state = this.store.getState()
     expect(
       state.sequencers.stopShorterMetro.playingState
-    ).to.equal(awakeningSequencers.PLAYING_STATES.STOP_QUEUED);
+    ).to.equal(SCReduxSequencers.PLAYING_STATES.STOP_QUEUED);
   });
 
   it('should go from STOP_QUEUED TO QUEUED when queued', function () {
     var state;
     this.store.dispatch(
-      awakeningSequencers.actions.sequencerQueued('stopShorterMetro')
+      SCReduxSequencers.actions.sequencerQueued('stopShorterMetro')
     );
     state = this.store.getState()
     expect(
       state.sequencers.stopShorterMetro.playingState
-    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
+    ).to.equal(SCReduxSequencers.PLAYING_STATES.QUEUED);
   });
 
   it('should remain queued if a straggler stop message comes in', function () {
     let state = this.store.getState();
     expect(
       state.sequencers.stopShorterMetro.playingState
-    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
+    ).to.equal(SCReduxSequencers.PLAYING_STATES.QUEUED);
     this.store.dispatch(
-      awakeningSequencers.actions.sequencerStopped('stopShorterMetro')
+      SCReduxSequencers.actions.sequencerStopped('stopShorterMetro')
     );
     state = this.store.getState();
     expect(
       state.sequencers.stopShorterMetro.playingState
-    ).to.equal(awakeningSequencers.PLAYING_STATES.QUEUED);
+    ).to.equal(SCReduxSequencers.PLAYING_STATES.QUEUED);
   });
 
   shouldExitSuperCollider();

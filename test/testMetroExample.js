@@ -1,7 +1,7 @@
 /**
  *  @file       testMetroExample.js
  *
- *	@desc       Testing the AwakeningSequencer through the MetronomeSequencer
+ *	@desc       Testing the SCReduxSequencer through the MetronomeSequencer
  *	example.  Also see `testMetroSequencer.sc` which is the corresponding
  *	SC code.
  *
@@ -14,7 +14,7 @@
 import { createStore, combineReducers, applyMiddleware } from "redux"
 import logger from 'redux-logger'
 import supercolliderRedux from "supercollider-redux"
-import awakeningSequencers from "../src/"
+import SCReduxSequencers from "../src/"
 import chai from "chai"
 const expect = chai.expect;
 
@@ -23,7 +23,7 @@ import { shouldExitSuperCollider, shouldStartSuperCollider } from './lib';
 const DEBUG = true;
 
 function create_default_state () {
-  var metroInitialState = awakeningSequencers.create_default_sequencer(
+  var metroInitialState = SCReduxSequencers.create_default_sequencer(
     'metro',
     'MetronomeSequencer'
   );
@@ -40,7 +40,7 @@ function create_default_state () {
 }
 var rootReducer = combineReducers({
   supercolliderRedux: supercolliderRedux.reducer,
-  sequencers: awakeningSequencers.reducer
+  sequencers: SCReduxSequencers.reducer
 });
 
 describe("Metronome Example", function () {
@@ -65,7 +65,7 @@ describe("Metronome Example", function () {
   });
 
   it("should start playing when queued", function (done) {
-    this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+    this.store.dispatch(SCReduxSequencers.actions.sequencerQueued('metro'));
     var currentState = this.store.getState().sequencers.metro;
     var playingState = currentState.playingState;
     var unsub = this.store.subscribe(() => {
@@ -78,7 +78,7 @@ describe("Metronome Example", function () {
           'object reference did not change, it is mutable'
         ).to.not.equal(currentState);
         playingState = newPlayingState;
-        if (playingState == awakeningSequencers.PLAYING_STATES.PLAYING) {
+        if (playingState == SCReduxSequencers.PLAYING_STATES.PLAYING) {
           unsub();
           done();
         }
@@ -96,7 +96,7 @@ describe("Metronome Example", function () {
         beat = newBeat;
         if (beat >= 8) {
           this.store.dispatch(
-            awakeningSequencers.actions.sequencerStopQueued('metro')
+            SCReduxSequencers.actions.sequencerStopQueued('metro')
           );
           unsub();
           done();
@@ -109,7 +109,7 @@ describe("Metronome Example", function () {
     var state = this.store.getState();
     expect(
       state.sequencers.metro.playingState
-    ).to.equal(awakeningSequencers.PLAYING_STATES.STOP_QUEUED);
+    ).to.equal(SCReduxSequencers.PLAYING_STATES.STOP_QUEUED);
     done();
   });
 
@@ -124,7 +124,7 @@ describe("Metronome Example", function () {
         playingState = newPlayingState;
         expect(
           state.sequencers.metro.playingState
-        ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
+        ).to.equal(SCReduxSequencers.PLAYING_STATES.STOPPED);
         unsub();
         done();
       }
@@ -151,7 +151,7 @@ describe("Metronome Example", function () {
     });
 
     this.store.dispatch(
-      awakeningSequencers.actions.sequencerPropChangeQueued('metro', {
+      SCReduxSequencers.actions.sequencerPropChangeQueued('metro', {
         arbitraryProperty: newPropValue
       })
     );
@@ -226,7 +226,7 @@ describe("Metronome Example", function () {
     });
     
     this.store.dispatch(
-      awakeningSequencers.actions.sequencerPropChangeQueued('metro', {
+      SCReduxSequencers.actions.sequencerPropChangeQueued('metro', {
         arbitraryProperty: newPropValue
       })
     );
@@ -235,7 +235,7 @@ describe("Metronome Example", function () {
       
       newPropValue = 'hello4';
       this.store.dispatch(
-        awakeningSequencers.actions.sequencerPropChangeQueued('metro', {
+        SCReduxSequencers.actions.sequencerPropChangeQueued('metro', {
           arbitraryProperty: newPropValue
         })
       );
@@ -243,7 +243,7 @@ describe("Metronome Example", function () {
       setTimeout(() => {
         newPropValue = 'hello5';
         this.store.dispatch(
-          awakeningSequencers.actions.sequencerPropChangeQueued('metro', {
+          SCReduxSequencers.actions.sequencerPropChangeQueued('metro', {
             arbitraryProperty: newPropValue
           })
         );

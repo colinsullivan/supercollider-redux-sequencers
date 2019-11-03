@@ -19,12 +19,12 @@ import { createStore, combineReducers } from "redux"
 import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
 const SCStoreController = supercolliderRedux.SCStoreController;
-import awakeningSequencers from "."
+import SCReduxSequencers from "."
 
 function create_default_state () {
   return {
     sequencers: {
-      'sampler': awakeningSequencers.create_default_sequencer(
+      'sampler': SCReduxSequencers.create_default_sequencer(
         'sampler',
         'SamplerExampleSequencer'
       )
@@ -34,7 +34,7 @@ function create_default_state () {
 
 var rootReducer = combineReducers({
   [supercolliderRedux.DEFAULT_MOUNT_POINT]: supercolliderRedux.reducer,
-  sequencers: awakeningSequencers.reducer
+  sequencers: SCReduxSequencers.reducer
 });
 
 var store = createStore(rootReducer, create_default_state());
@@ -50,7 +50,7 @@ sc.lang.boot().then((sclang) => {
       if (newIsReady != isReady) {
         console.log("Queueing...");
         isReady = newIsReady;
-        store.dispatch(awakeningSequencers.actions.sequencerQueued('sampler'));
+        store.dispatch(SCReduxSequencers.actions.sequencerQueued('sampler'));
       }
     });
 
@@ -63,7 +63,7 @@ sc.lang.boot().then((sclang) => {
     "Samples done loading!".postln();
 
     store = StateStore.getInstance();
-    sequencerFactory = AwakenedSequencerFactory.getInstance();
+    sequencerFactory = SCReduxSequencerFactory.getInstance();
     sequencerFactory.setBufManager(bufManager);
     sequencerFactory.setStore(store);
   };
@@ -87,7 +87,7 @@ sc.lang.boot().then((sclang) => {
     }, 1000);
 
     setTimeout(() => {
-      store.dispatch(awakeningSequencers.actions.sequencerStopQueued('sampler'));
+      store.dispatch(SCReduxSequencers.actions.sequencerStopQueued('sampler'));
     }, 10000);
 
   });

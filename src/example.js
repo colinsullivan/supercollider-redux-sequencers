@@ -18,12 +18,12 @@ import { createStore, combineReducers } from "redux"
 import sc from 'supercolliderjs';
 import supercolliderRedux from "supercollider-redux"
 const SCStoreController = supercolliderRedux.SCStoreController;
-import awakeningSequencers from "."
+import SCReduxSequencers from "."
 
 function create_default_state () {
   return {
     sequencers: {
-      'metro': awakeningSequencers.create_default_sequencer(
+      'metro': SCReduxSequencers.create_default_sequencer(
         'metro',
         'MetronomeSequencer'
       )
@@ -33,7 +33,7 @@ function create_default_state () {
 
 var rootReducer = combineReducers({
   [supercolliderRedux.DEFAULT_MOUNT_POINT]: supercolliderRedux.reducer,
-  sequencers: awakeningSequencers.reducer
+  sequencers: SCReduxSequencers.reducer
 });
 
 var store = createStore(rootReducer, create_default_state());
@@ -50,7 +50,7 @@ sc.lang.boot().then((lang) => {
       if (newMetroReady != metroReady) {
         console.log("Queueing metronome...");
         metroReady = newMetroReady;
-        store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+        store.dispatch(SCReduxSequencers.actions.sequencerQueued('metro'));
       }
     });
 
@@ -61,7 +61,7 @@ sc.lang.boot().then((lang) => {
 
     s.waitForBoot({
       store = StateStore.getInstance();
-      sequencerFactory = AwakenedSequencerFactory.getInstance();
+      sequencerFactory = SCReduxSequencerFactory.getInstance();
       sequencerFactory.setStore(store);
     })
 
@@ -73,7 +73,7 @@ sc.lang.boot().then((lang) => {
     }, 1000);
 
     setTimeout(() => {
-      store.dispatch(awakeningSequencers.actions.sequencerStopQueued('metro'));
+      store.dispatch(SCReduxSequencers.actions.sequencerStopQueued('metro'));
     }, 10000);
   });
 });

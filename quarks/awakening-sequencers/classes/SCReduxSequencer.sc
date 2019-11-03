@@ -1,5 +1,5 @@
 /**
- *  @file       AwakenedSequencer.sc
+ *  @file       SCReduxSequencer.sc
  *
  *
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
@@ -9,13 +9,13 @@
  **/
 
 /**
- *  @class        AwakenedSequencer
+ *  @class        SCReduxSequencer
  *
  *  @classdesc    A framework for playing a stream in sync with a clock.
  *  Subclasses handle setting up the stream and patch that the stream is
  *  playing.
  **/
-AwakenedSequencer : Object {
+SCReduxSequencer : Object {
 
   // reference to our state store
   var store,
@@ -112,7 +112,7 @@ AwakenedSequencer : Object {
   initAudioOut {
     arg parentOutputChannel;
     ^MixerChannel.new(
-      "AwakenedSequencer[" ++ currentState.sequencerId ++ "]" ,
+      "SCReduxSequencer[" ++ currentState.sequencerId ++ "]" ,
       Server.default,
       2, 2,
       outbus: outputBus
@@ -148,7 +148,7 @@ AwakenedSequencer : Object {
         if (currentState.playQuant != false, {
           if (currentState.stopQuant != false, {
             store.dispatch((
-              type: "AWAKENING-SEQUENCERS-SEQ_READY",
+              type: SCReduxSequencers.actionTypes['SEQUENCER_READY'],
               payload: (
                 sequencerId: sequencerId
               )
@@ -233,7 +233,7 @@ AwakenedSequencer : Object {
     streamPlayer = ReduxEventStreamPlayer.new(
       store,
       sequencerId,
-      // this AwakenedSequencer's stream
+      // this SCReduxSequencer's stream
       stream: stream
     );
 
@@ -268,7 +268,7 @@ AwakenedSequencer : Object {
         });
         // inform state store we've started playing
         store.dispatch((
-          type: "AWAKENING-SEQUENCERS-SEQ_PLAYING",
+          type: SCReduxSequencers.actionTypes['SEQUENCER_PLAYING'],
           payload: (
             sequencerId: sequencerId
           )
@@ -283,7 +283,7 @@ AwakenedSequencer : Object {
       if (currentState.playingState == "STOP_QUEUED", {
         this.stop();
         store.dispatch((
-          type: "AWAKENING-SEQUENCERS-SEQ_STOPPED",
+          type: SCReduxSequencers.actionTypes['SEQUENCER_STOPPED'],
           payload: (
             sequencerId: sequencerId
           )
@@ -305,7 +305,7 @@ AwakenedSequencer : Object {
     clock.play({
       if (currentState.lastPropChangeQueuedAt == lastPropChangeQueuedAt, {
         store.dispatch((
-          type: "AWAKENING-SEQUENCERS-SEQUENCER_PROP_CHANGED",
+          type: SCReduxSequencers.actionTypes['SEQUENCER_PROP_CHANGED'],
           payload: (
             sequencerId: sequencerId
           )

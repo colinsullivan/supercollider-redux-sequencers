@@ -1,4 +1,4 @@
-OutboardExampleSequencer : AwakenedSequencer {
+OutboardExampleSequencer : SCReduxSequencer {
   var pat,
     patStream,
     patchSynth;

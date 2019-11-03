@@ -1,4 +1,4 @@
-MetronomeSequencer : AwakenedSequencer {
+MetronomeSequencer : SCReduxSequencer {
   var pat,
     patStream,
     patchSynth;

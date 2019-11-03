@@ -14,7 +14,7 @@
  *
  *  @classdesc    A sequencer that doesn't repeat
  */
-OneShotMetronomeSequencer : AwakenedSequencer {
+OneShotMetronomeSequencer : SCReduxSequencer {
   var pat,
     patStream,
     patchSynth;

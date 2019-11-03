@@ -1,4 +1,4 @@
-SamplerExampleSequencer : AwakenedSequencer{
+SamplerExampleSequencer : SCReduxSequencer{
   var pat, patchSynth;
 
   initPatch {

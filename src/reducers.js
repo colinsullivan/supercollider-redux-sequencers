@@ -68,7 +68,7 @@ export function sequencer (state, action) {
         break;
 
       case actionTypes.SEQUENCER_STOPPED:
-        // this is sent from the AwakeningSequencer scheduled stop
+        // this is sent from the SCReduxSequencer scheduled stop
         if (state.playingState === PLAYING_STATES.STOP_QUEUED) {
           state = {
             ...state,

@@ -11,7 +11,7 @@
 
 import { createStore, combineReducers } from "redux"
 import supercolliderRedux from "supercollider-redux"
-import awakeningSequencers from "../src/"
+import SCReduxSequencers from "../src/"
 import chai from "chai"
 const expect = chai.expect;
 import midi from 'midi';
@@ -21,7 +21,7 @@ import { shouldStartSuperCollider, shouldExitSuperCollider } from './lib';
 const MIDI_PORT_INDEX = 1;
 
 function create_default_state () {
-  var metroInitialState = awakeningSequencers.create_default_sequencer(
+  var metroInitialState = SCReduxSequencers.create_default_sequencer(
     'metro',
     'OutboardExampleSequencer'
   );
@@ -38,7 +38,7 @@ function create_default_state () {
 
 var rootReducer = combineReducers({
   supercolliderRedux: supercolliderRedux.reducer,
-  sequencers: awakeningSequencers.reducer
+  sequencers: SCReduxSequencers.reducer
 });
 
 describe("Outboard Example", function () {
@@ -76,7 +76,7 @@ describe("Outboard Example", function () {
   });
 
   it("should start playing when queued", function (done) {
-    this.store.dispatch(awakeningSequencers.actions.sequencerQueued('metro'));
+    this.store.dispatch(SCReduxSequencers.actions.sequencerQueued('metro'));
     var currentState = this.store.getState().sequencers.metro;
     var playingState = currentState.playingState;
     var unsub = this.store.subscribe(() => {
@@ -89,7 +89,7 @@ describe("Outboard Example", function () {
           'object reference did not change, it is mutable'
         ).to.not.equal(currentState);
         playingState = newPlayingState;
-        if (playingState == awakeningSequencers.PLAYING_STATES.PLAYING) {
+        if (playingState == SCReduxSequencers.PLAYING_STATES.PLAYING) {
           unsub();
           done();
         }
@@ -108,7 +108,7 @@ describe("Outboard Example", function () {
         playingState = newPlayingState;
         expect(
           state.sequencers.metro.playingState
-        ).to.equal(awakeningSequencers.PLAYING_STATES.STOPPED);
+        ).to.equal(SCReduxSequencers.PLAYING_STATES.STOPPED);
         unsub();
         done();
       }
