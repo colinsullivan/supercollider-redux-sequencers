@@ -79,7 +79,7 @@ sc.lang.boot().then(sclang => {
     s.boot();
 
     s.waitForBoot({
-      store = StateStore.getInstance();
+      store = SCReduxStore.getInstance();
       sequencerFactory = SCReduxSequencerFactory.getInstance();
       sequencerFactory.setStore(store);
     })

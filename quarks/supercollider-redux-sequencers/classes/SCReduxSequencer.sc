@@ -133,6 +133,7 @@ SCReduxSequencer : Object {
   handleStateChange {
     var state = store.getState(),
       lastState = currentState;
+
     currentState = this.getStateSlice();
 
     if (currentState.isReady == false, {

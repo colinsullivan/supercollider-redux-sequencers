@@ -20,7 +20,7 @@ const expect = chai.expect;
 
 import { shouldExitSuperCollider, shouldStartSuperCollider } from "./lib";
 
-const DEBUG = true;
+const DEBUG = false;
 
 function create_default_state() {
   var metroInitialState = SCReduxSequencers.create_default_sequencer(
@@ -40,7 +40,8 @@ function create_default_state() {
 }
 var rootReducer = combineReducers({
   SCRedux: SCRedux.reducer,
-  sequencers: SCReduxSequencers.reducer
+  sequencers: SCReduxSequencers.reducer,
+  tempo: () => 120
 });
 
 describe("Metronome Example", function() {

@@ -38,7 +38,8 @@ function create_default_state() {
 
 var rootReducer = combineReducers({
   SCRedux: SCRedux.reducer,
-  sequencers: SCReduxSequencers.reducer
+  sequencers: SCReduxSequencers.reducer,
+  tempo: () => 120
 });
 
 describe("Outboard Example", function() {

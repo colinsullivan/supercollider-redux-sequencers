@@ -60,7 +60,7 @@ sc.lang.boot().then(sclang => {
 
     "Samples done loading!".postln();
 
-    store = StateStore.getInstance();
+    store = SCReduxStore.getInstance();
     sequencerFactory = SCReduxSequencerFactory.getInstance();
     sequencerFactory.setBufManager(bufManager);
     sequencerFactory.setStore(store);

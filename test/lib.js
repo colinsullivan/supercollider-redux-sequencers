@@ -1,80 +1,51 @@
-import sc from "supercolliderjs";
+//import sc from "supercolliderjs";
 
 import SCRedux from "supercollider-redux";
+
 export function shouldStartSuperCollider() {
   it("should initialize properly", function(done) {
     var unsub = this.store.subscribe(() => {
       let state = this.store.getState();
-      let scStateStoreReadyState =
-        state.SCRedux.scStateStoreReadyState;
+      const scSynthReadyState = state.SCRedux.scSynthReadyState;
 
-      if (scStateStoreReadyState === "READY") {
-        unsub();
-        done();
-      }
-    });
-    sc.lang
-      .boot({
-        debug: true,
-        echo: true,
-        stdin: false
-      })
-      .then(sclang => {
-        this.sclang = sclang;
+      if (scSynthReadyState === SCRedux.READY_STATES.READY) {
         this.sclang
           .interpret(
             `
+var store, sequencerFactory, clockController;
 
-      var store, sequencerFactory, clockController;
+MIDIClient.init();
 
-      API.mountDuplexOSC();
-      MIDIClient.init();
-
-      s.waitForBoot({
-        store = StateStore.getInstance();
-        clockController = ReduxTempoClockController.new((
-          store: store
-        ));
-        sequencerFactory = SCReduxSequencerFactory.getInstance();
-        sequencerFactory.setClockController(clockController);
-        sequencerFactory.setStore(store);
-      });
-
-        `
+store = SCReduxStore.getInstance();
+clockController = SCReduxTempoClockController.new((
+  store: store
+));
+sequencerFactory = SCReduxSequencerFactory.getInstance();
+sequencerFactory.setClockController(clockController);
+sequencerFactory.setStore(store);
+          `
           )
           .then(() => {
-            setTimeout(() => {
-              this.scStoreController = new SCRedux.SCStoreController(
-                this.store
-              );
-            }, 4000);
-          })
-          .catch(done);
-      });
+            unsub();
+            done();
+          });
+      }
+    });
+    this.sclangController = new SCRedux.SCLangController(this.store, {
+      debug: true,
+      echo: true,
+      stdin: false
+    });
+    this.sclangController.boot().then(sclang => {
+      this.scStoreController = new SCRedux.SCStoreController(this.store);
+      this.sclang = sclang;
+    });
   });
 }
 
 export function shouldExitSuperCollider() {
-  it("should pause", function(done) {
-    setTimeout(done, 1000);
-  });
-  it("should disconnect SCStoreController", function() {
-    this.scStoreController.disconnect();
-    this.scStoreController = null;
-  });
-  it("should quit the server", function(done) {
-    this.sclang
-      .interpret(`Server.freeAll(); Server.quitAll();`)
-      .then(() => {
-        setTimeout(done, 1000);
-      })
-      .catch(done);
-  });
-
-  it("should quit sclang", function(done) {
-    this.sclang
-      .quit()
-      .then(() => done())
-      .catch(done);
+  it("should exit supercollider", function(done) {
+    this.scStoreController.quit();
+    this.sclangController.quit().then(done);
   });
 }

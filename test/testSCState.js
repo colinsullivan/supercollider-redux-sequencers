@@ -11,8 +11,8 @@
 import { createStore, combineReducers } from "redux";
 import { expect } from "chai";
 
-import SCRedux from "supercollider-redux";
 import SCReduxSequencers from "../src/";
+import * as actionTypes from "../src/actionTypes";
 import { getSCState } from "../src/selectors";
 
 function create_default_state() {
@@ -108,8 +108,7 @@ describe("SCReplicaState", function() {
     let prevSCSeqState = scSeqState;
 
     store.dispatch({
-      type:
-        SCRedux.actionTypes.SUPERCOLLIDER_EVENTSTREAMPLAYER_NEXTBEAT,
+      type: actionTypes.SUPERCOLLIDER_EVENTSTREAMPLAYER_NEXTBEAT,
       payload: {
         id: seqState.sequencerId,
         nextTime: 1,
