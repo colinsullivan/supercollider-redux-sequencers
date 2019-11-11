@@ -32,13 +32,15 @@ sequencerFactory.setStore(store);
       }
     });
     this.sclangController = new SCRedux.SCLangController(this.store, {
-      debug: true,
-      echo: true,
-      stdin: false
+      interpretOnLangBoot: `
+s.options.inDevice = "JackRouter";
+s.options.outDevice = "JackRouter";
+`
     });
+    this.scStoreController = new SCRedux.SCStoreController(this.store);
     this.sclangController.boot().then(sclang => {
-      this.scStoreController = new SCRedux.SCStoreController(this.store);
       this.sclang = sclang;
+      this.scStoreController.init();
     });
   });
 }

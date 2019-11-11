@@ -39,7 +39,6 @@ var rootReducer = combineReducers({
 });
 
 describe("One Shot Metronome Example", function() {
-  this.timeout(10000);
 
   it("should init store", function() {
     var store = createStore(rootReducer, create_default_state());
@@ -124,58 +123,6 @@ describe("One Shot Metronome Example", function() {
       }
     });
   });
-
-  // TODO: Develop a different action type for this behavior
-  //it("should not play when queued then stopped", function (done) {
-  //var beat = null;
-  //var playingState = this.store.getState().sequencers.metro.playingState;
-
-  //var unsub = this.store.subscribe(() => {
-  //let state = this.store.getState();
-  //let newPlayingState = state.sequencers.metro.playingState;
-  //let newBeat = state.sequencers.metro.beat;
-
-  //if (beat != null && newBeat != beat) {
-  //unsub();
-  //done("Beat should not have changed");
-  //}
-
-  //if (newPlayingState != playingState) {
-  //playingState = newPlayingState;
-  //// if it is queued
-  //if (playingState == SCReduxSequencers.PLAYING_STATES.QUEUED) {
-  //beat = this.store.getState().sequencers.metro.beat;
-
-  //} else {
-
-  //// otherwise, it should just stop
-  //expect(
-  //playingState, 'sequencer should have changed to stopped'
-  //).to.equal(SCReduxSequencers.PLAYING_STATES.STOPPED);
-
-  //// and stay stopped
-  //setTimeout(() => {
-  //expect(
-  //playingState, 'sequencer should have remain stopped'
-  //).to.equal(SCReduxSequencers.PLAYING_STATES.STOPPED);
-  //unsub();
-  //done();
-  //}, 2000);
-  //}
-
-  //}
-  //});
-  //// first queue
-  //setTimeout(() => {
-  //this.store.dispatch(SCReduxSequencers.actions.sequencerQueued('metro'));
-  //// shortly after stop
-  //setTimeout(() => {
-  //this.store.dispatch(
-  //SCReduxSequencers.actions.sequencerStopped('metro')
-  //);
-  //}, 50);
-  //}, 50);
-  //});
 
   it("should loop when queued while playing", function(done) {
     var playingState = this.store.getState().sequencers.metro.playingState;
