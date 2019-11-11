@@ -5,10 +5,10 @@ import SCRedux from "supercollider-redux";
 export function shouldStartSuperCollider() {
   it("should initialize properly", function(done) {
     var unsub = this.store.subscribe(() => {
-      let state = this.store.getState();
-      const scSynthReadyState = state.SCRedux.scSynthReadyState;
+      let state = this.store.getState().SCRedux;
+      const {scStoreReadyState, scSynthReadyState} = state;
 
-      if (scSynthReadyState === SCRedux.READY_STATES.READY) {
+      if (scSynthReadyState === SCRedux.READY_STATES.READY && scStoreReadyState === SCRedux.READY_STATES.READY) {
         this.sclang
           .interpret(
             `

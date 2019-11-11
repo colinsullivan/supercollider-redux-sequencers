@@ -39,7 +39,6 @@ var rootReducer = combineReducers({
 });
 
 describe("One Shot Metronome Example", function() {
-
   it("should init store", function() {
     var store = createStore(rootReducer, create_default_state());
     this.store = store;
@@ -48,11 +47,27 @@ describe("One Shot Metronome Example", function() {
   shouldStartSuperCollider();
 
   it("should become ready soon after SC started", function(done) {
-    setTimeout(() => {
-      var metroReady = this.store.getState().sequencers.metro.isReady;
-      expect(metroReady).to.be.true;
-      done();
-    }, 250);
+    let metro = null;
+    const unsub = this.store.subscribe(() => {
+      const state = this.store.getState();
+      const {
+        scLangReadyState,
+        scStoreReadyState,
+        scSynthReadyState
+      } = state.SCRedux;
+      if (
+        scLangReadyState === SCRedux.READY_STATES.READY &&
+        scStoreReadyState === SCRedux.READY_STATES.READY &&
+        scSynthReadyState === SCRedux.READY_STATES.READY
+      ) {
+        if (metro !== state.sequencers.metro) {
+          metro = state.sequencers.metro;
+          expect(metro.isReady).to.be.true;
+          unsub();
+          done();
+        }
+      }
+    });
   });
 
   it("should start playing when queued", function(done) {
