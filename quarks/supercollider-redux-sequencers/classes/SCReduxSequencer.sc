@@ -259,23 +259,26 @@ SCReduxSequencer : Object {
     });
 
     clock.play({
-      // if we're still queued or requeued
-      if (
-        (currentState.playingState == "QUEUED")
-        || (currentState.playingState == "REQUEUED")
-      , {
-        if (prevStreamPlayer != nil, {
-          prevStreamPlayer.stop();    
-        });
-        // inform state store we've started playing
-        store.dispatch((
-          type: SCReduxSequencers.actionTypes['SEQUENCER_PLAYING'],
-          payload: (
-            sequencerId: sequencerId
-          )
-        ));
-      });
+      this.dispatchPlay();
     }, currentState.playQuant);
+  }
+
+  dispatchPlay {
+    // if we're still queued or requeued
+    if (
+      (currentState.playingState == "QUEUED")
+      || (currentState.playingState == "REQUEUED"), {
+      if (prevStreamPlayer != nil, {
+        prevStreamPlayer.stop();    
+      });
+      // inform state store we've started playing
+      store.dispatch((
+        type: SCReduxSequencers.actionTypes['SEQUENCER_PLAYING'],
+        payload: (
+          sequencerId: sequencerId
+        )
+      ));
+    });
   }
 
   queueStop {
