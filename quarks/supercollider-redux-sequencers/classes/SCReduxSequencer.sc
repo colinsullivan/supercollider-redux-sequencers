@@ -39,6 +39,7 @@ SCReduxSequencer : Object {
     // number representing SC audio output channel
     outputBus,
     streamPlayer,
+    prevStreamPlayer,
     // if this sequencer uses buffers this is a reference to the
     // `BufferManager` instance
     bufManager,
@@ -219,7 +220,7 @@ SCReduxSequencer : Object {
 
   queue {
     arg requeue = false;
-    var prevStreamPlayer = streamPlayer;
+    prevStreamPlayer = streamPlayer;
     if (requeue == false, {
       this.stop();
     });
