@@ -5,6 +5,24 @@ The SuperCollider pattern generators are intended to be written using the [Pbind
 
 The Node.js interface to SuperCollider is a [Redux](https://redux.js.org/) state store, all starting and stopping of sequencers occurs via actions dispatched to the store, and all note events received from the sequencers are actions dispatched from the SuperCollider state store.
 
+## State Overview
+
+State of all sequencers is stored by id in `sequencers`.  Each sequencer has the following attributes:
+
+* `sequencerId`: A unique identifier for this sequencer, also used as the key to lookup in `sequencers`
+* `classString`: A string representing the class to instantiate, expected to be a subclass of SCReduxSequencer.  In SuperCollider this is interpreted as a class and instantiated.
+* `beat`: A count of the events that have passed.
+* `nextBeat`: The SuperCollider clock beat on which the next event will occur.
+* `nextTime`: The time in seconds when the next event will occur (measured from the previous event).
+* `numBeats`: The duration of the sequence in clock beats.  If the sequence loops, this is the duration of one loop.
+* `playingState`: One of `PLAYING_STATES` indicating if the sequence is stopped, queued, playing, etc.
+* `isReady`: True if the sequencer's resources have initialized and it is ready to play.
+* `playQuant`, `stopQuant`, and `propQuant`: These are the [Quant](http://doc.sccode.org/Classes/Quant.html) values to determine when the sequencer should quantize play, stop, or property changes. 
+* `lastPropChangeQueuedAt`: A timestamp indicating when a `PROP_CHANGE_QUEUED` was dispatched.
+* `lastPropChangeAt`: A timestamp indicating when properties last changed in response to a `PROP_CHANGE_QUEUED` action.
+* `event`: The details of the most recently played event from the stream.
+* `midiOutDeviceName`, `midiOutPortName`: If the stream is to send events to a midi socket instead of a SuperCollider synth, this is the device name and port.
+
 ## Sequence Example
 
 
