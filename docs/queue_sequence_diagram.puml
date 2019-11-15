@@ -1,0 +1,62 @@
+@startuml
+!include styles.iuml
+
+hide footbox
+
+box "Node.js" #272727
+actor "Application" as app
+participant "Redux Store" as nodeStore
+participant SCStoreController
+end box
+
+box "SuperCollider" #272727
+participant SCReduxStore
+participant SCReduxSequencer
+participant TempoClock
+participant ReduxEventStreamPlayer
+end box
+
+app --> nodeStore : SEQUENCER_QUEUED (sequencerId)
+note right: Queues a single sequencer
+
+nodeStore --> SCStoreController : subscribe
+note right: SCStoreController forwards state\nto replica state store
+
+SCStoreController --> SCReduxStore : setState
+
+SCReduxStore --> SCReduxSequencer : subscribe
+note right: The SCReduxSequencer instance notices\nits own playingState has changed to QUEUED
+
+SCReduxSequencer --> SCReduxSequencer : queue()
+SCReduxSequencer --> ReduxEventStreamPlayer : streamPlayer.play()
+note right: The stream player is scheduled at playQuant
+
+SCReduxSequencer --> TempoClock : schedule this.dispatchPlay
+note right: Another function is scheduled\nto dispatch SEQUENCER_PLAYING
+create control "this.dispatchPlay Task" as dispatchPlay
+TempoClock --> dispatchPlay
+
+...at playQuant...
+
+dispatchPlay --> SCReduxSequencer : this.dispatchPlay()
+destroy dispatchPlay
+note right: timer fires - play action is dispatched\nright when stream player begins
+
+SCReduxSequencer --> SCReduxStore : dispatch SEQUENCER_PLAYING
+SCReduxStore --> SCStoreController : dispatch SEQUENCER_PLAYING
+SCStoreController --> nodeStore : dispatch SEQUENCER_PLAYING
+nodeStore --> nodeStore : reducers
+
+nodeStore --> app : subscribe
+note left: See the sequencer is playing!
+
+ReduxEventStreamPlayer --> SCReduxStore : dispatch EVENTSTREAMPLAYER_EVENT
+note right: ReduxEventStreamPlayer begins\ndispatching actions on each\nnote event.
+SCReduxStore --> SCStoreController : dispatch EVENTSTREAMPLAYER_EVENT
+SCStoreController --> nodeStore : dispatch EVENTSTREAMPLAYER_EVENT
+nodeStore --> nodeStore : reducers
+
+nodeStore --> app : subscribe
+note left: See the event that was played!
+
+@enduml
