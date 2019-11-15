@@ -23,11 +23,11 @@ export var PLAYING_STATES = {
 export function create_default_state() {
   return {};
 }
-export function create_default_sequencer(sequencerId, type) {
+export function create_default_sequencer(sequencerId, classString) {
   return {
     sequencerId,
-    type,
-    clockOffsetSeconds: 0.0,
+    classString,
+    // TODO: This should be `eventCount`
     beat: 0,
     nextBeat: false,
     nextTime: 0,
