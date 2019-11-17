@@ -3,7 +3,7 @@
   path:    "supercollider-redux-sequencers",
   summary:    "A Node.js and SuperCollider framework for generative musical sequencers based on supercollider-redux.",
   author:    "Colin Sullivan",
-  version:    0.813,
+  version:    "0.9.0",
 //  helpdoc:    "",
   url:      "https://github.com/colinsullivan/supercollider-redux-sequencers",
   dependencies:  #["https://github.com/colinsullivan/supercollider-redux.git@tags/v1.0.0-alpha"]
