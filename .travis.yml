@@ -11,7 +11,6 @@ cache:
   directories:
     - $HOME/supercollider
     - $HOME/sc3-plugins
-script: sudo -E su $USER -c "nvm use $(< .nvmrc); npm run test"
 env:
   global:
     AUDIODEV=null
