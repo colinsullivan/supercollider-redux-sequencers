@@ -1,4 +1,6 @@
 # supercollider-redux-sequencers
+[![Build Status](https://travis-ci.com/colinsullivan/supercollider-redux-sequencers.svg?branch=master)](https://travis-ci.com/colinsullivan/supercollider-redux-sequencers)
+
 A Node.js and SuperCollider framework for generative musical sequencers based on [supercollider-redux](https://github.com/colinsullivan/supercollider-redux).  Provides a musical sequencer that can be started and stopped from Node.js and dispatches state updates to the Node.js process at each event played.
 
 The SuperCollider pattern generators are intended to be written using the [Pbind](http://doc.sccode.org/Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind.html) library, a prominent way to build generative event generators in SuperCollider.

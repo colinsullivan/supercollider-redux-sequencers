@@ -1,4 +1,2 @@
 *.swp
 node_modules
-.supercollider.yaml
-.nyc_output
