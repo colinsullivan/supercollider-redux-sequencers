@@ -1,10 +1,10 @@
 (
   name:    "supercollider-redux-sequencers",
   path:    "supercollider-redux-sequencers",
-  summary:    "Components for building generative music systems involving sequenced events.",
+  summary:    "A Node.js and SuperCollider framework for generative musical sequencers based on supercollider-redux.",
   author:    "Colin Sullivan",
   version:    0.813,
 //  helpdoc:    "",
   url:      "https://github.com/colinsullivan/supercollider-redux-sequencers",
-  dependencies:  #["supercollider-redux@tags/0.94"]
+  dependencies:  #["https://github.com/colinsullivan/supercollider-redux.git@tags/1.0.0-alpha"]
 )
