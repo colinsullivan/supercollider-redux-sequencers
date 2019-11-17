@@ -25,6 +25,8 @@ State of all sequencers is stored by id in `sequencers`.  Each sequencer has the
 
 ## Sequence Example
 
+![docs/queue_sequence_diagram.png](docs/queue_sequence_diagram.png "Diagram of sequencer queueing and starting to play")
+
 
 ## SuperCollider Classes
 All SuperCollider code is included in a [quark](http://doc.sccode.org/Guides/UsingQuarks.html) inside the `quarks/supercollider-redux-sequencers` directory.
@@ -54,10 +56,6 @@ This example demonstrates a sampler that requires samples are loaded.
 This example demonstrates how a SuperCollider pattern can be parameterized through the state store.  See `ParamExampleSequencer` in the quark.
 
     $ npm run start_parameter_example
-
-## Sidenotes
-
-It is possible to run Node.js and a child SuperCollider process using [supercolliderjs](https://github.com/crucialfelix/supercolliderjs).  The unit tests do this.
 
 ## Unit Tests
 
