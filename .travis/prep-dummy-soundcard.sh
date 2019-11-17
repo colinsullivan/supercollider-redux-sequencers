@@ -10,7 +10,6 @@ cat << EOF > /home/travis/.asoundrc
        }
 EOF
 chmod go+r /home/travis/.asoundrc
-chmod o+rw /dev/snd/seq
 cat << EOF >> /etc/modules.conf
 # OSS/Free portion - card #1
 alias sound-slot-0 snd-card-0
