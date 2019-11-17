@@ -3,9 +3,6 @@
 /**
  *  @file       example.js
  *
- *	@desc       Ableton Link state changes into state store, forwarded to
- *	            SuperCollider replica state store.
- *
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
  *
  *  @copyright  2017 Colin Sullivan
@@ -13,9 +10,7 @@
  **/
 
 import { createStore, combineReducers } from "redux";
-import sc from "supercolliderjs";
 import SCRedux from "supercollider-redux";
-const SCStoreController = SCRedux.SCStoreController;
 import SCReduxSequencers from ".";
 
 function create_default_state() {
@@ -29,49 +24,47 @@ function create_default_state() {
   };
 }
 
-var rootReducer = combineReducers({
+const rootReducer = combineReducers({
   [SCRedux.DEFAULT_MOUNT_POINT]: SCRedux.reducer,
   sequencers: SCReduxSequencers.reducer
 });
 
-var store = createStore(rootReducer, create_default_state());
-sc.lang.boot().then(lang => {
-  var sclang = lang;
-  sclang.interpret("API.mountDuplexOSC();").then(() => {
-    var scStoreController = new SCStoreController(store);
+const store = createStore(rootReducer, create_default_state());
+const scReduxController = new SCRedux.SCReduxController(store, {
+  interpretOnLangBoot: `
+s.options.inDevice = "JackRouter";
+s.options.outDevice = "JackRouter";
+  `
+});
 
-    let metroReady = false;
-    store.subscribe(() => {
-      let state = store.getState();
-      let newMetroReady = state.sequencers.metro.isReady;
+scReduxController.boot().then(() => {
+  scReduxController.getSCLang().interpret(
+`
+var store, sequencerFactory;
 
-      if (newMetroReady != metroReady) {
-        console.log("Queueing metronome...");
-        metroReady = newMetroReady;
-        store.dispatch(SCReduxSequencers.actions.sequencerQueued("metro"));
-      }
-    });
+s.waitForBoot({
+  store = SCReduxStore.getInstance();
+  sequencerFactory = SCReduxSequencerFactory.getInstance();
+  sequencerFactory.setStore(store);
+})`
+  );
+  let metroReady = false;
+  store.subscribe(() => {
+    let state = store.getState();
+    let newMetroReady = state.sequencers.metro.isReady;
 
-    sclang.interpret(`
-    var store, sequencerFactory;
-
-    s.boot();
-
-    s.waitForBoot({
-      store = SCReduxStore.getInstance();
-      sequencerFactory = SCReduxSequencerFactory.getInstance();
-      sequencerFactory.setStore(store);
-    })
-
-    `);
-
-    setInterval(() => {
-      console.log("store.getState()");
-      console.log(store.getState());
-    }, 1000);
-
-    setTimeout(() => {
-      store.dispatch(SCReduxSequencers.actions.sequencerStopQueued("metro"));
-    }, 10000);
+    if (newMetroReady != metroReady) {
+      console.log("Queueing metronome...");
+      metroReady = newMetroReady;
+      store.dispatch(SCReduxSequencers.actions.sequencerQueued("metro"));
+    }
   });
+  setInterval(() => {
+    console.log("store.getState()");
+    console.log(store.getState());
+  }, 1000);
+
+  setTimeout(() => {
+    store.dispatch(SCReduxSequencers.actions.sequencerStopQueued("metro"));
+  }, 10000);
 });

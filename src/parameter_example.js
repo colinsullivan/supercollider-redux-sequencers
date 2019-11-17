@@ -3,9 +3,6 @@
 /**
  *  @file       parameter_example.js
  *
- *	@desc       Ableton Link state changes into state store, forwarded to
- *	            SuperCollider replica state store.
- *
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
  *
  *  @copyright  2017 Colin Sullivan
@@ -13,9 +10,7 @@
  **/
 
 import { createStore, combineReducers } from "redux";
-import sc from "supercolliderjs";
 import SCRedux from "supercollider-redux";
-const SCStoreController = SCRedux.SCStoreController;
 import SCReduxSequencers from ".";
 
 function create_default_state() {
@@ -55,25 +50,28 @@ var rootReducer = combineReducers({
 });
 
 var store = createStore(rootReducer, create_default_state());
-sc.lang.boot().then(sclang => {
-  sclang.interpret("API.mountDuplexOSC();").then(() => {
-    var scStoreController = new SCStoreController(store);
+const scReduxController = new SCRedux.SCReduxController(store, {
+  interpretOnLangBoot: `
+s.options.inDevice = "JackRouter";
+s.options.outDevice = "JackRouter";
+  `
+});
+scReduxController.boot().then(() => {
+  let paramexampleReady = false;
+  store.subscribe(() => {
+    let state = store.getState();
+    let newIsReady = state.sequencers.paramexample.isReady;
 
-    let paramexampleReady = false;
-    store.subscribe(() => {
-      let state = store.getState();
-      let newIsReady = state.sequencers.paramexample.isReady;
+    if (newIsReady != paramexampleReady) {
+      console.log("Queueing metronome...");
+      paramexampleReady = newIsReady;
+      store.dispatch(
+        SCReduxSequencers.actions.sequencerQueued("paramexample")
+      );
+    }
+  });
 
-      if (newIsReady != paramexampleReady) {
-        console.log("Queueing metronome...");
-        paramexampleReady = newIsReady;
-        store.dispatch(
-          SCReduxSequencers.actions.sequencerQueued("paramexample")
-        );
-      }
-    });
-
-    sclang.interpret(`
+  scReduxController.getSCLang().interpret(`
     var store, sequencerFactory;
 
     s.boot();
@@ -85,27 +83,26 @@ sc.lang.boot().then(sclang => {
     })
     `);
 
-    setInterval(() => {
-      console.log("store.getState()");
-      console.log(store.getState());
-    }, 1000);
+  setInterval(() => {
+    console.log("store.getState()");
+    console.log(store.getState());
+  }, 1000);
+
+  setTimeout(() => {
+    store.dispatch({
+      type: "PARAM_EXAMPLE_LEGATO"
+    });
 
     setTimeout(() => {
       store.dispatch({
-        type: "PARAM_EXAMPLE_LEGATO"
+        type: "PARAM_EXAMPLE_STOCCATO"
       });
 
       setTimeout(() => {
-        store.dispatch({
-          type: "PARAM_EXAMPLE_STOCCATO"
-        });
-
-        setTimeout(() => {
-          store.dispatch(
-            SCReduxSequencers.actions.sequencerStopQueued("paramexample")
-          );
-        }, 6000);
+        store.dispatch(
+          SCReduxSequencers.actions.sequencerStopQueued("paramexample")
+        );
       }, 6000);
     }, 6000);
-  });
+  }, 6000);
 });

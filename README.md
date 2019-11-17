@@ -67,10 +67,17 @@ MetronomeSequencer : SCReduxSequencer {
 ```
 
 ### `SCReduxSequencerFactory`
-Watches the `sequencers` dictionary at the root level of the state tree and instantiates sequencers.  Expects a `clockController` and `store`
+Watches the `sequencers` dictionary at the root level of the state tree and instantiates sequencers.  Expects a `store` from which to look for state changes:
+
+```supercollider
+var store, sequencerFactory;
+
+store = SCReduxStore.getInstance();
+sequencerFactory = SCReduxSequencerFactory.getInstance();
+sequencerFactory.setStore(store);
+```
 
 ### Internal classes:
-
 * `ReduxEventStreamPlayer`: This is a subclass of `EventStreamPlayer` which will dispatch actions each time an event from the stream is played.  Very useful for modifying other state based on the playback of a Pattern, for example.
 * `SCReduxSequencers`: A class providing a static object for action types.
 
@@ -87,15 +94,15 @@ This example plays a metronome implemented in `MetronomeSequencer.sc`.  It is no
 
     $ npm run start_example
 
-### Sampler
-This example demonstrates a sampler that requires samples are loaded.
-
-    $ npm run start_sampler_example
-
 ### Parameterized
-This example demonstrates how a SuperCollider pattern can be parameterized through the state store.  See `ParamExampleSequencer` in the quark.
+This example demonstrates one way a SuperCollider pattern can be parameterized through the state store.  See `ParamExampleSequencer` in the quark.
 
     $ npm run start_parameter_example
+
+### Sampler
+This example demonstrates a sampler that requires samples are loaded.  **NOTE**: This example depends on [cs-supercollider-lib](https://github.com/colinsullivan/cs-supercollider-lib).  Perhaps best useful for reference.
+
+    $ npm run start_sampler_example
 
 ## Unit Tests
 
