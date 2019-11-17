@@ -17,7 +17,7 @@ import SCReduxSequencers from "../src/";
 import chai from "chai";
 const expect = chai.expect;
 
-import { shouldStartSuperCollider, shouldExitSuperCollider } from "./lib";
+import { boot, quit } from "./lib";
 
 function create_default_state() {
   var metroInitialState = SCReduxSequencers.create_default_sequencer(
@@ -39,12 +39,11 @@ var rootReducer = combineReducers({
 });
 
 describe("One Shot Metronome Example", function() {
-  it("should init store", function() {
+  before(function(done) {
     var store = createStore(rootReducer, create_default_state());
     this.store = store;
+    boot.bind(this)(done);
   });
-
-  shouldStartSuperCollider();
 
   it("should become ready soon after SC started", function(done) {
     let metro = null;
@@ -77,9 +76,9 @@ describe("One Shot Metronome Example", function() {
       let state = this.store.getState();
       let newPlayingState = state.sequencers.metro.playingState;
 
-      if (newPlayingState != playingState) {
+      if (newPlayingState !== playingState) {
         playingState = newPlayingState;
-        if (playingState == SCReduxSequencers.PLAYING_STATES.PLAYING) {
+        if (playingState === SCReduxSequencers.PLAYING_STATES.PLAYING) {
           unsub();
           done();
         }
@@ -93,7 +92,7 @@ describe("One Shot Metronome Example", function() {
       let state = this.store.getState();
       let newPlayingState = state.sequencers.metro.playingState;
 
-      if (newPlayingState != playingState) {
+      if (newPlayingState !== playingState) {
         playingState = newPlayingState;
         expect(state.sequencers.metro.playingState).to.equal(
           SCReduxSequencers.PLAYING_STATES.STOPPED
@@ -211,5 +210,7 @@ describe("One Shot Metronome Example", function() {
       });
     }
   });
-  shouldExitSuperCollider();
+  after(function(done) {
+    quit.bind(this)(done);
+  });
 });

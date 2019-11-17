@@ -16,7 +16,7 @@ import SCReduxSequencers from "../src/";
 import chai from "chai";
 const expect = chai.expect;
 
-import { shouldStartSuperCollider, shouldExitSuperCollider } from "./lib";
+import { boot, quit } from "./lib";
 
 const DEBUG = false;
 
@@ -50,7 +50,7 @@ var rootReducer = combineReducers({
 });
 
 describe("Metronome Stopping Example", function() {
-  it("should init store", function() {
+  before(function(done) {
     let middleware = [];
     if (DEBUG) {
       middleware = [logger];
@@ -61,9 +61,8 @@ describe("Metronome Stopping Example", function() {
       applyMiddleware(...middleware)
     );
     this.store = store;
+    boot.bind(this)(done);
   });
-
-  shouldStartSuperCollider();
 
   it("should become ready soon after SC started", function(done) {
     setTimeout(() => {
@@ -230,5 +229,7 @@ describe("Metronome Stopping Example", function() {
     );
   });
 
-  shouldExitSuperCollider();
+  after(function (done) {
+    quit.bind(this)(done);
+  });
 });

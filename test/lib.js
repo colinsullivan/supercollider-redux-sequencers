@@ -2,16 +2,19 @@
 
 import SCRedux from "supercollider-redux";
 
-export function shouldStartSuperCollider() {
-  it("should initialize properly", function(done) {
-    var unsub = this.store.subscribe(() => {
-      let state = this.store.getState().SCRedux;
-      const {scStoreReadyState, scSynthReadyState} = state;
+export function boot(done) {
+  var unsub = this.store.subscribe(() => {
+    let state = this.store.getState().SCRedux;
+    const { scStoreReadyState, scSynthReadyState } = state;
 
-      if (scSynthReadyState === SCRedux.READY_STATES.READY && scStoreReadyState === SCRedux.READY_STATES.READY) {
-        this.sclang
-          .interpret(
-            `
+    if (
+      scSynthReadyState === SCRedux.READY_STATES.READY &&
+      scStoreReadyState === SCRedux.READY_STATES.READY
+    ) {
+      this.scReduxController
+        .getSCLang()
+        .interpret(
+          `
 var store, sequencerFactory, clockController;
 
 MIDIClient.init();
@@ -24,30 +27,25 @@ sequencerFactory = SCReduxSequencerFactory.getInstance();
 sequencerFactory.setClockController(clockController);
 sequencerFactory.setStore(store);
           `
-          )
-          .then(() => {
-            unsub();
-            done();
-          });
-      }
-    });
-    this.sclangController = new SCRedux.SCLangController(this.store, {
-      interpretOnLangBoot: `
+        )
+        .then(() => {
+          unsub();
+          done();
+        });
+    }
+  });
+  this.scReduxController = new SCRedux.SCReduxController(this.store, {
+    interpretOnLangBoot: `
 s.options.inDevice = "JackRouter";
 s.options.outDevice = "JackRouter";
 `
-    });
-    this.scStoreController = new SCRedux.SCStoreController(this.store);
-    this.sclangController.boot().then(sclang => {
-      this.sclang = sclang;
-      this.scStoreController.init();
-    });
   });
+  this.scReduxController.boot().catch(done);
 }
 
-export function shouldExitSuperCollider() {
-  it("should exit supercollider", function(done) {
-    this.scStoreController.quit();
-    this.sclangController.quit().then(done);
-  });
+export function quit(done) {
+  this.scReduxController
+    .quit()
+    .then(done)
+    .catch(done);
 }

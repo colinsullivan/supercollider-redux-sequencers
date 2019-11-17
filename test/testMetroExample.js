@@ -18,7 +18,7 @@ import SCReduxSequencers from "../src/";
 import chai from "chai";
 const expect = chai.expect;
 
-import { shouldExitSuperCollider, shouldStartSuperCollider } from "./lib";
+import { boot, quit } from "./lib";
 
 const DEBUG = false;
 
@@ -45,7 +45,7 @@ var rootReducer = combineReducers({
 });
 
 describe("Metronome Example", function() {
-  it("should init store", function() {
+  before(function(done) {
     let middleware = [];
     if (DEBUG) {
       middleware = [logger];
@@ -56,16 +56,15 @@ describe("Metronome Example", function() {
       applyMiddleware(...middleware)
     );
     this.store = store;
+    boot.bind(this)(done);
   });
-
-  shouldStartSuperCollider();
 
   it("should become ready soon after SC started", function(done) {
     setTimeout(() => {
       var metroReady = this.store.getState().sequencers.metro.isReady;
       expect(metroReady).to.be.true;
       done();
-    }, 250);
+    }, 450);
   });
 
   it("should start playing when queued", function(done) {
@@ -245,5 +244,7 @@ describe("Metronome Example", function() {
     }, 1000);
   });
 
-  shouldExitSuperCollider();
+  after(function(done) {
+    quit.bind(this)(done);
+  });
 });

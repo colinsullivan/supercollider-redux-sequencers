@@ -16,7 +16,7 @@ import chai from "chai";
 const expect = chai.expect;
 import midi from "midi";
 
-import { shouldStartSuperCollider, shouldExitSuperCollider } from "./lib";
+import { boot, quit } from "./lib";
 
 const MIDI_PORT_INDEX = 1;
 
@@ -43,9 +43,10 @@ var rootReducer = combineReducers({
 });
 
 describe("Outboard Example", function() {
-  it("should init store", function() {
+  before(function(done) {
     var store = createStore(rootReducer, create_default_state());
     this.store = store;
+    boot.bind(this)(done);
   });
 
   it("should init test MIDI input", function() {
@@ -64,8 +65,6 @@ describe("Outboard Example", function() {
     });
     this.midiInput.openPort(MIDI_PORT_INDEX);
   });
-
-  shouldStartSuperCollider();
 
   it("should become ready soon after SC started", function(done) {
     setTimeout(() => {
@@ -124,5 +123,7 @@ describe("Outboard Example", function() {
     done();
   });
 
-  shouldExitSuperCollider();
+  after(function (done) {
+    quit.bind(this)(done);
+  });
 });
