@@ -15,16 +15,12 @@ export function boot(done) {
         .getSCLang()
         .interpret(
           `
-var store, sequencerFactory, clockController;
+var store, sequencerFactory;
 
 MIDIClient.init();
 
 store = SCReduxStore.getInstance();
-clockController = SCReduxTempoClockController.new((
-  store: store
-));
 sequencerFactory = SCReduxSequencerFactory.getInstance();
-sequencerFactory.setClockController(clockController);
 sequencerFactory.setStore(store);
           `
         )

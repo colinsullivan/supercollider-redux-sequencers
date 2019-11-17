@@ -1,6 +1,5 @@
 # supercollider-redux-sequencers
-
-A Node.js and SuperCollider framework for generative musical sequencers based on [supercollider-redux](https://github.com/colinsullivan/supercollider-redux).  Provides a musical sequencer that can be started and stopped from Node.js and dispatches state updates to the Node.js process at each event played.
+A Node.js and SuperCollider framework for generative musical sequencers based on [supercollider-redux](https://github.com/colinsullivan/supercollider-redux).  Provides the ability to start and stop SuperCollider patterns from Node.js and state updates to the Node.js process at each event played.
 
 The SuperCollider pattern generators are intended to be written using the [Pbind](http://doc.sccode.org/Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind.html) library, a prominent way to build generative event generators in SuperCollider.
 
@@ -28,12 +27,52 @@ State of all sequencers is stored by id in `sequencers`.  Each sequencer has the
 
 ![docs/queue_sequence_diagram.png](docs/queue_sequence_diagram.png "Diagram of sequencer queueing and starting to play")
 
-
-## SuperCollider Classes
+## SuperCollider API
 All SuperCollider code is included in a [quark](http://doc.sccode.org/Guides/UsingQuarks.html) inside the `quarks/supercollider-redux-sequencers` directory.
 
-* `SCReduxSequencer`: A framework for playing a stream to a specific clock and with a `ReduxEventStreamPlayer`.  Responds to state changes in the store, scheduling starting and stopping of the event stream player appropriately.
+### `SCReduxSequencer`
+Plays a stream to a specific clock and with a `ReduxEventStreamPlayer`.  Responds to state changes in the store, scheduling starting and stopping of the event stream player appropriately.  To use, create a subclass and implement `initStream`.  Everything else is optional.
+
+```supercollider
+MetronomeSequencer : SCReduxSequencer {
+  var pat,
+    patStream,
+    patchSynth;
+
+  initPatch {
+    // define a simple synth
+    patch = Patch({
+      arg freq, amp = 0.0;
+      var out;
+      out = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.001, 0.05, 0.3), doneAction: 2);
+      [out, out];
+    });
+    patchSynth = patch.asSynthDef().add();
+    ^patch
+  }
+
+  initStream {
+
+    pat = Pbind(
+      // the name of the SynthDef to use for each note
+      \instrument, patchSynth.name,
+      \midinote, Pseq([96, 84, 84, 84], inf),
+      // rhythmic values
+      \dur, 1
+    );
+
+    ^pat.asStream();
+  }
+}
+```
+
+### `SCReduxSequencerFactory`
+Watches the `sequencers` dictionary at the root level of the state tree and instantiates sequencers.  Expects a `clockController` and `store`
+
+### Internal classes:
+
 * `ReduxEventStreamPlayer`: This is a subclass of `EventStreamPlayer` which will dispatch actions each time an event from the stream is played.  Very useful for modifying other state based on the playback of a Pattern, for example.
+* `SCReduxSequencers`: A class providing a static object for action types.
 
 ## Examples
 

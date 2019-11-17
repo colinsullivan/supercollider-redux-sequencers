@@ -18,7 +18,7 @@ SCReduxSequencerFactory : Object {
   // reference to our state store
   var store,
     bufManager,
-    clockController,
+    clock,
     // our list of sequencers (SCReduxSequencer instances / subclasses)
     sequencers;
 
@@ -47,14 +47,13 @@ SCReduxSequencerFactory : Object {
     bufManager = theBufManager;
   }
 
-  setClockController {
-    arg theClockController;
-    clockController = theClockController;
+  setClock {
+    arg theClock;
+    clock = theClock;
   }
 
   init {
     sequencers = IdentityDictionary.new();
-    clockController = nil;
   }
 
   handleStateChange {
@@ -83,7 +82,7 @@ SCReduxSequencerFactory : Object {
             store: store,
             sequencerId: sequencerId,
             bufManager: bufManager,
-            clockController: clockController
+            clock: clock
           ));
         });
 

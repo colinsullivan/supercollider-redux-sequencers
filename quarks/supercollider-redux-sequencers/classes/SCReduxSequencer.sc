@@ -34,8 +34,6 @@ SCReduxSequencer : Object {
     <audioOut,
     // the MIDI output for this sequencer
     <midiOut,
-    // Currently, built to be an AbletonTempoClockController
-    clockController,
     // number representing SC audio output channel
     outputBus,
     streamPlayer,
@@ -43,7 +41,7 @@ SCReduxSequencer : Object {
     // if this sequencer uses buffers this is a reference to the
     // `BufferManager` instance
     bufManager,
-    clock = false,
+    clock,
     params;
 
   *new {
@@ -86,14 +84,10 @@ SCReduxSequencer : Object {
     });
 
     currentState = this.getStateSlice();
-    if (params['clockController'] != nil, {
-      clockController = params['clockController']
+    if (params['clock'] != nil, {
+      clock = params['clock'];
     }, {
-      Exception.new("clockController not provided").throw();
-    });
-
-    if (clockController.isReady(), {
-      clock = clockController.clock;
+      clock = TempoClock.default();
     });
 
     audioOut = this.initAudioOut();
@@ -138,26 +132,16 @@ SCReduxSequencer : Object {
     currentState = this.getStateSlice();
 
     if (currentState.isReady == false, {
-      if (clock == false, {
-        if (clockController.isReady(), {
-          clock = clockController.clock;
-        });
-
-      });
-
-      // TODO: what else is essential here ?
-      if (clock != false, {
-        if (currentState.playQuant != false, {
-          if (currentState.stopQuant != false, {
-            store.dispatch((
-              type: SCReduxSequencers.actionTypes['SEQUENCER_READY'],
-              payload: (
-                sequencerId: sequencerId
-              )
-            ));
-          });    
+      if (currentState.playQuant != false, {
+        if (currentState.stopQuant != false, {
+          store.dispatch((
+            type: SCReduxSequencers.actionTypes['SEQUENCER_READY'],
+            payload: (
+              sequencerId: sequencerId
+            )
+          ));
         });    
-      });
+      });    
     });
 
 
