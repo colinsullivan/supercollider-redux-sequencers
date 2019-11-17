@@ -3,7 +3,7 @@ language: node_js
 before_install:
   - $TRAVIS_BUILD_DIR/.travis/install_system_audio.sh
   - sudo bash $TRAVIS_BUILD_DIR/.travis/prep-dummy-soundcard.sh
-  - $TRAVIS_BUILD_DIR/.travis/start_jackd_dummy.sh
+  - sudo -E su $USER -c "$TRAVIS_BUILD_DIR/.travis/start_jackd_dummy.sh"
   - $TRAVIS_BUILD_DIR/.travis/install_supercollider.sh
   - $TRAVIS_BUILD_DIR/.travis/install_supercolliderjs_config.sh
   - $TRAVIS_BUILD_DIR/.travis/install_quark.sh
@@ -11,6 +11,7 @@ cache:
   directories:
     - $HOME/supercollider
     - $HOME/sc3-plugins
+script: sudo -E su $USER -c 'npm run test'
 env:
   global:
     AUDIODEV=null
