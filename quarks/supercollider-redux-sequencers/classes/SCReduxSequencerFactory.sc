@@ -1,5 +1,5 @@
 /**
- *  @file       AwakenedSequencerFactory.sc
+ *  @file       SCReduxSequencerFactory.sc
  *
  *
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
@@ -9,17 +9,17 @@
  **/
 
 /**
- *  @class        AwakenedSequencerFactory
+ *  @class        SCReduxSequencerFactory
  *
  *  @classdesc    Watches state store for new sequencers and creates them.
  **/
-AwakenedSequencerFactory : Object {
+SCReduxSequencerFactory : Object {
   classvar <>instance;
   // reference to our state store
   var store,
     bufManager,
-    clockController,
-    // our list of sequencers (AwakenedSequencer instances / subclasses)
+    clock,
+    // our list of sequencers (SCReduxSequencer instances / subclasses)
     sequencers;
 
   *new {
@@ -28,14 +28,14 @@ AwakenedSequencerFactory : Object {
 
   *getInstance {
     if (this.instance == nil, {
-      this.instance = AwakenedSequencerFactory.new();
+      this.instance = SCReduxSequencerFactory.new();
     });
     ^this.instance;
   }
 
   setStore {
     arg theStore;
-    //"AwakenedSequencerFactory.setStore".postln();
+    //"SCReduxSequencerFactory.setStore".postln();
     store = theStore;
     store.subscribe({
       this.handleStateChange();
@@ -47,31 +47,30 @@ AwakenedSequencerFactory : Object {
     bufManager = theBufManager;
   }
 
-  setClockController {
-    arg theClockController;
-    clockController = theClockController;
+  setClock {
+    arg theClock;
+    clock = theClock;
   }
 
   init {
     sequencers = IdentityDictionary.new();
-    clockController = nil;
   }
 
   handleStateChange {
     var state = store.getState();
-    //"AwakenedSequencerFactory.handleStateChange".postln();
+    //"SCReduxSequencerFactory.handleStateChange".postln();
     
     if ((state.sequencers != nil), {
       // for each sequencer in state
       state.sequencers.keysValuesDo({
         arg sequencerId, sequencerState;
-        var sequencerClass = sequencerState['type'].asSymbol().asClass();
+        var sequencerClass = sequencerState['classString'].asSymbol().asClass();
 
         // if class was not found, error
         if (sequencerClass == nil, {
           Error(
             "Class % not found, cannot instantiate sequencer".format(
-              sequencerState['type']
+              sequencerState['classString']
             )
           ).throw();
         });
@@ -83,7 +82,7 @@ AwakenedSequencerFactory : Object {
             store: store,
             sequencerId: sequencerId,
             bufManager: bufManager,
-            clockController: clockController
+            clock: clock
           ));
         });
 

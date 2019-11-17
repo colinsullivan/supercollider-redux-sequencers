@@ -1,4 +1,4 @@
-ParamExampleSequencer : AwakenedSequencer {
+ParamExampleSequencer : SCReduxSequencer {
   var pat,
     instr,
     patStream,

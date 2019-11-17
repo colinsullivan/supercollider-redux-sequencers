@@ -1,0 +1,7 @@
+includePaths:
+    -   /home/travis/.local/share/SuperCollider/downloaded-quarks/API
+    -   /home/travis/.local/share/SuperCollider/downloaded-quarks/supercollider-redux/quarks/supercollider-redux
+    -   /home/travis/build/colinsullivan/supercollider-redux-sequencers/quarks/supercollider-redux-sequencers
+excludePaths:
+    []
+postInlineWarnings: false

@@ -1,20 +1,4 @@
-/**
- *  @file       OneShotMetronomeSequencer.sc
- *
- *
- *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
- *
- *  @copyright  2017 Colin Sullivan
- *  @license    Licensed under the MIT license.
- **/
-
-
-/**
- *  @class        OneShotMetronomeSequencer
- *
- *  @classdesc    A sequencer that doesn't repeat
- */
-OneShotMetronomeSequencer : AwakenedSequencer {
+LongMetronomeSequencer : SCReduxSequencer {
   var pat,
     patStream,
     patchSynth;
@@ -37,8 +21,7 @@ OneShotMetronomeSequencer : AwakenedSequencer {
     pat = Pbind(
       // the name of the SynthDef to use for each note
       \instrument, patchSynth.name,
-      // a sequence of 8 notes that does not repeat
-      \midinote, Pseq([96, 84, 84, 84, 96, 84*2, 84*2, 84*2]),
+      \midinote, Pseq([96, 84, 84, 84, 96, 84, 84, 84, 96, 84, 84, 84, 96, 84, 84, 84], inf),
       // rhythmic values
       \dur, 1
     );
@@ -46,3 +29,4 @@ OneShotMetronomeSequencer : AwakenedSequencer {
     ^pat.asStream();
   }
 }
+

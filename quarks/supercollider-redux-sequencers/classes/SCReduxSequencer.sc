@@ -1,5 +1,5 @@
 /**
- *  @file       AwakenedSequencer.sc
+ *  @file       SCReduxSequencer.sc
  *
  *
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
@@ -9,13 +9,13 @@
  **/
 
 /**
- *  @class        AwakenedSequencer
+ *  @class        SCReduxSequencer
  *
  *  @classdesc    A framework for playing a stream in sync with a clock.
  *  Subclasses handle setting up the stream and patch that the stream is
  *  playing.
  **/
-AwakenedSequencer : Object {
+SCReduxSequencer : Object {
 
   // reference to our state store
   var store,
@@ -34,15 +34,14 @@ AwakenedSequencer : Object {
     <audioOut,
     // the MIDI output for this sequencer
     <midiOut,
-    // Currently, built to be an AbletonTempoClockController
-    clockController,
     // number representing SC audio output channel
     outputBus,
     streamPlayer,
+    prevStreamPlayer,
     // if this sequencer uses buffers this is a reference to the
     // `BufferManager` instance
     bufManager,
-    clock = false,
+    clock,
     params;
 
   *new {
@@ -85,14 +84,10 @@ AwakenedSequencer : Object {
     });
 
     currentState = this.getStateSlice();
-    if (params['clockController'] != nil, {
-      clockController = params['clockController']
+    if (params['clock'] != nil, {
+      clock = params['clock'];
     }, {
-      Exception.new("clockController not provided").throw();
-    });
-
-    if (clockController.isReady(), {
-      clock = clockController.clock;
+      clock = TempoClock.default();
     });
 
     audioOut = this.initAudioOut();
@@ -112,7 +107,7 @@ AwakenedSequencer : Object {
   initAudioOut {
     arg parentOutputChannel;
     ^MixerChannel.new(
-      "AwakenedSequencer[" ++ currentState.sequencerId ++ "]" ,
+      "SCReduxSequencer[" ++ currentState.sequencerId ++ "]" ,
       Server.default,
       2, 2,
       outbus: outputBus
@@ -133,29 +128,20 @@ AwakenedSequencer : Object {
   handleStateChange {
     var state = store.getState(),
       lastState = currentState;
+
     currentState = this.getStateSlice();
 
     if (currentState.isReady == false, {
-      if (clock == false, {
-        if (clockController.isReady(), {
-          clock = clockController.clock;
-        });
-
-      });
-
-      // TODO: what else is essential here ?
-      if (clock != false, {
-        if (currentState.playQuant != false, {
-          if (currentState.stopQuant != false, {
-            store.dispatch((
-              type: "AWAKENING-SEQUENCERS-SEQ_READY",
-              payload: (
-                sequencerId: sequencerId
-              )
-            ));
-          });    
+      if (currentState.playQuant != false, {
+        if (currentState.stopQuant != false, {
+          store.dispatch((
+            type: SCReduxSequencers.actionTypes['SEQUENCER_READY'],
+            payload: (
+              sequencerId: sequencerId
+            )
+          ));
         });    
-      });
+      });    
     });
 
 
@@ -218,7 +204,7 @@ AwakenedSequencer : Object {
 
   queue {
     arg requeue = false;
-    var prevStreamPlayer = streamPlayer;
+    prevStreamPlayer = streamPlayer;
     if (requeue == false, {
       this.stop();
     });
@@ -233,7 +219,7 @@ AwakenedSequencer : Object {
     streamPlayer = ReduxEventStreamPlayer.new(
       store,
       sequencerId,
-      // this AwakenedSequencer's stream
+      // this SCReduxSequencer's stream
       stream: stream
     );
 
@@ -258,23 +244,26 @@ AwakenedSequencer : Object {
     });
 
     clock.play({
-      // if we're still queued or requeued
-      if (
-        (currentState.playingState == "QUEUED")
-        || (currentState.playingState == "REQUEUED")
-      , {
-        if (prevStreamPlayer != nil, {
-          prevStreamPlayer.stop();    
-        });
-        // inform state store we've started playing
-        store.dispatch((
-          type: "AWAKENING-SEQUENCERS-SEQ_PLAYING",
-          payload: (
-            sequencerId: sequencerId
-          )
-        ));
-      });
+      this.dispatchPlay();
     }, currentState.playQuant);
+  }
+
+  dispatchPlay {
+    // if we're still queued or requeued
+    if (
+      (currentState.playingState == "QUEUED")
+      || (currentState.playingState == "REQUEUED"), {
+      if (prevStreamPlayer != nil, {
+        prevStreamPlayer.stop();    
+      });
+      // inform state store we've started playing
+      store.dispatch((
+        type: SCReduxSequencers.actionTypes['SEQUENCER_PLAYING'],
+        payload: (
+          sequencerId: sequencerId
+        )
+      ));
+    });
   }
 
   queueStop {
@@ -283,7 +272,7 @@ AwakenedSequencer : Object {
       if (currentState.playingState == "STOP_QUEUED", {
         this.stop();
         store.dispatch((
-          type: "AWAKENING-SEQUENCERS-SEQ_STOPPED",
+          type: SCReduxSequencers.actionTypes['SEQUENCER_STOPPED'],
           payload: (
             sequencerId: sequencerId
           )
@@ -305,7 +294,7 @@ AwakenedSequencer : Object {
     clock.play({
       if (currentState.lastPropChangeQueuedAt == lastPropChangeQueuedAt, {
         store.dispatch((
-          type: "AWAKENING-SEQUENCERS-SEQUENCER_PROP_CHANGED",
+          type: SCReduxSequencers.actionTypes['SEQUENCER_PROP_CHANGED'],
           payload: (
             sequencerId: sequencerId
           )

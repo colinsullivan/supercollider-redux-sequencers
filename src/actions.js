@@ -9,9 +9,9 @@
  *  @license    Licensed under the MIT license.
  **/
 
-import * as actionTypes from "./actionTypes"
+import * as actionTypes from "./actionTypes";
 
-export function sequencerQueued (sequencerId) {
+export function sequencerQueued(sequencerId) {
   return {
     type: actionTypes.SEQUENCER_QUEUED,
     payload: {
@@ -20,7 +20,7 @@ export function sequencerQueued (sequencerId) {
   };
 }
 
-export function sequencerPlaying (sequencerId) {
+export function sequencerPlaying(sequencerId) {
   return {
     type: actionTypes.SEQUENCER_PLAYING,
     payload: {
@@ -29,7 +29,7 @@ export function sequencerPlaying (sequencerId) {
   };
 }
 
-export function sequencerStopped (sequencerId) {
+export function sequencerStopped(sequencerId) {
   return {
     type: actionTypes.SEQUENCER_STOPPED,
     payload: {
@@ -38,16 +38,16 @@ export function sequencerStopped (sequencerId) {
   };
 }
 
-export function sequencerStopQueued (sequencerId) {
+export function sequencerStopQueued(sequencerId) {
   return {
     type: actionTypes.SEQUENCER_STOP_QUEUED,
     payload: {
       sequencerId
     }
-  }
+  };
 }
 
-export function sequencerPropChangeQueued (sequencerId, props = {}) {
+export function sequencerPropChangeQueued(sequencerId, props = {}) {
   return {
     type: actionTypes.SEQUENCER_PROP_CHANGE_QUEUED,
     payload: {

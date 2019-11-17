@@ -8,24 +8,25 @@
  *  @license    Licensed under the MIT license.
  **/
 
-import { createSelector, createSelectorCreator, defaultMemoize } from 'reselect';
-import isEqual from 'lodash/isEqual';
+import {
+  createSelector,
+  createSelectorCreator,
+  defaultMemoize
+} from "reselect";
+import isEqual from "lodash/isEqual";
 
 const getSequencers = state => state.sequencers;
 
-const createDeepEqualSelector = createSelectorCreator(
-  defaultMemoize,
-  isEqual
-);
+const createDeepEqualSelector = createSelectorCreator(defaultMemoize, isEqual);
 
 /**
  *  Simplify sequencers for sending to SC.
  **/
 export const getSCSequencers = createSelector(
   getSequencers,
-  (sequencers) => {
+  sequencers => {
     var simplifiedSequencers = {};
-    Object.keys(sequencers).forEach((sequencerId) => {
+    Object.keys(sequencers).forEach(sequencerId => {
       simplifiedSequencers[sequencerId] = Object.assign(
         {},
         sequencers[sequencerId]
@@ -41,7 +42,7 @@ export const getSCSequencers = createSelector(
 
 export const getSCState = createDeepEqualSelector(
   getSCSequencers,
-  (sequencers) => ({
+  sequencers => ({
     sequencers
   })
 );

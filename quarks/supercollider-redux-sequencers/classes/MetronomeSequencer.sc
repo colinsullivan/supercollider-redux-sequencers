@@ -1,4 +1,4 @@
-LongMetronomeSequencer : AwakenedSequencer {
+MetronomeSequencer : SCReduxSequencer {
   var pat,
     patStream,
     patchSynth;
@@ -21,7 +21,7 @@ LongMetronomeSequencer : AwakenedSequencer {
     pat = Pbind(
       // the name of the SynthDef to use for each note
       \instrument, patchSynth.name,
-      \midinote, Pseq([96, 84, 84, 84, 96, 84, 84, 84, 96, 84, 84, 84, 96, 84, 84, 84], inf),
+      \midinote, Pseq([96, 84, 84, 84], inf),
       // rhythmic values
       \dur, 1
     );
@@ -29,4 +29,3 @@ LongMetronomeSequencer : AwakenedSequencer {
     ^pat.asStream();
   }
 }
-

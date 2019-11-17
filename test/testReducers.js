@@ -11,13 +11,13 @@
 import { createStore, combineReducers } from "redux";
 import { expect } from "chai";
 
-import awakeningSequencers from "../src/";
+import SCReduxSequencers from "../src/";
 
-const { actionTypes } = awakeningSequencers;
+const { actionTypes } = SCReduxSequencers;
 
 function create_default_state() {
   var metroInitialState = {
-    ...awakeningSequencers.create_default_sequencer(
+    ...SCReduxSequencers.create_default_sequencer(
       "metro",
       "MetronomeSequencer"
     ),
@@ -25,7 +25,7 @@ function create_default_state() {
   };
   metroInitialState.numBeats = 4;
   metroInitialState.stopQuant = [4, 4];
-  var metroTwoInitialState = awakeningSequencers.create_default_sequencer(
+  var metroTwoInitialState = SCReduxSequencers.create_default_sequencer(
     "metro_two",
     "MetronomeSequencer"
   );
@@ -40,7 +40,7 @@ function create_default_state() {
 }
 
 var rootReducer = combineReducers({
-  sequencers: awakeningSequencers.reducer
+  sequencers: SCReduxSequencers.reducer
 });
 
 describe("reducers", function() {
@@ -57,7 +57,7 @@ describe("reducers", function() {
   it("should change sequencers list after sequencer is queued", function() {
     prevState = state;
 
-    store.dispatch(awakeningSequencers.actions.sequencerQueued("metro"));
+    store.dispatch(SCReduxSequencers.actions.sequencerQueued("metro"));
 
     state = store.getState();
 
@@ -77,22 +77,22 @@ describe("reducers", function() {
     expect(prevState.sequencers.metro.lastPropChangeQueuedAt).to.be.false;
     expect(prevState.sequencers.metro.lastPropChangeAt).to.be.false;
 
-    expect(prevState.sequencers.metro.myParam).to.equal('one');
+    expect(prevState.sequencers.metro.myParam).to.equal("one");
 
-    store.dispatch(awakeningSequencers.actions.sequencerPropChangeQueued('metro', {
-      myParam: 'two'
-    }));
+    store.dispatch(
+      SCReduxSequencers.actions.sequencerPropChangeQueued("metro", {
+        myParam: "two"
+      })
+    );
 
     state = store.getState();
 
     expect(prevState.sequencers.metro).to.not.equal(state.sequencers.metro);
-    expect(state.sequencers.metro.lastPropChangeQueuedAt).to.be.a('number');
-    expect(state.sequencers.metro.myParam).to.equal('two');
-
-    
+    expect(state.sequencers.metro.lastPropChangeQueuedAt).to.be.a("number");
+    expect(state.sequencers.metro.myParam).to.equal("two");
   });
 
-  it('should update state when props are changed', function () {
+  it("should update state when props are changed", function() {
     prevState = store.getState();
 
     // this action would come from SC to indicate the parameter change went
@@ -100,7 +100,7 @@ describe("reducers", function() {
     store.dispatch({
       type: actionTypes.SEQUENCER_PROP_CHANGED,
       payload: {
-        sequencerId: 'metro'
+        sequencerId: "metro"
       }
     });
 
@@ -110,7 +110,6 @@ describe("reducers", function() {
     expect(state.sequencers.metro.lastPropChangeQueuedAt).to.equal(
       prevState.sequencers.metro.lastPropChangeQueuedAt
     );
-    expect(state.sequencers.metro.lastPropChangeAt).to.be.a('number');
+    expect(state.sequencers.metro.lastPropChangeAt).to.be.a("number");
   });
-
 });

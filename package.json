@@ -1,18 +1,19 @@
 {
-  "name": "awakening-sequencers",
+  "name": "supercollider-redux-sequencers",
   "version": "0.8.13",
-  "description": "Components for building generative music systems involving sequenced events.",
+  "description": "Components for building generative music systems using JavaScript and SuperCollider.",
   "main": "lib/index.js",
   "scripts": {
     "start_example": "babel-node src/example.js",
     "start_parameter_example": "babel-node src/parameter_example.js",
     "start_sampler_example": "babel-node src/example_sampler.js",
     "build": "rm -Rf lib/* && babel src --out-dir lib",
-    "test": "nyc --require @babel/register mocha --timeout 15000"
+    "test": "NODE_ENV=test nyc mocha --require @babel/register --require source-map-support/register --timeout 15000 --slow 15000 --bail",
+    "build_puml_docs": "plantuml -tpng docs/*.puml"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/colinsullivan/awakening-sequencers.git"
+    "url": "git+https://github.com/colinsullivan/supercollider-redux-sequencers.git"
   },
   "keywords": [
     "node.js",
@@ -22,16 +23,16 @@
   "author": "Colin Sullivan <colin [at] colin-sullivan.net>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/colinsullivan/awakening-sequencers/issues"
+    "url": "https://github.com/colinsullivan/supercollider-redux-sequencers/issues"
   },
-  "homepage": "https://github.com/colinsullivan/awakening-sequencers#readme",
+  "homepage": "https://github.com/colinsullivan/supercollider-redux-sequencers#readme",
   "dependencies": {
     "lodash": "^4.17.11",
-    "midi": "^0.9.5",
-    "redux": "^3.6.0",
+    "midi": "^1.0.0",
+    "redux": "^4.0.4",
+    "redux-logger": "^3.0.6",
     "reselect": "^3.0.1",
-    "supercollider-redux": "0.0.97",
-    "supercolliderjs": "^0.14.2"
+    "supercollider-redux": "1.0.0-alpha"
   },
   "babel": {
     "presets": [
@@ -54,14 +55,17 @@
     }
   },
   "devDependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.3.1",
-    "@babel/register": "^7.0.0",
-    "babel-eslint": "^10.0.1",
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/node": "^7.6.3",
+    "@babel/preset-env": "^7.6.3",
+    "@babel/register": "^7.6.2",
+    "babel-eslint": "^10.0.3",
+    "babel-plugin-istanbul": "^5.2.0",
     "chai": "^4.2.0",
-    "mocha": "^5.2.0",
-    "nyc": "^11.9.0",
-    "redux-logger": "^3.0.6"
+    "eslint": "^6.6.0",
+    "mocha": "^6.2.2",
+    "nyc": "^14.1.1",
+    "source-map-support": "^0.5.16"
   }
 }
