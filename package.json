@@ -3,6 +3,7 @@
   "version": "0.9.01",
   "description": "Components for building generative music systems using JavaScript and SuperCollider.",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "start_example": "ts-node src/example.js",
     "start_parameter_example": "ts-node src/parameter_example.js",

@@ -1,9 +1,9 @@
 export declare enum PLAYING_STATES {
-    STOPPED = 0,
-    QUEUED = 1,
-    PLAYING = 2,
-    REQUEUED = 3,
-    STOP_QUEUED = 4
+    STOPPED = "STOPPED",
+    QUEUED = "QUEUED",
+    PLAYING = "PLAYING",
+    REQUEUED = "REQUEUED",
+    STOP_QUEUED = "STOP_QUEUED"
 }
 export declare type Quant = [number, number];
 export declare type SCReduxSequencer = {
