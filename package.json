@@ -7,8 +7,8 @@
     "start_example": "babel-node src/example.js",
     "start_parameter_example": "babel-node src/parameter_example.js",
     "start_sampler_example": "babel-node src/example_sampler.js",
-    "build": "rm -Rf lib/* && babel src --out-dir lib",
-    "test": "NODE_ENV=test nyc mocha --require @babel/register --require source-map-support/register --timeout 15000 --slow 15000 --bail",
+    "build": "tsc",
+    "test": "NODE_ENV=test nyc mocha -r ts-node/register --timeout 15000 --slow 15000 --bail",
     "build_puml_docs": "plantuml -tpng docs/*.puml"
   },
   "repository": {
@@ -32,7 +32,7 @@
     "redux": "^4.0.4",
     "redux-logger": "^3.0.6",
     "reselect": "^3.0.1",
-    "supercollider-redux": "1.0.0-alpha.1"
+    "supercollider-redux": "1.0.0-alpha.2"
   },
   "babel": {
     "presets": [
@@ -60,12 +60,16 @@
     "@babel/node": "^7.6.3",
     "@babel/preset-env": "^7.6.3",
     "@babel/register": "^7.6.2",
+    "@types/chai": "^4.2.14",
+    "@types/mocha": "^8.0.4",
     "babel-eslint": "^10.0.3",
     "babel-plugin-istanbul": "^5.2.0",
     "chai": "^4.2.0",
     "eslint": "^6.6.0",
-    "mocha": "^6.2.2",
+    "mocha": "^6.2.3",
     "nyc": "^14.1.1",
-    "source-map-support": "^0.5.16"
+    "source-map-support": "^0.5.16",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.1.2"
   }
 }

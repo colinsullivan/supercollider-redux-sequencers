@@ -11,39 +11,40 @@
  **/
 
 import * as actionTypes from "./actionTypes";
+import { PLAYING_STATES } from './models';
 
-export var PLAYING_STATES = {
-  STOPPED: "STOPPED",
-  QUEUED: "QUEUED",
-  PLAYING: "PLAYING",
-  REQUEUED: "REQUEUED",
-  STOP_QUEUED: "STOP_QUEUED"
-};
+//export var PLAYING_STATES = {
+  //STOPPED: "STOPPED",
+  //QUEUED: "QUEUED",
+  //PLAYING: "PLAYING",
+  //REQUEUED: "REQUEUED",
+  //STOP_QUEUED: "STOP_QUEUED"
+//};
 
 export function create_default_state() {
   return {};
 }
-export function create_default_sequencer(sequencerId, scClassName) {
-  return {
-    sequencerId,
-    scClassName,
-    // TODO: This should be `eventCount`
-    beat: 0,
-    nextBeat: false,
-    nextTime: 0,
-    numBeats: 8,
-    playingState: PLAYING_STATES.STOPPED,
-    isReady: false,
-    playQuant: [4, 0],
-    stopQuant: [8, 0],
-    propQuant: [4, 4],
-    lastPropChangeQueuedAt: false,
-    lastPropChangeAt: false,
-    event: false,
-    midiOutDeviceName: false,
-    midiOutPortName: false
-  };
-}
+//export function create_default_sequencer(sequencerId, scClassName) {
+  //return {
+    //sequencerId,
+    //scClassName,
+    //// TODO: This should be `eventCount`
+    //beat: 0,
+    //nextBeat: false,
+    //nextTime: 0,
+    //numBeats: 8,
+    //playingState: PLAYING_STATES.STOPPED,
+    //isReady: false,
+    //playQuant: [4, 0],
+    //stopQuant: [8, 0],
+    //propQuant: [4, 4],
+    //lastPropChangeQueuedAt: false,
+    //lastPropChangeAt: false,
+    //event: false,
+    //midiOutDeviceName: false,
+    //midiOutPortName: false
+  //};
+//}
 function create_timestamp() {
   return new Date().getTime() / 1000.0;
 }
