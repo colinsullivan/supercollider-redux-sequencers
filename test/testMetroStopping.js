@@ -13,8 +13,7 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import logger from "redux-logger";
 import SCRedux from "supercollider-redux";
 import SCReduxSequencers from "../src/";
-import chai from "chai";
-const expect = chai.expect;
+import { expect } from "chai";
 
 import { boot, quit } from "./lib";
 

@@ -23,10 +23,10 @@ export var PLAYING_STATES = {
 export function create_default_state() {
   return {};
 }
-export function create_default_sequencer(sequencerId, classString) {
+export function create_default_sequencer(sequencerId, scClassName) {
   return {
     sequencerId,
-    classString,
+    scClassName,
     // TODO: This should be `eventCount`
     beat: 0,
     nextBeat: false,

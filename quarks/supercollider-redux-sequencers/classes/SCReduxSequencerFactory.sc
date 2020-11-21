@@ -64,13 +64,13 @@ SCReduxSequencerFactory : Object {
       // for each sequencer in state
       state.sequencers.keysValuesDo({
         arg sequencerId, sequencerState;
-        var sequencerClass = sequencerState['classString'].asSymbol().asClass();
+        var sequencerClass = sequencerState['scClassName'].asSymbol().asClass();
 
         // if class was not found, error
         if (sequencerClass == nil, {
           Error(
             "Class % not found, cannot instantiate sequencer".format(
-              sequencerState['classString']
+              sequencerState['scClassName']
             )
           ).throw();
         });
