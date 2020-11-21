@@ -50,12 +50,7 @@ var rootReducer = combineReducers({
 });
 
 var store = createStore(rootReducer, create_default_state());
-const scReduxController = new SCRedux.SCReduxController(store, {
-  interpretOnLangBoot: `
-s.options.inDevice = "JackRouter";
-s.options.outDevice = "JackRouter";
-  `
-});
+const scReduxController = new SCRedux.SCReduxController(store);
 scReduxController.boot().then(() => {
   let paramexampleReady = false;
   store.subscribe(() => {
