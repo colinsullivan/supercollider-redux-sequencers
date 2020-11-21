@@ -14,8 +14,7 @@
 import { createStore, combineReducers } from "redux";
 import SCRedux from "supercollider-redux";
 import SCReduxSequencers from "../src/";
-import chai from "chai";
-const expect = chai.expect;
+import { expect } from "chai";
 
 import { boot, quit } from "./lib";
 

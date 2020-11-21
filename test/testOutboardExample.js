@@ -10,15 +10,15 @@
  **/
 
 import { createStore, combineReducers } from "redux";
+import { expect } from "chai";
+import { input } from "midi";
+
 import SCRedux from "supercollider-redux";
 import SCReduxSequencers from "../src/";
-import chai from "chai";
-const expect = chai.expect;
-import midi from "midi";
 
 import { boot, quit } from "./lib";
 
-const MIDI_PORT_INDEX = 1;
+const MIDI_PORT_INDEX = 2;
 
 function create_default_state() {
   var metroInitialState = SCReduxSequencers.create_default_sequencer(
@@ -50,7 +50,7 @@ describe("Outboard Example", function() {
   });
 
   it("should init test MIDI input", function() {
-    this.midiInput = new midi.input();
+    this.midiInput = new input();
     const numPorts = this.midiInput.getPortCount();
     let i = 0;
     while (i < numPorts) {

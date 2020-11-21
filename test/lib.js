@@ -30,12 +30,7 @@ sequencerFactory.setStore(store);
         });
     }
   });
-  this.scReduxController = new SCRedux.SCReduxController(this.store, {
-    interpretOnLangBoot: `
-s.options.inDevice = "JackRouter";
-s.options.outDevice = "JackRouter";
-`
-  });
+  this.scReduxController = new SCRedux.SCReduxController(this.store);
   this.scReduxController.boot().catch(done);
 }
 
