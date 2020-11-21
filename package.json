@@ -4,9 +4,9 @@
   "description": "Components for building generative music systems using JavaScript and SuperCollider.",
   "main": "lib/index.js",
   "scripts": {
-    "start_example": "babel-node src/example.js",
-    "start_parameter_example": "babel-node src/parameter_example.js",
-    "start_sampler_example": "babel-node src/example_sampler.js",
+    "start_example": "ts-node src/example.js",
+    "start_parameter_example": "ts-node src/parameter_example.js",
+    "start_sampler_example": "ts-node src/example_sampler.js",
     "build": "tsc",
     "test": "NODE_ENV=test nyc mocha -r ts-node/register --timeout 15000 --slow 15000 --bail",
     "build_puml_docs": "plantuml -tpng docs/*.puml"
@@ -34,11 +34,6 @@
     "reselect": "^3.0.1",
     "supercollider-redux": "1.0.0-alpha.2"
   },
-  "babel": {
-    "presets": [
-      "@babel/preset-env"
-    ]
-  },
   "eslintConfig": {
     "extends": "eslint:recommended",
     "parser": "babel-eslint",
@@ -55,15 +50,9 @@
     }
   },
   "devDependencies": {
-    "@babel/cli": "^7.6.4",
-    "@babel/core": "^7.6.4",
-    "@babel/node": "^7.6.3",
-    "@babel/preset-env": "^7.6.3",
-    "@babel/register": "^7.6.2",
     "@types/chai": "^4.2.14",
     "@types/mocha": "^8.0.4",
     "babel-eslint": "^10.0.3",
-    "babel-plugin-istanbul": "^5.2.0",
     "chai": "^4.2.0",
     "eslint": "^6.6.0",
     "mocha": "^6.2.3",
