@@ -11,7 +11,7 @@
 
 import * as actionTypes from "./actionTypes";
 
-export function sequencerQueued(sequencerId) {
+export function sequencerQueued(sequencerId : string) {
   return {
     type: actionTypes.SEQUENCER_QUEUED,
     payload: {
@@ -20,7 +20,7 @@ export function sequencerQueued(sequencerId) {
   };
 }
 
-export function sequencerPlaying(sequencerId) {
+export function sequencerPlaying(sequencerId : string) {
   return {
     type: actionTypes.SEQUENCER_PLAYING,
     payload: {
@@ -29,7 +29,7 @@ export function sequencerPlaying(sequencerId) {
   };
 }
 
-export function sequencerStopped(sequencerId) {
+export function sequencerStopped(sequencerId : string) {
   return {
     type: actionTypes.SEQUENCER_STOPPED,
     payload: {
@@ -38,7 +38,7 @@ export function sequencerStopped(sequencerId) {
   };
 }
 
-export function sequencerStopQueued(sequencerId) {
+export function sequencerStopQueued(sequencerId : string) {
   return {
     type: actionTypes.SEQUENCER_STOP_QUEUED,
     payload: {
@@ -47,7 +47,7 @@ export function sequencerStopQueued(sequencerId) {
   };
 }
 
-export function sequencerPropChangeQueued(sequencerId, props = {}) {
+export function sequencerPropChangeQueued(sequencerId : string, props = {}) {
   return {
     type: actionTypes.SEQUENCER_PROP_CHANGE_QUEUED,
     payload: {

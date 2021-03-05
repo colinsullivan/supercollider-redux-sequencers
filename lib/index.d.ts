@@ -3,7 +3,7 @@ import * as actionTypes from "./actionTypes";
 import * as selectors from "./selectors";
 import reducer from "./reducers";
 import { PLAYING_STATES } from "./models";
-export { SCReduxSequencer } from "./models";
+export { SCReduxSequencer, Quant } from "./models";
 declare const _default: {
     actions: typeof actions;
     actionTypes: typeof actionTypes;
