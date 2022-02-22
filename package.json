@@ -1,6 +1,6 @@
 {
   "name": "supercollider-redux-sequencers",
-  "version": "0.9.1",
+  "version": "0.9.11",
   "description": "Components for building generative music systems using JavaScript and SuperCollider.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
