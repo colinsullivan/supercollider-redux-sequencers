@@ -18,8 +18,6 @@ import SCReduxSequencers from "../src/";
 
 import { boot, quit } from "./lib";
 
-const MIDI_PORT_INDEX = 2;
-
 function create_default_state() {
   var metroInitialState = SCReduxSequencers.create_default_sequencer(
     "metro",
@@ -51,11 +49,16 @@ describe("Outboard Example", function() {
 
   it("should init test MIDI input", function() {
     this.midiInput = new input();
+    const midiInputName = "(out) SuperCollider";
+    let midiPortIndex = 0;
     const numPorts = this.midiInput.getPortCount();
-    let i = 0;
-    while (i < numPorts) {
-      console.log(`MIDI port index ${i}: ${this.midiInput.getPortName(i)}`);
-      i += 1;
+    while (midiPortIndex < numPorts) {
+      const name = this.midiInput.getPortName(midiPortIndex);
+      console.log(`MIDI port index ${midiPortIndex}: ${name}`);
+      if (name === midiInputName) {
+        break;
+      }
+      midiPortIndex += 1;
     }
 
     this.midiNotesReceived = [];
@@ -63,7 +66,7 @@ describe("Outboard Example", function() {
       //console.log('m:' + message + ' d:' + deltaTime);
       this.midiNotesReceived.push(message);
     });
-    this.midiInput.openPort(MIDI_PORT_INDEX);
+    this.midiInput.openPort(midiPortIndex);
   });
 
   it("should become ready soon after SC started", function(done) {
