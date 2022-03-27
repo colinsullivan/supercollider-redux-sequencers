@@ -18,7 +18,15 @@ import SCReduxSequencers from "../src/";
 
 import { boot, quit } from "./lib";
 
-const MIDI_PORT_INDEX = 2;
+// NOTE: This test relies on a virtual MIDI loop with inputs & outputs named:
+// (in) SuperCollider
+// (out) SuperCollider
+//
+// This can be created using MidiPipe, a preset is included in the repo at
+// test/fixtures/test.mipi - open this file with MidiPipe.
+
+const midiInputName = "(out) SuperCollider";
+const midiOutputName = "(in) SuperCollider";
 
 function create_default_state() {
   var metroInitialState = SCReduxSequencers.create_default_sequencer(
@@ -27,8 +35,8 @@ function create_default_state() {
   );
   metroInitialState.numBeats = 4;
   metroInitialState.stopQuant = [4, 4];
-  metroInitialState.midiOutDeviceName = "(in) SuperCollider";
-  metroInitialState.midiOutPortName = "(in) SuperCollider";
+  metroInitialState.midiOutDeviceName = midiOutputName;
+  metroInitialState.midiOutPortName = midiOutputName;
   return {
     sequencers: {
       metro: metroInitialState
@@ -51,11 +59,15 @@ describe("Outboard Example", function() {
 
   it("should init test MIDI input", function() {
     this.midiInput = new input();
+    let midiPortIndex = 0;
     const numPorts = this.midiInput.getPortCount();
-    let i = 0;
-    while (i < numPorts) {
-      console.log(`MIDI port index ${i}: ${this.midiInput.getPortName(i)}`);
-      i += 1;
+    while (midiPortIndex < numPorts) {
+      const name = this.midiInput.getPortName(midiPortIndex);
+      console.log(`MIDI port index ${midiPortIndex}: ${name}`);
+      if (name === midiInputName) {
+        break;
+      }
+      midiPortIndex += 1;
     }
 
     this.midiNotesReceived = [];
@@ -63,7 +75,7 @@ describe("Outboard Example", function() {
       //console.log('m:' + message + ' d:' + deltaTime);
       this.midiNotesReceived.push(message);
     });
-    this.midiInput.openPort(MIDI_PORT_INDEX);
+    this.midiInput.openPort(midiPortIndex);
   });
 
   it("should become ready soon after SC started", function(done) {

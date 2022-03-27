@@ -30,12 +30,10 @@ SCReduxSequencer : Object {
     // patch could be false if just MIDI out
     patch,
     stream,
-    // a patch needs an audio output channel
-    <audioOut,
     // the MIDI output for this sequencer
     <midiOut,
     // number representing SC audio output channel
-    outputBus,
+    <outputBus,
     streamPlayer,
     prevStreamPlayer,
     // if this sequencer uses buffers this is a reference to the
@@ -90,7 +88,6 @@ SCReduxSequencer : Object {
       clock = TempoClock.default();
     });
 
-    audioOut = this.initAudioOut();
     midiOut = this.initMidiOut();
     patch = this.initPatch();
     stream = this.initStream();
@@ -104,16 +101,6 @@ SCReduxSequencer : Object {
     });
   }
   
-  initAudioOut {
-    arg parentOutputChannel;
-    ^MixerChannel.new(
-      "SCReduxSequencer[" ++ currentState.sequencerId ++ "]" ,
-      Server.default,
-      2, 2,
-      outbus: outputBus
-    );
-  }
-
   initMidiOut {
     if (currentState.midiOutDeviceName != false, {
       ^MIDIOut.newByName(
@@ -223,25 +210,12 @@ SCReduxSequencer : Object {
       stream: stream
     );
 
-    // if we are playing audio play player on the audio out channel
-    if (audioOut != false, {
-      audioOut.play(
-        streamPlayer,
-        (
-          clock: clock,
-          quant: currentState.playQuant
-        )
-      );
-    });
-    // if we are playing through a midi out, just call play on the stream
-    if (midiOut != false, {
-      streamPlayer.play(
-        clock,
-        // doReset: false (continue from where paused)
-        false,
-        currentState.playQuant
-      );
-    });
+    streamPlayer.play(
+      clock,
+      // doReset: false (continue from where paused)
+      false,
+      currentState.playQuant,
+    );
 
     clock.play({
       this.dispatchPlay();
