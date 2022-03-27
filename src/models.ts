@@ -22,7 +22,7 @@ export type SCReduxSequencer = {
   propQuant: Quant,
   lastPropChangeQueuedAt: number | boolean,
   lastPropChangeAt: number | boolean,
-  event: object | boolean,
+  event: Record<string, any> | undefined,
   midiOutDeviceName: string | boolean,
   midiOutPortName: string | boolean
 };
@@ -42,7 +42,7 @@ export const create_default_sequencer = (sequencerId : string, scClassName : str
   propQuant: [4, 4],
   lastPropChangeQueuedAt: false,
   lastPropChangeAt: false,
-  event: false,
+  event: undefined,
   midiOutDeviceName: false,
   midiOutPortName: false
 });
