@@ -24,35 +24,32 @@ function create_default_state() {
   metroInitialState.stopQuant = [4, 4];
   return {
     sequencers: {
-      metro: metroInitialState
-    }
+      metro: metroInitialState,
+    },
   };
 }
 var rootReducer = combineReducers({
-  sequencers: SCReduxSequencers.reducer
+  sequencers: SCReduxSequencers.reducer,
 });
 
-describe("SCReplicaState", function() {
-  var store = createStore(rootReducer, create_default_state()),
-    state,
-    scState,
-    seqState,
-    scSeqState;
+describe("SCReplicaState", function () {
+  let store, state, scState;
+  beforeEach(() => {
+    store = createStore(rootReducer, create_default_state());
 
-  it("should select subset", function() {
     state = store.getState();
     scState = getSCState(state);
-    seqState = state.sequencers[Object.keys(state.sequencers)[0]];
-    scSeqState = scState.sequencers[Object.keys(scState.sequencers)[0]];
   });
 
-  it("should contain all sequencers", function() {
+  it("should contain all sequencers", function () {
     expect(Object.keys(state.sequencers)).to.deep.equal(
       Object.keys(scState.sequencers)
     );
   });
 
-  it("should be missing certain sequencer properties", function() {
+  it("should be missing certain sequencer properties", function () {
+    const seqState = state.sequencers[Object.keys(state.sequencers)[0]];
+    const scSeqState = scState.sequencers[Object.keys(scState.sequencers)[0]];
     expect(seqState).to.have.property("sequencerId");
     expect(scSeqState).to.have.property("sequencerId");
     expect(seqState).to.have.property("playingState");
@@ -68,7 +65,9 @@ describe("SCReplicaState", function() {
     expect(scSeqState).to.not.have.property("nextTime");
   });
 
-  it("should reselect after sequencer changes playing state", function() {
+  it("should reselect after sequencer changes playing state", function () {
+    const seqState = state.sequencers[Object.keys(state.sequencers)[0]];
+    const scSeqState = scState.sequencers[Object.keys(scState.sequencers)[0]];
     let prevState = state;
     let prevSeqState = seqState;
     let prevSCSeqState = scSeqState;
@@ -103,7 +102,9 @@ describe("SCReplicaState", function() {
     expect(scSeqState).to.not.equal(prevSCSeqState);
   });
 
-  it("should remain the same as sequencer playback happens", function() {
+  it("should remain the same as sequencer playback happens", function () {
+    const seqState = state.sequencers[Object.keys(state.sequencers)[0]];
+    const scSeqState = scState.sequencers[Object.keys(scState.sequencers)[0]];
     let prevSeqState = seqState;
     let prevSCSeqState = scSeqState;
 
@@ -113,8 +114,8 @@ describe("SCReplicaState", function() {
         id: seqState.sequencerId,
         nextTime: 1,
         nextBeat: 1,
-        midinote: 44
-      }
+        midinote: 44,
+      },
     });
 
     state = store.getState();

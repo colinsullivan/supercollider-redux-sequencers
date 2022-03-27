@@ -18,6 +18,16 @@ import SCReduxSequencers from "../src/";
 
 import { boot, quit } from "./lib";
 
+// NOTE: This test relies on a virtual MIDI loop with inputs & outputs named:
+// (in) SuperCollider
+// (out) SuperCollider
+//
+// This can be created using MidiPipe, a preset is included in the repo at
+// test/fixtures/test.mipi - open this file with MidiPipe.
+
+const midiInputName = "(out) SuperCollider";
+const midiOutputName = "(in) SuperCollider";
+
 function create_default_state() {
   var metroInitialState = SCReduxSequencers.create_default_sequencer(
     "metro",
@@ -25,8 +35,8 @@ function create_default_state() {
   );
   metroInitialState.numBeats = 4;
   metroInitialState.stopQuant = [4, 4];
-  metroInitialState.midiOutDeviceName = "(in) SuperCollider";
-  metroInitialState.midiOutPortName = "(in) SuperCollider";
+  metroInitialState.midiOutDeviceName = midiOutputName;
+  metroInitialState.midiOutPortName = midiOutputName;
   return {
     sequencers: {
       metro: metroInitialState
@@ -49,7 +59,6 @@ describe("Outboard Example", function() {
 
   it("should init test MIDI input", function() {
     this.midiInput = new input();
-    const midiInputName = "(out) SuperCollider";
     let midiPortIndex = 0;
     const numPorts = this.midiInput.getPortCount();
     while (midiPortIndex < numPorts) {
