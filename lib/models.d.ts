@@ -20,7 +20,7 @@ export declare type SCReduxSequencer = {
     propQuant: Quant;
     lastPropChangeQueuedAt: number | boolean;
     lastPropChangeAt: number | boolean;
-    event: object | boolean;
+    event: Record<string, any> | undefined;
     midiOutDeviceName: string | boolean;
     midiOutPortName: string | boolean;
 };
