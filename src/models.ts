@@ -6,7 +6,7 @@ export enum PLAYING_STATES {
   STOP_QUEUED = "STOP_QUEUED"
 };
 
-export type Quant = [number, number];
+export type Quant = [number, number] | null;
 
 export type SCReduxSequencer = {
   sequencerId: string,
